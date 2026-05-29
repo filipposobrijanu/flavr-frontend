@@ -33,6 +33,7 @@ model Restaurant {
   cuisineType         String   // π.χ. "ITALIAN", "GREEK"
   address             String
   globalBayesianScore Float    @default(0.0) // Εδώ θα αποθηκεύεται το σωστό σκορ
+  status RestaurantStatus @default(PENDING)
   ownerId             String
   owner               User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   reviews             Review[]
@@ -47,4 +48,9 @@ model Review {
   restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   userId       String
   user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+enum RestaurantStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
