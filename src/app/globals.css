@@ -5,22 +5,60 @@
   --foreground: #171717;
 }
 
+/* 1. Δηλώνουμε το font στο Tailwind v4 */
+@theme {
+  --font-ranchers: var(--font-ranchers), sans-serif;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: rgb(249, 234, 186);
     --foreground: #ededed;
   }
 }
 
+/* 2. Αντικαθιστούμε το Arial με τη CSS μεταβλητή του Ranchers */
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-ranchers), sans-serif;
+}
+/* From Uiverse.io by Voxybuns */
+.button-main {
+  /* Variables */
+  --button_radius: 0.75em;
+  --button_color: #ffb834;
+  --button_outline_color: #000000;
+  font-size: 17px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--button_radius);
+  background: var(--button_outline_color);
+}
+
+.button_top {
+  display: block;
+  box-sizing: border-box;
+  border: 2px solid var(--button_outline_color);
+  border-radius: var(--button_radius);
+  background: var(--button_color);
+  color: var(--button_outline_color);
+  transform: translateY(-0.2em);
+  transition: transform 0.1s ease;
+}
+
+.button-main:hover .button_top {
+  /* Pull the button upwards when hovered */
+  transform: translateY(-0.33em);
+}
+
+.button-main:active .button_top {
+  /* Push the button downwards when pressed */
+  transform: translateY(0);
 }

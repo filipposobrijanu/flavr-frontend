@@ -1,0 +1,50 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL") 
+  directUrl = env("DIRECT_URL") 
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// 🎭 Οι 4 ρόλοι της εκφώνησης
+enum Role {
+  VISITOR
+  REVIEWER
+  OWNER
+  ADMIN
+}
+
+model User {
+  id          String       @id @default(uuid())
+  email       String       @unique
+  username    String       @unique
+  role        Role         @default(REVIEWER)
+  restaurants Restaurant[] // Σχέση 1-προς-πολλά: Ένας OWNER μπορεί να έχει πολλά εστιατόρια
+  reviews     Review[]     // Σχέση 1-προς-πολλά: Ένας REVIEWER κάνει πολλές κριτικές
+  passwordHash String?
+}
+
+model Restaurant {
+  id                  String   @id @default(uuid())
+  name                String
+  description         String
+  cuisineType         String   // π.χ. "ITALIAN", "GREEK"
+  address             String
+  globalBayesianScore Float    @default(0.0) // Εδώ θα αποθηκεύεται το σωστό σκορ
+  ownerId             String
+  owner               User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  reviews             Review[]
+}
+
+model Review {
+  id           String     @id @default(uuid())
+  rating       Int        // Από 1 έως 5
+  comment      String
+  createdAt    DateTime   @default(now())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
