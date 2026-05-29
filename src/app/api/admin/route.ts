@@ -1,3 +1,4 @@
+// force build comment for vercel
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { RestaurantService } from "@/lib/backend/RestaurantService";
