@@ -1,4 +1,3 @@
-// force build comment for vercel
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { RestaurantService } from "@/lib/backend/RestaurantService";
@@ -9,7 +8,7 @@ const restaurantService = new RestaurantService();
 export async function GET() {
   try {
     const pendingRestaurants = await prisma.restaurant.findMany({
-      where: { status: "PENDING" },
+      where: { status: "PENDING" as any },
       include: { owner: true }, // Κάνουμε join τον πίνακα User για να δούμε τα στοιχεία του ιδιοκτήτη
       orderBy: { createdAt: "desc" },
     });
