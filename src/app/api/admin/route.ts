@@ -8,7 +8,7 @@ const restaurantService = new RestaurantService();
 export async function GET() {
   try {
     const pendingRestaurants = await prisma.restaurant.findMany({
-      where: { status: "PENDING" as any },
+      where: { status: "PENDING" },
       include: { owner: true }, // Κάνουμε join τον πίνακα User για να δούμε τα στοιχεία του ιδιοκτήτη
       orderBy: { createdAt: "desc" },
     });
