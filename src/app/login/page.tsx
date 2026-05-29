@@ -80,7 +80,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[calc(75vh-4rem)] mb-10 flex flex-col gap-4 items-center justify-center text-center p-6 text-black">
+    <div className=" min-h-[calc(80vh-4rem)] md:min-h-[calc(75vh-4rem)] mb-10 flex flex-col gap-4 items-center justify-center text-center p-6 text-black">
       <title>Login | Flavr</title>
       <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center">
         {/* 🍌 Μπανάνα */}
@@ -91,6 +91,16 @@ export default function LoginPage() {
             alt="Banana Illustration"
             className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-blue-400 p-2"
           />
+        </div>
+        <div className="flex justify-center items-center w-full">
+          <div className="flex lg:hidden justify-center items-center  mb-8 mt-2 w-44 h-44 transform rotate-8 transition-transform hover:scale-110">
+            <Image
+              priority
+              src={banana}
+              alt="Burger Illustration"
+              className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-blue-400 p-2"
+            />
+          </div>
         </div>
 
         <h2 className="text-4xl md:text-5xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight mb-4 uppercase z-10">
@@ -185,6 +195,16 @@ export default function LoginPage() {
             alt="Fish Illustration"
             className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-green-400 p-2"
           />
+        </div>
+        <div className="flex justify-center items-center w-full">
+          <div className="flex lg:hidden justify-center items-center  mb-2 mt-10 w-44 h-44 transform -rotate-8 transition-transform hover:scale-110">
+            <Image
+              priority
+              src={fish}
+              alt="Burger Illustration"
+              className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-green-400 p-2"
+            />
+          </div>
         </div>
       </div>
     </div>

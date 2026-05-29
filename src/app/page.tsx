@@ -15,7 +15,7 @@ export default function Home() {
   const router = useRouter();
   return (
     <>
-      <div className="w-full min-h-[calc(70vh-4rem)] flex items-center justify-center px-6 text-black overflow-hidden">
+      <div className="w-full min-h-[calc(100vh-4rem)] md:min-h-[calc(90vh-4rem)] lg:min-h-[calc(70vh-4rem)]   flex items-center justify-center px-6 text-black overflow-hidden">
         {/* 2. ΝΕΟ INNER CONTAINER: Αυτό ορίζει πόσο "μέσα" θα έρθουν οι εικόνες (π.χ. max-w-5xl) */}
         <div className="relative w-full max-w-7xl mx-auto flex flex-col items-center justify-center">
           {/* ΑΡΙΣΤΕΡΗ ΕΙΚΟΝΑ - Τώρα με left-0 ή left-4 κάθεται στην άκρη του 5xl container, δηλαδή πιο μέσα! */}
@@ -30,6 +30,26 @@ export default function Home() {
 
           {/* Κείμενο & Κουμπιά (z-10 για να είναι πάντα από πάνω) */}
           <div className="max-w-2xl text-center space-y-6 z-10 px-4">
+            <div className="flex justify-center items-center w-full">
+              <div className="flex lg:hidden justify-center items-center  mb-2 mt-10 w-55 h-55 transform -rotate-8 transition-transform hover:scale-110">
+                <Image
+                  priority
+                  src={burger}
+                  alt="Burger Illustration"
+                  className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-yellow-400 p-2"
+                />
+              </div>
+            </div>
+            <div className="flex justify-center items-center w-full">
+              <div className="hidden lg:block absolute right-0 xl:right-3 top-1/2 -translate-y-1/2 w-55 h-55 xl:w-65 xl:h-65 z-0 transform rotate-12 transition-transform hover:scale-110">
+                <Image
+                  priority
+                  src={food}
+                  alt="Pizza Illustration"
+                  className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-orange-400 p-2"
+                />
+              </div>
+            </div>
             <span
               style={{ backgroundColor: "#ffffff" }}
               className="border-2 border-b-4 border-black font-bold px-4 py-1.5 rounded-xl text-sm uppercase tracking-wider mb-3 inline-block"
@@ -37,7 +57,7 @@ export default function Home() {
               THE UNFILTERED RESTAURANT TRUTH HUB
             </span>
 
-            <h1 className="text-5xl mt-6 mb-5 md:text-6xl text-white [-webkit-text-stroke:6px_black] [paint-order:stroke_fill] tracking-tight leading-none">
+            <h1 className="text-5xl mt-6 mb-8 md:mb-5 md:text-6xl text-white [-webkit-text-stroke:6px_black] [paint-order:stroke_fill] tracking-tight leading-none">
               Reliable Evaluation <br />
               Without Expediency.
             </h1>
@@ -71,6 +91,16 @@ export default function Home() {
                 </button>
               ) : null}
             </div>
+            <div className="flex justify-center items-center w-full">
+              <div className="flex lg:hidden justify-center items-center  mb-16 mt-8  w-55 h-55 transform rotate-8 transition-transform hover:scale-110">
+                <Image
+                  priority
+                  src={food}
+                  alt="Pizza Illustration"
+                  className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-orange-400 p-2"
+                />
+              </div>
+            </div>
           </div>
 
           {/* ΔΕΞΙΑ ΕΙΚΟΝΑ - Αντίστοιχα με right-0 ή right-4 */}
@@ -87,14 +117,14 @@ export default function Home() {
       <div
         style={{ backgroundColor: "rgb(255, 209, 11)" }}
         // 1. Το εξωτερικό div έγινε flex-col για να μπει ο τίτλος πάνω και οι κάρτες από κάτω
-        className="w-full  border-t-4 border-black py-16 px-6 text-black flex flex-col items-center justify-center"
+        className="w-full  border-t-4 border-black py-12 md:py-16 px-6 text-black flex flex-col items-center justify-center"
       >
         {/* 👑 ΝΕΟ ΚΕΙΜΕΝΟ ΑΠΟ ΠΑΝΩ (Section Header) */}
-        <div className="text-center mb-12 space-y-3">
+        <div className="text-center mb-8 md:mb-12 space-y-3">
           <h2 className="text-3xl md:text-5xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight">
             Core Features
           </h2>
-          <p className="text-sm md:text-base max-w-md mx-auto text-black">
+          <p className="text-base max-w-md mx-auto text-black">
             Designed with strict engineering standards to ensure data integrity
             and rock-solid performance.
           </p>
@@ -165,9 +195,9 @@ export default function Home() {
       <div
         style={{ backgroundColor: "#FF8904" }}
         // 1. Το εξωτερικό div έγινε flex-col για να μπει ο τίτλος πάνω και οι κάρτες από κάτω
-        className="w-full  border-t-4 border-black py-16 px-6 text-black flex flex-col items-center justify-center"
+        className="w-full  border-t-4 border-black py-12 md:py-16 px-6 text-black flex flex-col items-center justify-center"
       >
-        <div className="text-center mb-12 space-y-3">
+        <div className="text-center mb-8 md:mb-12 space-y-3">
           <h2 className="text-3xl md:text-5xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight">
             How It Goes Down
           </h2>
@@ -206,7 +236,7 @@ export default function Home() {
       {/* 🏁 FINAL CTA SECTION */}
       <div
         // 1. Το εξωτερικό div έγινε flex-col για να μπει ο τίτλος πάνω και οι κάρτες από κάτω
-        className="w-full  border-t-4 border-black py-16 px-6 text-black flex flex-col items-center justify-center"
+        className="w-full  border-t-4 border-black py-12 md:py-16 px-6 text-black flex flex-col items-center justify-center"
       >
         <div className="max-w-2xl bg-white border-4 border-black p-10 rounded-3xl shadow-[10px_10px_0px_0px_black] transform hover:-rotate-1 transition-transform">
           <h2 className="text-3xl md:text-4xl font-black mb-6 text-black tracking-tight">
@@ -225,7 +255,7 @@ export default function Home() {
               style={{ backgroundColor: "#FE2120", color: "white" }}
               className="button_top px-3 py-2 py-3 px-6 text-lg "
             >
-              START EXPLORING NOW
+              START {window.innerWidth > 768 ? "EXPLORING" : ""} NOW
             </span>
           </button>
         </div>
