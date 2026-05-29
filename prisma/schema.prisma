@@ -1,13 +1,15 @@
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL") 
-  directUrl = env("DIRECT_URL") 
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
+
 enum RestaurantStatus {
   PENDING
   APPROVED
   REJECTED
 }
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -21,35 +23,45 @@ enum Role {
 }
 
 model User {
-  id          String       @id @default(uuid())
-  email       String       @unique
-  username    String       @unique
-  role        Role         @default(REVIEWER)
-  restaurants Restaurant[] // Σχέση 1-προς-πολλά: Ένας OWNER μπορεί να έχει πολλά εστιατόρια
-  reviews     Review[]     // Σχέση 1-προς-πολλά: Ένας REVIEWER κάνει πολλές κριτικές
+  id           String       @id @default(uuid())
+  email        String       @unique
+  username     String       @unique
+  role         Role         @default(REVIEWER)
+  restaurants  Restaurant[] // Σχέση 1-προς-πολλά: Ένας OWNER μπορεί να έχει πολλά εστιατόρια
+  reviews      Review[] // Σχέση 1-προς-πολλά: Ένας REVIEWER κάνει πολλές κριτικές
   passwordHash String?
 }
 
 model Restaurant {
-  id                  String   @id @default(uuid())
+  id                  String           @id @default(uuid())
   name                String
   description         String
-  cuisineType         String   // π.χ. "ITALIAN", "GREEK"
+  cuisineType         String // π.χ. "ITALIAN", "GREEK"
   address             String
-  globalBayesianScore Float    @default(0.0) // Εδώ θα αποθηκεύεται το σωστό σκορ
-  status    RestaurantStatus @default(PENDING)
+  globalBayesianScore Float            @default(0.0) // Εδώ θα αποθηκεύεται το σωστό σκορ
+  status              RestaurantStatus @default(PENDING)
   ownerId             String
-  owner               User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  owner               User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   reviews             Review[]
+  createdAt           DateTime         @default(now())
 }
 
 model Review {
-  id           String     @id @default(uuid())
-  rating       Int        // Από 1 έως 5
-  comment      String
-  createdAt    DateTime   @default(now())
-  restaurantId String
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  id               String   @id @default(uuid())
+  text             String
+  rating           Int
+  foodRating       Int
+  serviceRating    Int
+  atmosphereRating Int
+  vfmRating        Int
+  simpleAverage    Float
+  createdAt        DateTime @default(now())
+
+  // Τα πεδία που ήδη έχεις
   userId       String
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurantId String
+
+  // ΠΡΟΣΘΕΣΕ ΑΥΤΑ ΤΑ ΔΥΟ:
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }

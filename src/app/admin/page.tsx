@@ -22,6 +22,16 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showNotification = (message: string, type: "success" | "error") => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 4000);
+  };
+
   // Έλεγχος δικαιωμάτων πρόσβασης (Role Validation)
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -31,7 +41,7 @@ export default function AdminDashboard() {
     }
     const user = JSON.parse(storedUser);
     if (user.role !== "ADMIN") {
-      alert("Δεν έχετε δικαιώματα διαχειριστή!");
+      showNotification("You do not have administrator rights!", "error");
       router.push("/restaurants");
       return;
     }
@@ -61,20 +71,24 @@ export default function AdminDashboard() {
     });
 
     if (res.ok) {
-      alert(
-        `Η αίτηση ενημερώθηκε με επιτυχία σε: ${status === "APPROVED" ? "ΕΓΚΡΙΘΗΚΕ" : "ΑΠΟΡΡΙΦΘΗΚΕ"}`,
+      showNotification(
+        `The application was successfully updated to: ${status === "APPROVED" ? "APPROVED" : "DECLINED"}`,
+        "success",
       );
       fetchPendingRestaurants(); // Ανανέωση της λίστας live
     } else {
-      alert("Κάτι πήγε στραβά κατά την επεξεργασία.");
+      showNotification(`Something went wrong during processing.`, "success");
     }
   };
 
   if (loading) {
     return (
-      <div className="min-h-[calc(100vh-4rem)] bg-gray-50 flex items-center justify-center p-8">
+      <div
+        style={{ backgroundColor: "rgb(249, 234, 186)" }}
+        className="min-h-[calc(80vh-4rem)]  flex items-center justify-center p-8"
+      >
         <title>Admin Dashboard | Flavr</title>
-        <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-black text-xl text-black animate-pulse uppercase tracking-wider">
+        <div className=" border-4 bg-white border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-black text-xl text-black animate-pulse uppercase tracking-wider">
           Loading Admin Panel...
         </div>
       </div>
@@ -83,13 +97,25 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black">
+      {notification && (
+        <div
+          className={`fixed bottom-20 right-6 z-50 p-4 border-4 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-black ${
+            notification.type === "success"
+              ? "bg-green-500  text-black"
+              : "bg-red-500  text-white"
+          }`}
+        >
+          {notification.message}
+        </div>
+      )}
       <title>Admin Dashboard | Flavr</title>
       <div className="max-w-5xl mx-auto">
         {/* 🛡️ Header Πίνακα Ελέγχου */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-10 border-b-4 border-black pb-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5 border-black pb-6">
           <div>
             <h2 className="text-4xl md:text-5xl text-white items-center inline-flex gap-3 [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight uppercase">
               <Image
+                priority
                 src={person_Img}
                 alt="Banana Illustration"
                 className="object-contain border-2 w-16 h-16 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-green-400 p-1"
@@ -140,7 +166,7 @@ export default function AdminDashboard() {
                   </div>
 
                   <p className="text-xs font-black uppercase tracking-wider text-[#3a8bd6]">
-                    📍 {res.address}
+                    {res.address}
                   </p>
 
                   <p className="text-sm font-medium text-gray-700 leading-relaxed line-clamp-2">

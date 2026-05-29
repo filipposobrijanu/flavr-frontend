@@ -16,31 +16,28 @@ interface Restaurant {
 }
 
 export default function RestaurantsPage() {
+  const [isLoading, setIsLoading] = useState(true);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [search, setSearch] = useState("");
   const [cuisine, setCuisine] = useState("");
 
   useEffect(() => {
     const getRestaurants = async () => {
+      setIsLoading(true); // Ξεκινάει το loading
       try {
         const res = await fetch("/api/restaurants?search=&cuisine=");
         const data = await res.json();
-
         if (res.ok && Array.isArray(data)) {
           setRestaurants(data);
-        } else {
-          console.error("API Error or data is not an array:", data);
-          setRestaurants([]); // Fallback σε άδειο πίνακα
         }
       } catch (error) {
-        console.error("Failed to fetch restaurants:", error);
-        setRestaurants([]); // Fallback σε άδειο πίνακα
+        console.error(error);
+      } finally {
+        setIsLoading(false); // Σταματάει το loading είτε πετύχει είτε όχι
       }
     };
-
     getRestaurants();
   }, []);
-
   return (
     <div className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black">
       <title>Discover Restaurants | Flavr</title>
@@ -48,6 +45,7 @@ export default function RestaurantsPage() {
         {/* 🌐 Τίτλος Σελίδας με Stroke Εφέ */}
         <h2 className="text-4xl md:text-5xl text-white items-center inline-flex gap-3 [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight uppercase">
           <Image
+            priority
             src={rest_Image}
             alt="Banana Illustration"
             className="object-contain border-2 w-16 h-16 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-blue-400 p-1"
@@ -74,9 +72,9 @@ export default function RestaurantsPage() {
               onChange={(e) => setCuisine(e.target.value)}
             >
               <option value="">ALL CUISINES</option>
-              <option value="Ιταλικό">ITALIAN</option>
-              <option value="Ελληνικό">GREEK</option>
-              <option value="Μεξικάνικο">MEXICAN</option>
+              <option value="ITALIAN">ITALIAN</option>
+              <option value="GREEK">GREEK</option>
+              <option value="MEXICAN">MEXICAN</option>
             </select>
             {/* Custom Βέλος */}
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-black font-bold">
@@ -84,64 +82,74 @@ export default function RestaurantsPage() {
             </div>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {restaurants.map((res) => (
-            <div
-              key={res.id}
-              className="bg-white border-2 border-b-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all"
-            >
-              <div>
-                {/* Header Κάρτας: Όνομα & Σκορ */}
-                <div className="flex justify-between items-start gap-2 mb-3">
-                  <h2 className="text-2xl font-black tracking-tight text-black line-clamp-1">
-                    {res.name}
-                  </h2>
-                  {/* Badge Σκορ σαν Sticker */}
-                  <span className="bg-yellow-400 border-2 border-black font-black px-2.5 py-1 rounded-lg text-xs tracking-wide shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                    ⭐{" "}
-                    {res.globalBayesianScore > 0
-                      ? Number(res.globalBayesianScore).toFixed(1)
-                      : "NEW"}
-                  </span>
-                </div>
-
-                {/* Subtitle: Κουζίνα & Διεύθυνση */}
-                <p className="text-xs font-black uppercase tracking-wider text-blue-500 mb-4">
-                  {res.cuisineType} •{" "}
-                  <span className="text-gray-600 normal-case font-bold">
-                    {res.address}
-                  </span>
-                </p>
-
-                {/* Περιγραφή με περιορισμό 3 γραμμών */}
-                <p className="text-sm font-medium text-black line-clamp-3 leading-relaxed mb-6">
-                  {res.description}
-                </p>
+        {isLoading ? (
+          /* ⏳ LOADING SKELETON */
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="bg-gray-200 border-2 border-black p-6 rounded-2xl h-[300px] shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] animate-pulse"
+              >
+                <div className="h-6 bg-gray-300 rounded w-3/4 mb-4"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/2 mb-6"></div>
+                <div className="h-20 bg-gray-300 rounded w-full"></div>
               </div>
-
-              {/* 👈 2. ΔΙΟΡΘΩΣΗ: Προσθήκη Link γύρω από το Neobrutalist κουμπί */}
-              <Link href={`/restaurants/${res.id}`} className="w-full block">
-                <button className="w-full button-main">
-                  <span
-                    style={{ backgroundColor: "#50A2FF" }}
-                    className="button_top px-3 py-2"
-                  >
-                    VIEW & REVIEWS
-                  </span>
-                </button>
-              </Link>
-            </div>
-          ))}
-        </div>
-
-        {/* Empty State: Αν δεν βρεθούν εστιατόρια */}
-        {restaurants.length === 0 && (
+            ))}
+          </div>
+        ) : restaurants.length === 0 ? (
+          /* EMPTY STATE */
           <div className="text-center py-12 border-4 border-dashed border-black rounded-2xl bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <p className="font-black text-xl">No restaurants found...</p>
-            <p className="text-sm text-gray-500 font-bold mt-1">
-              Try changing the search filters.
-            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {restaurants.map((res) => (
+              <div
+                key={res.id}
+                className="bg-white border-2 border-b-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all"
+              >
+                <div>
+                  {/* Header Κάρτας: Όνομα & Σκορ */}
+                  <div className="flex justify-between items-start gap-2 mb-3">
+                    <h2 className="text-2xl font-black tracking-tight text-black line-clamp-1">
+                      {res.name}
+                    </h2>
+                    {/* Badge Σκορ σαν Sticker */}
+                    <span className="bg-yellow-400 border-2 border-black font-black px-2.5 py-1 rounded-lg text-xs tracking-wide shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                      ⭐{" "}
+                      {res.globalBayesianScore > 0
+                        ? Number(res.globalBayesianScore).toFixed(1)
+                        : "NEW"}
+                    </span>
+                  </div>
+
+                  {/* Subtitle: Κουζίνα & Διεύθυνση */}
+                  <p className="text-xs font-black uppercase tracking-wider text-blue-500 mb-4">
+                    {res.cuisineType} •{" "}
+                    <span className="text-gray-600 normal-case font-bold">
+                      {res.address}
+                    </span>
+                  </p>
+
+                  {/* Περιγραφή με περιορισμό 3 γραμμών */}
+                  <p className="text-sm font-medium text-black line-clamp-3 leading-relaxed mb-6">
+                    {res.description}
+                  </p>
+                </div>
+
+                {/* 👈 2. ΔΙΟΡΘΩΣΗ: Προσθήκη Link γύρω από το Neobrutalist κουμπί */}
+                <Link href={`/restaurants/${res.id}`} className="w-full block">
+                  <button className="w-full button-main">
+                    <span
+                      style={{ backgroundColor: "#50A2FF" }}
+                      className="button_top px-3 py-2"
+                    >
+                      VIEW & REVIEWS
+                    </span>
+                  </button>
+                </Link>
+              </div>
+            ))}
           </div>
         )}
       </div>

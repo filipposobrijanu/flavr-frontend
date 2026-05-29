@@ -35,9 +35,9 @@ export default function Footer({
   return (
     // 🛠️ ΔΙΟΡΘΩΣΗ: w-full και bg-white για να είναι όλο κάτασπρο και να πιάνει όλη την οθόνη
     <footer className="w-full border-t-4 border-black bg-white text-black pt-8 pb-6 mt-auto">
-      {/* Εσωτερικό container για να κρατάει το περιεχόμενο κεντραρισμένο στα 6xl */}
       <div className="max-w-6xl mx-auto px-6">
-        <div className="md:flex md:items-start md:justify-between">
+        {/* TOP SECTION: Logo & Socials */}
+        <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
           <Link
             href="/"
             className="flex items-center gap-x-2 text-2xl font-black tracking-tight"
@@ -47,7 +47,7 @@ export default function Footer({
             <span>{brandName}</span>
           </Link>
 
-          <ul className="flex list-none mt-6 md:mt-0 space-x-3 p-0MAIN">
+          <ul className="flex list-none space-x-3 p-0">
             {socialLinks.map((link, i) => (
               <li key={i}>
                 <a
@@ -64,12 +64,13 @@ export default function Footer({
           </ul>
         </div>
 
-        {/* Εσωτερική διαχωριστική γραμμή */}
-        <div className=" pt-4 md:pt-6 lg:grid lg:grid-cols-10">
-          <nav className="lg:mt-0 lg:col-[4/11]">
-            <ul className="list-none flex flex-wrap -my-1 -mx-2 lg:justify-end p-0">
+        {/* BOTTOM SECTION: Links & Copyright */}
+        <div className="pt-8 flex flex-col lg:grid lg:grid-cols-10 gap-6">
+          {/* Main Links */}
+          <nav className="lg:col-[4/11] order-1">
+            <ul className="list-none flex flex-wrap justify-center lg:justify-end gap-x-6 gap-y-2 p-0">
               {mainLinks.map((link, i) => (
-                <li key={i} className="my-1 mx-2 shrink-0">
+                <li key={i}>
                   <Link
                     href={link.href}
                     className="text-sm font-bold underline-offset-4 hover:opacity-80"
@@ -81,10 +82,11 @@ export default function Footer({
             </ul>
           </nav>
 
-          <div className="mt-4 lg:mt-0 lg:col-[4/11]">
-            <ul className="list-none flex flex-wrap -my-1 -mx-3 lg:justify-end p-0">
+          {/* Legal Links */}
+          <div className="lg:col-[4/11] order-2">
+            <ul className="list-none flex flex-wrap justify-center lg:justify-end gap-x-6 gap-y-2 p-0">
               {legalLinks.map((link, i) => (
-                <li key={i} className="my-1 mx-3 shrink-0">
+                <li key={i}>
                   <Link
                     href={link.href}
                     className="text-sm text-gray-600 underline-offset-4 hover:opacity-80"
@@ -96,7 +98,8 @@ export default function Footer({
             </ul>
           </div>
 
-          <div className="mt-6 text-sm font-medium text-gray-600 whitespace-nowrap lg:mt-0 lg:row-[1/3] lg:col-[1/4]">
+          {/* Copyright Section - Moves to bottom on mobile, stays left on desktop */}
+          <div className="text-center lg:text-left text-sm font-medium text-gray-600 lg:row-[1/3] lg:col-[1/4] order-3 mt-4 lg:mt-0">
             <div>{copyright.text}</div>
             {copyright.license && (
               <div className="text-xs text-gray-500 mt-1">

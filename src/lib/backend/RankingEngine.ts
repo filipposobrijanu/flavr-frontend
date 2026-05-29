@@ -17,7 +17,7 @@ export class RankingEngine {
 
     // ΔΙΟΡΘΩΣΗ: Ορίζουμε acc: number και rev: Review
     const sumOfAverages = restaurantReviews.reduce(
-      (acc: number, rev: Review) => acc + rev.simpleAverage,
+      (acc, rev) => acc + (rev.simpleAverage || 0), // Χρησιμοποίησε optional chaining
       0,
     );
     const R = sumOfAverages / v;

@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer/Footer";
 import { AuthProvider } from "../context/AuthContext";
 import { Metadata } from "next";
+import PageTransition from "../components/PageTransition";
 
 // Ρύθμιση της γραμματοσειράς Ranchers από το Google Fonts
 const ranchersFont = DynaPuff({
@@ -33,7 +34,7 @@ export default function RootLayout({
         {/* Προσθέτουμε το class 'font-ranchers' στο body για να εφαρμοστεί σε ΟΛΟ το site */}
         <body className="bg-black text-black font-ranchers">
           <Navbar></Navbar>
-          {children}{" "}
+          <PageTransition>{children} </PageTransition>
           <Footer
             brandName="Flavr"
             logo={<span className="text-2xl">🍳</span>}

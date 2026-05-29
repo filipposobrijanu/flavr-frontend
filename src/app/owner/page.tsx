@@ -13,13 +13,25 @@ interface Restaurant {
 }
 
 export default function OwnerDashboard() {
+  const [isListLoading, setIsListLoading] = useState(true);
+
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
-  const [cuisineType, setCuisineType] = useState("Ιταλικό");
+  const [cuisineType, setCuisineType] = useState("ITALIAN");
   const [userId, setUserId] = useState<string | null>(null);
   const router = useRouter();
+
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showNotification = (message: string, type: "success" | "error") => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 4000);
+  };
 
   // Έλεγχος αν ο χρήστης είναι πράγματι OWNER
   useEffect(() => {
@@ -30,7 +42,7 @@ export default function OwnerDashboard() {
     }
     const user = JSON.parse(storedUser);
     if (user.role !== "OWNER") {
-      alert("Δεν έχετε πρόσβαση σε αυτή τη σελίδα!");
+      showNotification("Δεν έχετε πρόσβαση σε αυτή τη σελίδα!", "error");
       router.push("/restaurants");
       return;
     }
@@ -39,17 +51,24 @@ export default function OwnerDashboard() {
   }, []);
 
   const fetchMyRestaurants = async (ownerId: string) => {
-    const res = await fetch(`/api/owner?ownerId=${ownerId}`, {
-      cache: "no-store", // 👈 Forces fresh data fetch
-    });
-    const data = await res.json();
-    setRestaurants(data);
+    setIsListLoading(true);
+    try {
+      const res = await fetch(`/api/owner?ownerId=${ownerId}`, {
+        cache: "no-store",
+      });
+      const data = await res.json();
+      setRestaurants(data);
+    } catch (error) {
+      console.error("Error fetching:", error);
+    } finally {
+      setIsListLoading(false);
+    }
   };
 
   const handleSubmitApplication = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !description || !address)
-      return alert("Συμπληρώστε όλα τα πεδία!");
+      return showNotification("Fill in all fields!", "error");
 
     const res = await fetch("/api/restaurants", {
       method: "POST",
@@ -64,19 +83,25 @@ export default function OwnerDashboard() {
     });
 
     if (res.ok) {
-      alert("Η αίτηση υποβλήθηκε επιτυχώς και εκκρεμεί έγκριση από τον Admin!");
+      showNotification(
+        "The application was successfully submitted and is pending approval from the Admin!",
+        "success",
+      );
       setName("");
       setDescription("");
       setAddress("");
       if (userId) fetchMyRestaurants(userId); // Ανανέωση λίστας
     } else {
-      alert("Αποτυχία υποβολής αίτησης.");
+      showNotification("Application submission failed.", "error");
     }
   };
 
   if (!userId) {
     return (
-      <div className="min-h-[calc(100vh-4rem)]  flex items-center justify-center p-8">
+      <div
+        style={{ backgroundColor: "rgb(249, 234, 186)" }}
+        className="min-h-[calc(90vh-4rem)]  flex items-center justify-center p-8"
+      >
         <title>Owner Dashboard | Flavr</title>
         <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-black text-xl text-black animate-pulse uppercase tracking-wider">
           Data Control...
@@ -87,6 +112,17 @@ export default function OwnerDashboard() {
 
   return (
     <div className="min-h-[calc(90vh-4rem)]  p-6 md:p-12 text-black">
+      {notification && (
+        <div
+          className={`fixed bottom-20 right-6 z-50 p-4 border-4 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-black ${
+            notification.type === "success"
+              ? "bg-green-500  text-black"
+              : "bg-red-500  text-white"
+          }`}
+        >
+          {notification.message}
+        </div>
+      )}
       <title>Owner Dashboard | Flavr</title>
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* 🍳 Φόρμα Υποβολής Νέου Εστιατορίου */}
@@ -135,10 +171,10 @@ export default function OwnerDashboard() {
                   value={cuisineType}
                   onChange={(e) => setCuisineType(e.target.value)}
                 >
-                  <option value="Ιταλικό">Italian</option>
-                  <option value="Ελληνικό">Greek</option>
-                  <option value="Μεξικάνικο">Mexican</option>
-                  <option value="Burgers">Burgers</option>
+                  <option value="ITALIAN">ITALIAN</option>
+                  <option value="GREEK">GREEK</option>
+                  <option value="MEXICAN">MEXICAN</option>
+                  <option value="BURGERS">BURGERS</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-black font-bold">
                   ▼
@@ -177,14 +213,24 @@ export default function OwnerDashboard() {
           <h2 className="text-3xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight uppercase">
             My Restaurants
           </h2>
-
-          {restaurants.length === 0 ? (
+          {isListLoading ? (
+            /* ⏳ LOADING SKELETON */
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="bg-white p-5 rounded-2xl border-2 border-black h-[180px] animate-pulse shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+                >
+                  <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                </div>
+              ))}
+            </div>
+          ) : restaurants.length === 0 ? (
             <div className="bg-white p-12 rounded-2xl border-4 border-dashed border-black text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-black text-lg text-black">
                 You have not registered a restaurant yet.
-              </p>
-              <p className="text-xs font-bold text-gray-500 mt-1">
-                Use the form on the left to make your first application!
               </p>
             </div>
           ) : (
@@ -238,7 +284,7 @@ export default function OwnerDashboard() {
                     <span className="text-gray-500 font-bold">
                       Bayesian Score:
                     </span>
-                    <span className="bg-amber-100 border border-black px-2 py-0.5 rounded-md text-amber-900 font-black">
+                    <span className="bg-amber-100 border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] border-black px-2 py-0.5 rounded-md text-amber-900 font-black">
                       ⭐{" "}
                       {res.globalBayesianScore > 0
                         ? Number(res.globalBayesianScore).toFixed(1)

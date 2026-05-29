@@ -85,6 +85,7 @@ export default function SignUpPage() {
         {/* 🍌 Μπανάνα */}
         <div className="hidden lg:block absolute left-0 xl:left-4 top-1/2 -translate-y-1/2 w-48 h-48 xl:w-56 xl:h-56 z-0 transform -rotate-6 transition-transform hover:scale-110">
           <Image
+            priority
             src={banana}
             alt="Banana Illustration"
             className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-yellow-400 p-2"
@@ -201,6 +202,7 @@ export default function SignUpPage() {
         {/* 🐟 Ψάρι */}
         <div className="hidden lg:block absolute right-0 xl:right-4 top-1/2 -translate-y-1/2 w-48 h-48 xl:w-56 xl:h-56 z-0 transform rotate-6 transition-transform hover:scale-110">
           <Image
+            priority
             src={fish}
             alt="Fish Illustration"
             className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-purple-400 p-2"

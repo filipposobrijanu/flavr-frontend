@@ -15,12 +15,13 @@ export default function Home() {
   const router = useRouter();
   return (
     <>
-      <div className="w-full min-h-[calc(75vh-4rem)] flex items-center justify-center px-6 text-black overflow-hidden">
+      <div className="w-full min-h-[calc(70vh-4rem)] flex items-center justify-center px-6 text-black overflow-hidden">
         {/* 2. ΝΕΟ INNER CONTAINER: Αυτό ορίζει πόσο "μέσα" θα έρθουν οι εικόνες (π.χ. max-w-5xl) */}
         <div className="relative w-full max-w-7xl mx-auto flex flex-col items-center justify-center">
           {/* ΑΡΙΣΤΕΡΗ ΕΙΚΟΝΑ - Τώρα με left-0 ή left-4 κάθεται στην άκρη του 5xl container, δηλαδή πιο μέσα! */}
           <div className="hidden lg:block absolute left-0 xl:left-3 top-1/2 -translate-y-1/2 w-55 h-55 xl:w-65 xl:h-65 z-0 transform -rotate-12 transition-transform hover:scale-110">
             <Image
+              priority
               src={burger}
               alt="Burger Illustration"
               className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-yellow-400 p-2"
@@ -75,6 +76,7 @@ export default function Home() {
           {/* ΔΕΞΙΑ ΕΙΚΟΝΑ - Αντίστοιχα με right-0 ή right-4 */}
           <div className="hidden lg:block absolute right-0 xl:right-3 top-1/2 -translate-y-1/2 w-55 h-55 xl:w-65 xl:h-65 z-0 transform rotate-12 transition-transform hover:scale-110">
             <Image
+              priority
               src={food}
               alt="Pizza Illustration"
               className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-orange-400 p-2"
@@ -157,6 +159,75 @@ export default function Home() {
               </p>
             </div>
           </div>
+        </div>
+      </div>
+      {/* 🚀 ΝΕΟ SECTION: FLAVR WORKFLOW */}
+      <div
+        style={{ backgroundColor: "#FF8904" }}
+        // 1. Το εξωτερικό div έγινε flex-col για να μπει ο τίτλος πάνω και οι κάρτες από κάτω
+        className="w-full  border-t-4 border-black py-16 px-6 text-black flex flex-col items-center justify-center"
+      >
+        <div className="text-center mb-12 space-y-3">
+          <h2 className="text-3xl md:text-5xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight">
+            How It Goes Down
+          </h2>
+        </div>
+        <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
+          {[
+            {
+              step: "1",
+              title: "Search",
+              desc: "Find the spot that fits your hunger.",
+            },
+            {
+              step: "2",
+              title: "Review",
+              desc: "Drop your honest, unfiltered take.",
+            },
+            {
+              step: "3",
+              title: "Verify",
+              desc: "Our algorithm does the math.",
+            },
+            { step: "4", title: "Rank", desc: "Fair scores for everyone." },
+          ].map((item, i) => (
+            <div key={i} className="flex flex-col items-center w-full md:w-1/4">
+              <div className=" hover:scale-105 transition-transform w-22 h-22 bg-white border-2 border-b-4 border-black rounded-full flex  items-center justify-center font-black text-4xl mb-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                {item.step}
+              </div>
+              <h4 className="font-bold uppercase tracking-widest text-xl">
+                {item.title}
+              </h4>
+              <p className="text-sm mt-2 opacity-80">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* 🏁 FINAL CTA SECTION */}
+      <div
+        // 1. Το εξωτερικό div έγινε flex-col για να μπει ο τίτλος πάνω και οι κάρτες από κάτω
+        className="w-full  border-t-4 border-black py-16 px-6 text-black flex flex-col items-center justify-center"
+      >
+        <div className="max-w-2xl bg-white border-4 border-black p-10 rounded-3xl shadow-[10px_10px_0px_0px_black] transform hover:-rotate-1 transition-transform">
+          <h2 className="text-3xl md:text-4xl font-black mb-6 text-black tracking-tight">
+            Ready to find your next <br /> favorite meal?
+          </h2>
+          <p className="text-lg text-gray-700 mb-8 font-medium">
+            Stop relying on fake reviews and start trusting the data. Join the
+            community that values true culinary quality.
+          </p>
+
+          <button
+            onClick={() => router.push("/restaurants")}
+            className="button-main bg-[#FE2120] "
+          >
+            <span
+              style={{ backgroundColor: "#FE2120", color: "white" }}
+              className="button_top px-3 py-2 py-3 px-6 text-lg "
+            >
+              START EXPLORING NOW
+            </span>
+          </button>
         </div>
       </div>
     </>

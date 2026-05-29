@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/db";
 
-// 👈 Χρησιμοποιούμε Named Export
 export class RestaurantService {
   // 1. Δημιουργία Νέου Εστιατορίου (Αίτηση από Owner)
   async createRestaurant(data: {
@@ -19,6 +18,7 @@ export class RestaurantService {
         ownerId: data.ownerId,
         status: "PENDING",
         globalBayesianScore: 0.0,
+        createdAt: new Date(), // <--- Προσθήκη εδώ
       },
     });
   }

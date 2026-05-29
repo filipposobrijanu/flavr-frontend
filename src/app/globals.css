@@ -21,7 +21,10 @@
     --foreground: #ededed;
   }
 }
-
+.ready {
+  opacity: 1 !important;
+  transition: opacity 0.3s ease-in-out;
+}
 /* 2. Αντικαθιστούμε το Arial με τη CSS μεταβλητή του Ranchers */
 body {
   background: var(--background);

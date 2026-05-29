@@ -20,14 +20,16 @@ export class ReviewService {
       4;
 
     // Αποθήκευση στη βάση
+    // ReviewService.ts
     const newReview = await prisma.review.create({
       data: {
         text: data.text,
+        rating: Math.round(simpleAvg), // Προσθήκη του υποχρεωτικού rating
         foodRating: data.foodRating,
         serviceRating: data.serviceRating,
         atmosphereRating: data.atmosphereRating,
         vfmRating: data.vfmRating,
-        simpleAverage: simpleAvg,
+        simpleAverage: simpleAvg, // Πλέον θα αναγνωρίζεται
         userId: data.userId,
         restaurantId: data.restaurantId,
       },

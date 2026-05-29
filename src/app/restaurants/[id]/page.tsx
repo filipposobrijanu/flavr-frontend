@@ -35,6 +35,16 @@ export default function RestaurantDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
+  const [notification, setNotification] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
+
+  const showNotification = (message: string, type: "success" | "error") => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification(null), 4000);
+  };
+
   // Form State για την κριτική
   const [text, setText] = useState("");
   const [foodRating, setFoodRating] = useState(5);
@@ -64,9 +74,10 @@ export default function RestaurantDetailsPage() {
   // Υποβολή Κριτικής
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!text) return alert("Παρακαλώ γράψτε ένα σχόλιο κριτικής!");
+    if (!text)
+      return showNotification("Please write a review comment!", "error");
     if (!currentUser)
-      return alert("Πρέπει να έχετε συνδεθεί για να κάνετε κριτική!");
+      return showNotification("You must be logged in to review!", "error");
 
     const res = await fetch("/api/reviews", {
       method: "POST",
@@ -83,8 +94,9 @@ export default function RestaurantDetailsPage() {
     });
 
     if (res.ok) {
-      alert(
-        "Η κριτική σας υποβλήθηκε! Το Bayesian Score επαναϋπολογίστηκε live!",
+      showNotification(
+        "Your review has been submitted! Bayesian Score recalculated live!",
+        "success",
       );
       setText("");
       setFoodRating(5);
@@ -93,7 +105,7 @@ export default function RestaurantDetailsPage() {
       setVfmRating(5);
       fetchRestaurantData();
     } else {
-      alert("Αποτυχία υποβολής κριτικής.");
+      showNotification("Review submission failed.", "error");
     }
   };
 
@@ -123,6 +135,17 @@ export default function RestaurantDetailsPage() {
 
   return (
     <div className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black">
+      {notification && (
+        <div
+          className={`fixed bottom-20 right-6 z-50 p-4 border-4 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-black ${
+            notification.type === "success"
+              ? "bg-green-500  text-black"
+              : "bg-red-500  text-white"
+          }`}
+        >
+          {notification.message}
+        </div>
+      )}
       <title>Restaurant | Flavr</title>
       <div className="max-w-6xl mx-auto space-y-8">
         {/* Πίσω στις αναζητήσεις */}
