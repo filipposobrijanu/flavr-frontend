@@ -255,7 +255,7 @@ export default function Home() {
               style={{ backgroundColor: "#FE2120", color: "white" }}
               className="button_top px-3 py-2 py-3 px-6 text-lg "
             >
-              START {window.innerWidth > 768 ? "EXPLORING" : ""} NOW
+              START <span className="hidden md:block">EXPLORING</span> NOW
             </span>
           </button>
         </div>
