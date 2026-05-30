@@ -3,9 +3,8 @@
 import Image from "next/image";
 import rest_Image from "../../assets/ideativas-tlm-kitchen-10152789_1920.png";
 import { useState, useEffect } from "react";
-import Link from "next/link";
+import Link from "next/link"; // 👈 1. ΠΡΟΣΘΗΚΗ: Εισαγωγή του Link για την πλοήγηση
 import { Metadata } from "next";
-import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 interface Restaurant {
   id: string;
@@ -17,33 +16,11 @@ interface Restaurant {
 }
 
 export default function RestaurantsPage() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  // 1. Read directly from the URL
-  const search = searchParams.get("search") || "";
-  const cuisine = searchParams.get("cuisine") || "";
-
   const [isLoading, setIsLoading] = useState(true);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  useEffect(() => {
-    const getRestaurants = async () => {
-      setIsLoading(true);
-      try {
-        const res = await fetch(
-          `/api/restaurants?search=${search}&cuisine=${cuisine}`,
-        );
-        const data = await res.json();
-        setRestaurants(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getRestaurants();
-  }, [search, cuisine]);
+  const [search, setSearch] = useState("");
+  const [cuisine, setCuisine] = useState("");
+
   useEffect(() => {
     const getRestaurants = async () => {
       setIsLoading(true); // Ξεκινάει το loading
@@ -61,12 +38,6 @@ export default function RestaurantsPage() {
     };
     getRestaurants();
   }, []);
-  const updateParams = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) params.set(key, value);
-    else params.delete(key);
-    router.push(`${pathname}?${params.toString()}`);
-  };
   return (
     <div className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black">
       <title>Discover Restaurants | Flavr</title>
@@ -90,7 +61,7 @@ export default function RestaurantsPage() {
             placeholder="Search by name..."
             className="flex-1 px-3 py-2 text-md border-2 border-black rounded-xl font-bold bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400 text-black"
             value={search}
-            onChange={(e) => updateParams("search", e.target.value)}
+            onChange={(e) => setSearch(e.target.value)}
           />
 
           {/* Dropdown Επιλογής Κουζίνας */}
@@ -98,7 +69,7 @@ export default function RestaurantsPage() {
             <select
               className="w-full px-3 py-2 border-2 border-black rounded-xl font-black bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:outline-none appearance-none cursor-pointer text-sm text-black"
               value={cuisine}
-              onChange={(e) => updateParams("cuisine", e.target.value)}
+              onChange={(e) => setCuisine(e.target.value)}
             >
               <option value="">ALL CUISINES</option>
               <option value="ITALIAN">ITALIAN</option>
