@@ -111,9 +111,61 @@ export default function RestaurantDetailsPage() {
 
   if (loading)
     return (
-      <div className="min-h-[calc(80vh-4rem)] flex items-center justify-center text-black font-black text-xl">
-        <title>Restaurant | Flavr</title>
-        Loading restaurant...
+      <div className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black animate-pulse">
+        <div className="max-w-6xl mx-auto space-y-8">
+          {/* Back Button Skeleton */}
+          <div className="h-10 w-40 bg-gray-200 rounded-xl border-2 border-black"></div>
+
+          {/* Hero Card Skeleton */}
+          <div className="bg-white p-6 md:p-8 border-4 border-black rounded-2xl flex flex-col md:flex-row justify-between items-start gap-6">
+            <div className="space-y-4 flex-1">
+              <div className="h-6 w-24 bg-gray-200 rounded-lg"></div>{" "}
+              {/* Cuisine tag */}
+              <div className="h-12 w-3/4 bg-gray-200 rounded-lg"></div>{" "}
+              {/* Title */}
+              <div className="h-4 w-1/3 bg-gray-200 rounded-md"></div>{" "}
+              {/* Address */}
+              <div className="space-y-2 pt-4 border-t-2 border-black border-dashed">
+                <div className="h-4 w-full bg-gray-200 rounded"></div>
+                <div className="h-4 w-full bg-gray-200 rounded"></div>
+                <div className="h-4 w-2/3 bg-gray-200 rounded"></div>
+              </div>
+            </div>
+            {/* Score Badge Skeleton */}
+            <div className="h-32 w-full md:w-[180px] bg-gray-200 border-4 border-black rounded-2xl"></div>
+          </div>
+
+          {/* Form & Reviews Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Sidebar Form Skeleton */}
+            <div className="h-[400px] w-full bg-white border-4 border-black rounded-2xl p-6">
+              <div className="h-8 w-1/2 bg-gray-200 rounded mb-6"></div>
+              <div className="space-y-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className="h-10 w-full bg-gray-200 rounded-lg"
+                  ></div>
+                ))}
+              </div>
+            </div>
+
+            {/* Reviews List Skeleton */}
+            <div className="lg:col-span-2 space-y-4">
+              <div className="h-8 w-48 bg-gray-200 rounded-lg"></div>
+              <div
+                key={1}
+                className="h-40 w-full bg-white border-2 border-b-4 border-black rounded-2xl p-5 space-y-4"
+              >
+                <div className="flex justify-between">
+                  <div className="h-6 w-32 bg-gray-200 rounded"></div>
+                  <div className="h-6 w-20 bg-gray-200 rounded"></div>
+                </div>
+                <div className="h-16 w-full bg-gray-200 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     );
 
@@ -122,7 +174,7 @@ export default function RestaurantDetailsPage() {
       <div className="min-h-[calc(80vh-4rem)] flex flex-col items-center justify-center text-black gap-4">
         <title>Restaurant | Flavr</title>
         <p className="font-black text-2xl text-red-500">
-          Το εστιατόριο δεν βρέθηκε! 😭
+          Το εστιατόριο δεν βρέθηκε!
         </p>
         <Link
           href="/restaurants"
@@ -179,8 +231,17 @@ export default function RestaurantDetailsPage() {
             <p className="text-xs font-black uppercase tracking-wider text-black">
               Bayesian Score
             </p>
-            <p className="text-4xl font-black mt-1 text-black">
-              ⭐{" "}
+            <p className="text-4xl font-black mt-1 text-black flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="28"
+                height="28"
+                fill="black"
+                className="bi bi-star"
+                viewBox="0 0 16 16"
+              >
+                <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+              </svg>{" "}
               {restaurant.globalBayesianScore > 0
                 ? Number(restaurant.globalBayesianScore).toFixed(1)
                 : "NEW"}

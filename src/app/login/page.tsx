@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import banana from "../../assets/ideativas-tlm-banana-6631298_1920.png";
@@ -10,6 +10,8 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const searchParams = useSearchParams();
+  const redirect = searchParams.get("redirect");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
@@ -66,6 +68,7 @@ export default function LoginPage() {
         if (loggedInUser.role === "ADMIN") router.push("/admin");
         else if (loggedInUser.role === "OWNER") router.push("/owner");
         else router.push("/restaurants");
+        router.push(redirect as string);
       } else {
         newErrors.general = "Invalid credentials or user does not exist!";
         setErrors(newErrors);
@@ -112,7 +115,7 @@ export default function LoginPage() {
           {/* General Global Error Box */}
           {errors.general && (
             <div className="mb-4 p-3 bg-red-200 border-2 border-black rounded-xl font-bold text-xs uppercase text-red-700 tracking-wide text-left shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-              💥 {errors.general}
+              {errors.general}
             </div>
           )}
 

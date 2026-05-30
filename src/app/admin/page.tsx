@@ -83,13 +83,41 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div
-        style={{ backgroundColor: "rgb(249, 234, 186)" }}
-        className="min-h-[calc(80vh-4rem)]  flex items-center justify-center p-8"
-      >
-        <title>Admin Dashboard | Flavr</title>
-        <div className=" border-4 bg-white border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-black text-xl text-black animate-pulse uppercase tracking-wider">
-          Loading Admin Panel...
+      <div className="min-h-[calc(80vh-4rem)] p-6 md:p-12 max-w-5xl mx-auto animate-pulse">
+        <title>Loading Admin Panel... | Flavr</title>
+
+        {/* Header Skeleton */}
+        <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-10">
+          <div className="h-16 w-64 bg-gray-200 rounded-2xl"></div>
+          <div className="h-10 w-32 bg-gray-200 rounded-xl"></div>
+        </div>
+
+        <div className="h-8 w-48 bg-gray-200 rounded-lg mb-6"></div>
+
+        {/* List Skeletons */}
+        <div className="space-y-6">
+          {[1, 2].map((i) => (
+            <div
+              key={i}
+              className="bg-white p-6 rounded-2xl border-2 border-b-4 border-black flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+            >
+              <div className="space-y-3 flex-1 w-full">
+                <div className="flex gap-3">
+                  <div className="h-8 w-1/3 bg-gray-200 rounded-lg"></div>
+                  <div className="h-8 w-20 bg-gray-200 rounded-lg"></div>
+                </div>
+                <div className="h-4 w-1/4 bg-gray-200 rounded"></div>
+                <div className="h-12 w-full bg-gray-200 rounded-lg"></div>
+                <div className="pt-3 border-t border-black/10 mt-3 h-4 w-1/2 bg-gray-200 rounded"></div>
+              </div>
+
+              {/* Action Buttons Skeleton */}
+              <div className="flex gap-3 w-full lg:w-auto">
+                <div className="h-10 w-24 bg-gray-200 rounded-lg"></div>
+                <div className="h-10 w-24 bg-gray-200 rounded-lg"></div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );

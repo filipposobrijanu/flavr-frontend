@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 interface Restaurant {
   id: string;
@@ -14,14 +14,33 @@ interface Restaurant {
 
 export default function OwnerDashboard() {
   const [isListLoading, setIsListLoading] = useState(true);
-
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+
+  // Input states
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
-  const [cuisineType, setCuisineType] = useState("ITALIAN");
   const [userId, setUserId] = useState<string | null>(null);
+
+  // Validation State
+  const [errors, setErrors] = useState({
+    name: "",
+    description: "",
+    address: "",
+  });
+
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
   const router = useRouter();
+
+  const cuisineType = searchParams.get("cuisine") || "ITALIAN";
+
+  // 2. Function to update the URL
+  const handleCuisineChange = (newCuisine: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("cuisine", newCuisine);
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   const [notification, setNotification] = useState<{
     message: string;
@@ -31,6 +50,57 @@ export default function OwnerDashboard() {
   const showNotification = (message: string, type: "success" | "error") => {
     setNotification({ message, type });
     setTimeout(() => setNotification(null), 4000);
+  };
+
+  const validate = () => {
+    let tempErrors = { name: "", description: "", address: "" };
+    let isValid = true;
+
+    if (!name.trim()) {
+      tempErrors.name = "Name is required";
+      isValid = false;
+    }
+    if (!description.trim()) {
+      tempErrors.description = "Description is required";
+      isValid = false;
+    }
+    if (!address.trim()) {
+      tempErrors.address = "Address is required";
+      isValid = false;
+    }
+
+    setErrors(tempErrors);
+    return isValid;
+  };
+
+  const handleSubmitApplication = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) {
+      showNotification("Please check the form for errors!", "error");
+      return;
+    }
+
+    const res = await fetch("/api/restaurants", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        description,
+        address,
+        cuisineType,
+        ownerId: userId,
+      }),
+    });
+
+    if (res.ok) {
+      showNotification("Restaurant submitted successfully!", "success");
+      setName("");
+      setDescription("");
+      setAddress("");
+      if (userId) fetchMyRestaurants(userId);
+    } else {
+      showNotification("Failed to submit application.", "error");
+    }
   };
 
   // Έλεγχος αν ο χρήστης είναι πράγματι OWNER
@@ -62,37 +132,6 @@ export default function OwnerDashboard() {
       console.error("Error fetching:", error);
     } finally {
       setIsListLoading(false);
-    }
-  };
-
-  const handleSubmitApplication = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name || !description || !address)
-      return showNotification("Fill in all fields!", "error");
-
-    const res = await fetch("/api/restaurants", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name,
-        description,
-        address,
-        cuisineType,
-        ownerId: userId,
-      }),
-    });
-
-    if (res.ok) {
-      showNotification(
-        "The application was successfully submitted and is pending approval from the Admin!",
-        "success",
-      );
-      setName("");
-      setDescription("");
-      setAddress("");
-      if (userId) fetchMyRestaurants(userId); // Ανανέωση λίστας
-    } else {
-      showNotification("Application submission failed.", "error");
     }
   };
 
@@ -141,9 +180,17 @@ export default function OwnerDashboard() {
                 type="text"
                 className="w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400 text-black"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
-                placeholder="π.χ. Pizza Con Amore"
+                onChange={(e) => {
+                  setName(e.target.value);
+                  setErrors({ ...errors, name: "" });
+                }}
+                placeholder="e.g. Pizza Con Amore"
               />
+              {errors.name && (
+                <p className="text-red-600 text-[10px] font-black mt-1">
+                  * {errors.name}
+                </p>
+              )}
             </div>
 
             {/* Διεύθυνση */}
@@ -155,9 +202,17 @@ export default function OwnerDashboard() {
                 type="text"
                 className="w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400 text-black"
                 value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                onChange={(e) => {
+                  setAddress(e.target.value);
+                  setErrors({ ...errors, address: "" });
+                }}
                 placeholder="e.g. 12 Panepistimiou, Athens"
               />
+              {errors.address && (
+                <p className="text-red-600 text-[10px] font-black mt-1">
+                  * {errors.address}
+                </p>
+              )}
             </div>
 
             {/* Τύπος Κουζίνας */}
@@ -168,8 +223,8 @@ export default function OwnerDashboard() {
               <div className="relative">
                 <select
                   className="w-full px-3 py-2 border-2 border-black rounded-xl font-black bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none appearance-none cursor-pointer text-sm text-black"
-                  value={cuisineType}
-                  onChange={(e) => setCuisineType(e.target.value)}
+                  value={cuisineType} // Controlled by URL state
+                  onChange={(e) => handleCuisineChange(e.target.value)} // Updates URL state
                 >
                   <option value="ITALIAN">ITALIAN</option>
                   <option value="GREEK">GREEK</option>
@@ -190,9 +245,17 @@ export default function OwnerDashboard() {
               <textarea
                 className="w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400 text-black h-24 resize-none"
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  setErrors({ ...errors, description: "" });
+                }}
                 placeholder="A few words about the menu..."
               />
+              {errors.description && (
+                <p className="text-red-600 text-[10px] font-black mt-1">
+                  * {errors.description}
+                </p>
+              )}
             </div>
 
             {/* Κουμπί Υποβολής */}
@@ -214,16 +277,38 @@ export default function OwnerDashboard() {
             My Restaurants
           </h2>
           {isListLoading ? (
-            /* ⏳ LOADING SKELETON */
+            /* ⏳ HIGH-FIDELITY LOADING SKELETON */
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[1, 2].map((i) => (
                 <div
                   key={i}
-                  className="bg-white p-5 rounded-2xl border-2 border-black h-[180px] animate-pulse shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
+                  className="bg-white p-5 rounded-2xl border-2 border-b-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between animate-pulse"
                 >
-                  <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
-                  <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                  <div className="space-y-4">
+                    {/* Header Skeleton */}
+                    <div className="flex justify-between items-start gap-2">
+                      <div className="h-7 w-3/4 bg-gray-200 rounded-lg"></div>
+                      <div className="h-7 w-20 bg-gray-200 rounded-lg"></div>
+                    </div>
+
+                    {/* Cuisine & Address Skeleton */}
+                    <div className="space-y-2">
+                      <div className="h-4 w-1/2 bg-gray-200 rounded"></div>
+                      <div className="h-4 w-full bg-gray-200 rounded"></div>
+                    </div>
+
+                    {/* Description Lines Skeleton */}
+                    <div className="space-y-2 pt-2">
+                      <div className="h-4 w-full bg-gray-200 rounded"></div>
+                      <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+
+                  {/* Footer Skeleton */}
+                  <div className="border-t-2 border-black/10 pt-4 mt-4 flex justify-between items-center">
+                    <div className="h-4 w-1/3 bg-gray-200 rounded"></div>
+                    <div className="h-8 w-16 bg-gray-200 rounded-md"></div>
+                  </div>
                 </div>
               ))}
             </div>

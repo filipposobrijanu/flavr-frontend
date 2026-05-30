@@ -7,18 +7,26 @@ import { AuthProvider } from "../context/AuthContext";
 import { Metadata } from "next";
 import PageTransition from "../components/PageTransition";
 
-// Ρύθμιση της γραμματοσειράς Ranchers από το Google Fonts
 const ranchersFont = DynaPuff({
   subsets: ["latin"],
-  weight: ["400"], // Η Ranchers βγαίνει μόνο σε 400 (Regular)
-  variable: "--font-ranchers", // Η CSS μεταβλητή για το Tailwind
+  weight: ["400"],
+  variable: "--font-ranchers",
 });
 export const metadata: Metadata = {
   title: {
-    default: "Flavr | Discover & Review Restaurants", // <--- Αν μια σελίδα ΔΕΝ έχει τίτλο, θα δείχνει αυτό
-    template: "%s | Flavr", // <--- Το template για τις υπόλοιπες σελίδες
+    default: "Flavr | Discover & Review Restaurants",
+    template: "%s | Flavr",
   },
-  description: "The ultimate neobrutalist restaurant evaluation platform.",
+  openGraph: {
+    title: "Flavr | Unfiltered Restaurant Truth",
+    description:
+      "Stop trusting fake reviews. Flavr uses Bayesian statistics for honest restaurant rankings.",
+    url: "https://flavr.com",
+    siteName: "Flavr",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
+    locale: "en_US",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

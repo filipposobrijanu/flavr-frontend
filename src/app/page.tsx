@@ -253,9 +253,9 @@ export default function Home() {
           >
             <span
               style={{ backgroundColor: "#FE2120", color: "white" }}
-              className="button_top px-3 py-2 py-3 px-6 text-lg "
+              className="button_top px-3 py-2 py-3 px-6 text-lg inline-flex items-center justify-center"
             >
-              START <span className="hidden md:block">EXPLORING</span> NOW
+              START <span className="hidden md:inline">EXPLORING</span> NOW
             </span>
           </button>
         </div>

@@ -1,41 +1,44 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/db"; // Σιγουρέψου ότι το path για το prisma σου είναι σωστό (@/lib/db ή @/lib/prisma)
+import { prisma } from "@/lib/db";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { email, role, username } = body;
 
-    if (!email) {
+    if (!email || !username) {
       return NextResponse.json(
-        { error: "Το email είναι υποχρεωτικό" },
+        { message: "Το email και το username είναι υποχρεωτικά" },
         { status: 400 },
       );
     }
 
-    // Έλεγχος αν υπάρχει ήδη ο χρήστης
-    let user = await prisma.user.findUnique({ where: { email } });
+    // 1. Check if the user already exists
+    const existingUser = await prisma.user.findUnique({ where: { email } });
 
-    // Αν δεν υπάρχει, τον δημιουργούμε αυτόματα
-    if (!user) {
-      user = await prisma.user.create({
-        data: {
-          email,
-          username: username || email.split("@")[0], // Fallback αν το front-end δεν έστειλε username
-          role: role || "USER",
-          passwordHash: "mocked_password", // Απλό password για την εργασία
-        },
-      });
-
-      return NextResponse.json(user, { status: 201 }); // 201 = Created
+    // 2. If they ALREADY exist, throw an error! 🛑
+    if (existingUser) {
+      return NextResponse.json(
+        { message: "Username or Email already taken!" },
+        { status: 409 }, // 409 Conflict
+      );
     }
 
-    // Αν υπάρχει ήδη, επιστρέφουμε τον χρήστη (ή σφάλμα ότι υπάρχει ήδη, ό,τι προτιμάς)
-    return NextResponse.json(user, { status: 200 });
+    // 3. If they don't exist, create the new account ✅
+    const newUser = await prisma.user.create({
+      data: {
+        email,
+        username,
+        role: role || "VISITOR",
+        passwordHash: "mocked_password", // Απλό password για την εργασία
+      },
+    });
+
+    return NextResponse.json(newUser, { status: 201 }); // 201 Created
   } catch (error) {
     console.error("Signup Error:", error);
     return NextResponse.json(
-      { error: "Σφάλμα κατά την αυθεντικοποίηση" },
+      { message: "Σφάλμα κατά την εγγραφή. Δοκιμάστε ξανά!" },
       { status: 500 },
     );
   }

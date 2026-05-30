@@ -38,6 +38,7 @@ export async function POST(request: Request) {
         vfmRating: Number(vfmRating),
         simpleAverage: calculatedAverage, // 👈 Αποθήκευση του μέσου όρου της κριτικής
         restaurantId,
+        rating: Math.round(calculatedAverage),
         userId,
       },
     });

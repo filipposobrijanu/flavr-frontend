@@ -23,7 +23,7 @@ export default function AboutPage() {
           <div className="absolute right-4 bottom-0 text-4xl opacity-20 pointer-events-none font-black select-none hidden sm:block">
             FOOD
           </div>
-          <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-black">
+          <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-white">
             What is Flavr?
           </h1>
         </div>

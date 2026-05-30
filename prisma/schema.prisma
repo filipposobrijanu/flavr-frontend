@@ -55,6 +55,7 @@ model Review {
   atmosphereRating Int
   vfmRating        Int
   simpleAverage    Float
+  rating    Int?
   createdAt        DateTime @default(now())
 
   // Τα πεδία που ήδη έχεις

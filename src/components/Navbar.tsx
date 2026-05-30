@@ -91,6 +91,7 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
       >
         Restaurants
       </Link>
+
       {user?.role === "OWNER" && (
         <Link
           href="/owner"
@@ -107,7 +108,14 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
           Admin Dashboard
         </Link>
       )}
-
+      {user && (
+        <Link
+          href="/dashboard"
+          className={`${pathname === "/dashboard" ? "text-black" : "hover:text-black"} font-semibold hover:opacity-80 transition-colors`}
+        >
+          My Profile
+        </Link>
+      )}
       {user ? (
         <div className="flex items-center gap-4">
           <div className="inline-flex items-center gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-bold text-black bg-gray-100 border-2 border-black px-3 py-1 rounded-xl text-sm">
