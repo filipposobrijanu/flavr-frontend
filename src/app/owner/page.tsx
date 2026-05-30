@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter, useSearchParams, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 
 interface Restaurant {
   id: string;
@@ -20,6 +20,7 @@ export default function OwnerDashboard() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
+  const [cuisineType, setCuisineType] = useState("ITALIAN");
   const [userId, setUserId] = useState<string | null>(null);
 
   // Validation State
@@ -29,19 +30,7 @@ export default function OwnerDashboard() {
     address: "",
   });
 
-  const searchParams = useSearchParams();
-  const pathname = usePathname();
   const router = useRouter();
-
-  const cuisineType = searchParams.get("cuisine") || "ITALIAN";
-
-  // 2. Function to update the URL
-  const handleCuisineChange = (newCuisine: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("cuisine", newCuisine);
-    router.push(`${pathname}?${params.toString()}`);
-  };
-
   const [notification, setNotification] = useState<{
     message: string;
     type: "success" | "error";
@@ -223,8 +212,8 @@ export default function OwnerDashboard() {
               <div className="relative">
                 <select
                   className="w-full px-3 py-2 border-2 border-black rounded-xl font-black bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none appearance-none cursor-pointer text-sm text-black"
-                  value={cuisineType} // Controlled by URL state
-                  onChange={(e) => handleCuisineChange(e.target.value)} // Updates URL state
+                  value={cuisineType}
+                  onChange={(e) => setCuisineType(e.target.value)}
                 >
                   <option value="ITALIAN">ITALIAN</option>
                   <option value="GREEK">GREEK</option>
