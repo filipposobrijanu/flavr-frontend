@@ -10,9 +10,50 @@ interface Restaurant {
   address: string;
   status: string;
   globalBayesianScore: number;
+  imageUrl?: string;
 }
 
 export default function OwnerDashboard() {
+  const [image, setImage] = useState<File | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) setImage(e.target.files[0]);
+  };
+
+  const uploadToCloudinary = async () => {
+    if (!image) return null;
+
+    const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+    console.log("Cloud Name being used:", cloudName); // Δες αν είναι σωστό στο Console
+
+    const formData = new FormData();
+    formData.append("file", image);
+    formData.append("upload_preset", "my_flavr_preset"); // Σιγουρέψου ότι αυτό υπάρχει στο dashboard σου!
+
+    try {
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // ΕΔΩ ΘΑ ΔΟΥΜΕ ΤΟ ΠΡΑΓΜΑΤΙΚΟ ΛΑΘΟΣ (π.χ. "invalid cloud name" ή "preset not found")
+        console.error("FULL CLOUDINARY ERROR:", data);
+        return null;
+      }
+
+      return data.secure_url;
+    } catch (error) {
+      console.error("Network error during upload:", error);
+      return null;
+    }
+  };
+
   const [isListLoading, setIsListLoading] = useState(true);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
 
@@ -68,7 +109,11 @@ export default function OwnerDashboard() {
       showNotification("Please check the form for errors!", "error");
       return;
     }
+    // 1. Δείτε αν ξεκινάει η διαδικασία
+    console.log("Submitting...");
 
+    const imageUrl = await uploadToCloudinary();
+    console.log("Image URL received:", imageUrl);
     const res = await fetch("/api/restaurants", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -78,6 +123,7 @@ export default function OwnerDashboard() {
         address,
         cuisineType,
         ownerId: userId,
+        imageUrl,
       }),
     });
 
@@ -89,6 +135,8 @@ export default function OwnerDashboard() {
       if (userId) fetchMyRestaurants(userId);
     } else {
       showNotification("Failed to submit application.", "error");
+      const errorData = await res.json();
+      console.error("Server Error:", errorData);
     }
   };
 
@@ -225,7 +273,18 @@ export default function OwnerDashboard() {
                 </div>
               </div>
             </div>
-
+            {/* 🖼️ Image Upload */}
+            <div className="text-left">
+              <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
+                Restaurant Image
+              </label>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-black file:bg-blue-400 file:text-black hover:file:bg-blue-500 transition-all"
+              />
+            </div>
             {/* Περιγραφή */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">

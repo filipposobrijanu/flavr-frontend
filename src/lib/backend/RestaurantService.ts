@@ -8,6 +8,7 @@ export class RestaurantService {
     cuisineType: string;
     address: string;
     ownerId: string;
+    imageUrl: string;
   }) {
     return await prisma.restaurant.create({
       data: {
@@ -16,6 +17,7 @@ export class RestaurantService {
         cuisineType: data.cuisineType,
         address: data.address,
         ownerId: data.ownerId,
+        imageUrl: data.imageUrl,
         status: "PENDING",
         globalBayesianScore: 0.0,
         createdAt: new Date(), // <--- Προσθήκη εδώ

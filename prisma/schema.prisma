@@ -1,7 +1,52 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String       @id @default(uuid())
+  email        String       @unique
+  username     String       @unique
+  role         Role         @default(REVIEWER)
+  passwordHash String?
+  restaurants  Restaurant[]
+  reviews      Review[]
+}
+
+model Restaurant {
+  id                  String           @id @default(uuid())
+  name                String
+  description         String
+  cuisineType         String
+  address             String
+  globalBayesianScore Float            @default(0.0)
+  ownerId             String
+  status              RestaurantStatus @default(PENDING)
+  createdAt           DateTime         @default(now())
+  imageUrl            String?
+  owner               User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  reviews             Review[]
+}
+
+model Review {
+  id               String     @id @default(uuid())
+  rating           Int
+  createdAt        DateTime   @default(now())
+  restaurantId     String
+  userId           String
+  atmosphereRating Int
+  foodRating       Int
+  serviceRating    Int
+  simpleAverage    Float
+  text             String
+  vfmRating        Int
+  restaurant       Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum RestaurantStatus {
@@ -10,58 +55,9 @@ enum RestaurantStatus {
   REJECTED
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-// 🎭 Οι 4 ρόλοι της εκφώνησης
 enum Role {
   VISITOR
   REVIEWER
   OWNER
   ADMIN
-}
-
-model User {
-  id           String       @id @default(uuid())
-  email        String       @unique
-  username     String       @unique
-  role         Role         @default(REVIEWER)
-  restaurants  Restaurant[] // Σχέση 1-προς-πολλά: Ένας OWNER μπορεί να έχει πολλά εστιατόρια
-  reviews      Review[] // Σχέση 1-προς-πολλά: Ένας REVIEWER κάνει πολλές κριτικές
-  passwordHash String?
-}
-
-model Restaurant {
-  id                  String           @id @default(uuid())
-  name                String
-  description         String
-  cuisineType         String // π.χ. "ITALIAN", "GREEK"
-  address             String
-  globalBayesianScore Float            @default(0.0) // Εδώ θα αποθηκεύεται το σωστό σκορ
-  status              RestaurantStatus @default(PENDING)
-  ownerId             String
-  owner               User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  reviews             Review[]
-  createdAt           DateTime         @default(now())
-}
-
-model Review {
-  id               String   @id @default(uuid())
-  text             String
-  rating           Int?
-  foodRating       Int
-  serviceRating    Int
-  atmosphereRating Int
-  vfmRating        Int
-  simpleAverage    Float
-  createdAt        DateTime @default(now())
-
-  // Τα πεδία που ήδη έχεις
-  userId       String
-  restaurantId String
-
-  // ΠΡΟΣΘΕΣΕ ΑΥΤΑ ΤΑ ΔΥΟ:
-  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 }

@@ -40,9 +40,16 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, description, cuisineType, address, ownerId } = body;
+    const { name, description, cuisineType, address, ownerId, imageUrl } = body;
 
-    if (!name || !description || !cuisineType || !address || !ownerId) {
+    if (
+      !name ||
+      !description ||
+      !cuisineType ||
+      !address ||
+      !ownerId ||
+      !imageUrl
+    ) {
       return NextResponse.json(
         { error: "Όλα τα πεδία είναι υποχρεωτικά!" },
         { status: 400 },
@@ -55,6 +62,7 @@ export async function POST(request: Request) {
       cuisineType,
       address,
       ownerId,
+      imageUrl,
     });
 
     return NextResponse.json(newRestaurant, { status: 201 });

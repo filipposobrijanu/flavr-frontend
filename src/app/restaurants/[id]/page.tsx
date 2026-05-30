@@ -25,6 +25,7 @@ interface Restaurant {
   address: string;
   globalBayesianScore: number;
   reviews: Review[];
+  imageUrl?: string;
 }
 
 export default function RestaurantDetailsPage() {
@@ -212,6 +213,13 @@ export default function RestaurantDetailsPage() {
         {/* 🏛️ Κεντρικό Card Εστιατορίου */}
         <div className="bg-white p-6 md:p-8 border-4 border-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row justify-between items-start gap-6">
           <div className="space-y-3 flex-1">
+            {restaurant.imageUrl && (
+              <img
+                src={restaurant.imageUrl}
+                alt={restaurant.name}
+                className="w-64 h-64 object-cover rounded-xl border-2 border-black mb-6"
+              />
+            )}
             <span className="bg-blue-400 text-black text-xs font-black px-3 py-1 border-2 border-black rounded-lg uppercase tracking-wide inline-block shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               {restaurant.cuisineType}
             </span>

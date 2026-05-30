@@ -13,6 +13,7 @@ interface Restaurant {
   cuisineType: string;
   globalBayesianScore: number;
   address: string;
+  imageUrl?: string;
 }
 
 export default function RestaurantsPage() {
@@ -126,6 +127,15 @@ export default function RestaurantsPage() {
                 className="bg-white border-2 border-b-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all"
               >
                 <div>
+                  {res.imageUrl && (
+                    <div className="w-full h-40 mb-4 overflow-hidden rounded-xl border-2 border-black">
+                      <img
+                        src={res.imageUrl}
+                        alt={res.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
                   {/* Header Κάρτας: Όνομα & Σκορ */}
                   <div className="flex justify-between items-start gap-2 mb-3">
                     <h2 className="text-2xl font-black tracking-tight text-black line-clamp-1">
