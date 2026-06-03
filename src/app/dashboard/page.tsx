@@ -10,8 +10,7 @@ import { useLocale } from "@/context/LocaleContext";
 
 export default async function DashboardPage() {
   const { t } = useLocale();
-  const cookieStore = await cookies();
-  const userId = cookieStore.get("userId")?.value;
+  const userId = "f36ea3c9-e024-4fbb-ae41-5a69932a05e8";
 
   const [activities, totalReviews] = await Promise.all([
     prisma.review.findMany({
