@@ -7,37 +7,83 @@ import Image from "next/image";
 import banana from "../../assets/ideativas-tlm-banana-6631298_1920.png";
 import fish from "../../assets/ideativas-tlm-fish-6600570_1920.png";
 import { useAuth } from "@/context/AuthContext";
+import { useLocale } from "@/context/LocaleContext";
+import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 
-export default function SignUpPage() {
+function SignUpContent() {
+  const { t } = useLocale();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [role, setRole] = useState("REVIEWER");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
   // 🛠️ State για errors ανά input field στο signup
   const [errors, setErrors] = useState({
     username: "",
     email: "",
+    password: "",
     general: "",
   });
   const router = useRouter();
+  const googleSignUp = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      try {
+        const res = await fetch("/api/auth/google", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            accessToken: tokenResponse.access_token, // 👈 Το στέλνουμε σαν accessToken, όπως στο Login!
+            role: role, // Στέλνουμε ΚΑΙ τον ρόλο
+          }),
+        });
 
+        if (res.ok) {
+          const newUser = await res.json();
+          login(newUser);
+
+          if (newUser.role === "ADMIN") router.push("/admin");
+          else if (newUser.role === "OWNER") router.push("/owner");
+          else router.push("/restaurants");
+        } else {
+          const errorData = await res.json();
+          setErrors({
+            ...errors,
+            general: errorData.message || "Google Sign-Up failed",
+          });
+        }
+      } catch (error) {
+        setErrors({ ...errors, general: "Network error" });
+      } finally {
+        setLoading(false);
+      }
+    },
+    onError: () => setErrors({ ...errors, general: "Το Google Auth απέτυχε" }),
+  });
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
 
     let hasErrors = false;
-    const newErrors = { username: "", email: "", general: "" };
+    const newErrors = { username: "", email: "", password: "", general: "" };
 
     if (!username.trim()) {
-      newErrors.username = "Choose a clean username!";
+      newErrors.username = t("signup.errors.username");
       hasErrors = true;
     }
     if (!email.trim()) {
-      newErrors.email = "Email is required for verification!";
+      newErrors.email = t("signup.errors.email_required");
       hasErrors = true;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "This email looks fake!";
+      newErrors.email = t("signup.errors.email_invalid");
+      hasErrors = true;
+    }
+    if (!password.trim()) {
+      newErrors.password = t("signup.errors.password_required");
+      hasErrors = true;
+    } else if (password.length < 6) {
+      newErrors.password = t("signup.errors.password_short");
       hasErrors = true;
     }
 
@@ -47,13 +93,13 @@ export default function SignUpPage() {
     }
 
     setLoading(true);
-    setErrors({ username: "", email: "", general: "" });
+    setErrors({ username: "", email: "", password: "", general: "" });
 
     try {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username, role }),
+        body: JSON.stringify({ email, username, password, role }), // 👈 Στέλνουμε το password
       });
 
       if (res.ok) {
@@ -65,13 +111,12 @@ export default function SignUpPage() {
         else router.push("/restaurants");
       } else {
         const errorData = await res.json();
-        newErrors.general =
-          errorData.message || "Username or Email already taken!";
+        newErrors.general = errorData.message || t("signup.errors.general");
         setErrors(newErrors);
       }
     } catch (error) {
       console.error(error);
-      newErrors.general = "Connection lost. Try again!";
+      newErrors.general = t("signup.errors.connection");
       setErrors(newErrors);
     } finally {
       setLoading(false);
@@ -91,19 +136,9 @@ export default function SignUpPage() {
             className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-yellow-400 p-2"
           />
         </div>
-        <div className="flex justify-center items-center w-full">
-          <div className="flex lg:hidden justify-center items-center  mb-8 mt-2 w-44 h-44 transform rotate-8 transition-transform hover:scale-110">
-            <Image
-              priority
-              src={banana}
-              alt="Burger Illustration"
-              className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-yellow-400 p-2"
-            />
-          </div>
-        </div>
 
         <h2 className="text-4xl md:text-5xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight mb-4 uppercase z-10">
-          Join the club
+          {t("signup.title")}
         </h2>
 
         {/* 📦 Κάρτα */}
@@ -119,7 +154,7 @@ export default function SignUpPage() {
             {/* Username Input */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
-                Choose Username
+                {t("signup.username_label")}
               </label>
               <input
                 type="text"
@@ -128,7 +163,7 @@ export default function SignUpPage() {
                   setUsername(e.target.value);
                   setErrors({ ...errors, username: "" });
                 }}
-                placeholder="e.g. food_critic_99"
+                placeholder={t("signup.username_placeholder")}
                 className={`w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none transition-all placeholder:text-gray-400 ${errors.username ? "bg-red-50 border-red-500" : ""}`}
               />
               {errors.username && (
@@ -141,7 +176,7 @@ export default function SignUpPage() {
             {/* Email Input */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
-                Email Address
+                {t("signup.email_label")}
               </label>
               <input
                 type="email"
@@ -150,7 +185,7 @@ export default function SignUpPage() {
                   setEmail(e.target.value);
                   setErrors({ ...errors, email: "" });
                 }}
-                placeholder="yourmail@domain.com"
+                placeholder={t("signup.email_placeholder")}
                 className={`w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none transition-all placeholder:text-gray-400 ${errors.email ? "bg-red-50 border-red-500" : ""}`}
               />
               {errors.email && (
@@ -159,11 +194,31 @@ export default function SignUpPage() {
                 </p>
               )}
             </div>
+            <div className="text-left">
+              <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
+                {t("signup.password_label")}
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setErrors({ ...errors, password: "" });
+                }}
+                placeholder={t("signup.password_placeholder")}
+                className={`w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none transition-all placeholder:text-gray-400 ${errors.password ? "bg-red-50 border-red-500" : ""}`}
+              />
+              {errors.password && (
+                <p className="text-red-600 font-black text-[10px] uppercase tracking-wide mt-1 ml-1">
+                  * {errors.password}
+                </p>
+              )}
+            </div>
 
             {/* 👑 Role Selector (Με όλους τους 4 ρόλους πλέον!) */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
-                I am a...
+                {t("signup.role_label")}
               </label>
               <div className="relative">
                 <select
@@ -171,12 +226,10 @@ export default function SignUpPage() {
                   onChange={(e) => setRole(e.target.value)}
                   className="w-full px-3 py-2 border-2 border-black rounded-xl font-black bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none appearance-none cursor-pointer text-sm"
                 >
-                  <option value="VISITOR">
-                    CASUAL VISITOR (JUST BROWSING)
-                  </option>
-                  <option value="REVIEWER">REVIEWER (WRITING REVIEWS)</option>
-                  <option value="OWNER">RESTAURANT OWNER</option>
-                  <option value="ADMIN">SYSTEM ADMIN (ADMIN)</option>
+                  <option value="VISITOR">{t("signup.roles.visitor")}</option>
+                  <option value="REVIEWER">{t("signup.roles.reviewer")}</option>
+                  <option value="OWNER">{t("signup.roles.owner")}</option>
+                  <option value="ADMIN">{t("signup.roles.admin")}</option>
                 </select>
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-black font-bold">
                   ▼
@@ -193,18 +246,45 @@ export default function SignUpPage() {
                 style={{ backgroundColor: "#ff5c00", color: "white" }}
                 className="button_top px-3 py-2 font-black tracking-wider"
               >
-                {loading ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
+                {loading ? t("signup.loading") : t("signup.btn")}
               </span>
             </button>
           </form>
+          <div className="my-6 flex items-center justify-center relative">
+            <hr className="w-full border-black border-1" />
+          </div>
+
+          {/* 🚀 Το ίδιο Custom Google Button με το Login! */}
+          <button
+            type="button"
+            onClick={() => {
+              // Έλεγχος αν ο ρόλος είναι έγκυρος
+              if (!role) {
+                setErrors({
+                  ...errors,
+                  general: "Παρακαλώ επιλέξτε έναν ρόλο πρώτα!",
+                });
+                return;
+              }
+              googleSignUp(); // Αν όλα οκ, τρέχει το login
+            }}
+            className="w-full flex items-center justify-center gap-3 px-4 cursor-pointer py-3 bg-white border-2 border-black rounded-xl font-black uppercase text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
+          >
+            <img
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="Google Logo"
+              className="w-5 h-5"
+            />
+            {t("signup.continue_with_google") || "Sign up with Google"}
+          </button>
 
           <p className="mt-6 text-xs font-bold text-gray-600">
-            Already have an account?{" "}
+            {t("signup.login_prompt")}{" "}
             <Link
               href="/login"
               className="text-orange-600 underline font-black uppercase ml-1 hover:text-orange-800"
             >
-              Login here
+              {t("signup.login_link")}
             </Link>
           </p>
         </div>
@@ -230,5 +310,13 @@ export default function SignUpPage() {
         </div>
       </div>
     </div>
+  );
+}
+export default function SignUpPage() {
+  return (
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+      <title>Sign Up | Flavr</title>
+      <SignUpContent />
+    </GoogleOAuthProvider>
   );
 }

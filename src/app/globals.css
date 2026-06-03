@@ -5,16 +5,27 @@
   --foreground: #171717;
 }
 
-/* 1. Δηλώνουμε το font στο Tailwind v4 */
 @theme {
   --font-ranchers: var(--font-ranchers), sans-serif;
+  --font-carlito: var(--font-carlito), sans-serif;
 }
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 }
+body {
+  background: var(--background);
+  color: var(--foreground);
+  /* font-family: var(--font-ranchers), sans-serif; <--- ΣΒΗΣΕ ΑΥΤΟ */
+}
 
+/* Πρόσθεσε αυτές τις κλάσεις για να τις χρησιμοποιήσεις στο Layout */
+.font-ranchers-class {
+  font-family: var(--font-ranchers), sans-serif;
+}
+.font-carlito-class {
+  font-family: var(--font-carlito), sans-serif;
+}
 @media (prefers-color-scheme: dark) {
   :root {
     --background: rgb(249, 234, 186);
@@ -26,11 +37,7 @@
   transition: opacity 0.3s ease-in-out;
 }
 /* 2. Αντικαθιστούμε το Arial με τη CSS μεταβλητή του Ranchers */
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-ranchers), sans-serif;
-}
+
 /* From Uiverse.io by Voxybuns */
 .button-main {
   /* Variables */

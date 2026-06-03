@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Review {
   id: string;
@@ -29,6 +30,7 @@ interface Restaurant {
 }
 
 export default function RestaurantDetailsPage() {
+  const { t } = useLocale();
   const { id } = useParams();
   const router = useRouter();
 
@@ -76,9 +78,15 @@ export default function RestaurantDetailsPage() {
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text)
-      return showNotification("Please write a review comment!", "error");
+      return showNotification(
+        t("restaurant_details.errors.empty_comment"),
+        "error",
+      );
     if (!currentUser)
-      return showNotification("You must be logged in to review!", "error");
+      return showNotification(
+        t("restaurant_details.errors.login_required"),
+        "error",
+      );
 
     const res = await fetch("/api/reviews", {
       method: "POST",
@@ -95,10 +103,7 @@ export default function RestaurantDetailsPage() {
     });
 
     if (res.ok) {
-      showNotification(
-        "Your review has been submitted! Bayesian Score recalculated live!",
-        "success",
-      );
+      showNotification(t("restaurant_details.success_msg"), "success");
       setText("");
       setFoodRating(5);
       setServiceRating(5);
@@ -106,7 +111,7 @@ export default function RestaurantDetailsPage() {
       setVfmRating(5);
       fetchRestaurantData();
     } else {
-      showNotification("Review submission failed.", "error");
+      showNotification(t("restaurant_details.errors.submit_error"), "error");
     }
   };
 
@@ -175,13 +180,13 @@ export default function RestaurantDetailsPage() {
       <div className="min-h-[calc(80vh-4rem)] flex flex-col items-center justify-center text-black gap-4">
         <title>Restaurant | Flavr</title>
         <p className="font-black text-2xl text-red-500">
-          Το εστιατόριο δεν βρέθηκε!
+          {t("restaurant_details.notFound")}
         </p>
         <Link
           href="/restaurants"
           className="border-2 border-black bg-yellow-400 px-4 py-2 font-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
         >
-          GO BACK
+          {t("restaurant_details.back_btn")}
         </Link>
       </div>
     );
@@ -207,7 +212,7 @@ export default function RestaurantDetailsPage() {
           href="/restaurants"
           className="inline-block font-black inline-flex gap-2 text-md uppercase tracking-wider border-2 border-black bg-gray-200 px-4 py-2 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
         >
-          Back to Restaurants
+          {t("restaurant_details.back_btn")}
         </Link>
 
         {/* 🏛️ Κεντρικό Card Εστιατορίου */}
@@ -252,10 +257,11 @@ export default function RestaurantDetailsPage() {
               </svg>{" "}
               {restaurant.globalBayesianScore > 0
                 ? Number(restaurant.globalBayesianScore).toFixed(1)
-                : "NEW"}
+                : t("restaurant_details.new")}
             </p>
             <div className="text-[11px] mt-3 font-black uppercase border-t border-black pt-2 text-black opacity-90">
-              {restaurant.reviews.length} reviews
+              {restaurant.reviews.length}{" "}
+              {t("restaurant_details.reviews_count")}
             </div>
           </div>
         </div>
@@ -267,24 +273,28 @@ export default function RestaurantDetailsPage() {
             {currentUser?.role === "REVIEWER" ? (
               <div className="bg-white p-6 border-4 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] sticky top-6">
                 <h2 className="text-xl font-black uppercase tracking-tight mb-4 text-black border-b-2 border-black pb-2">
-                  Write a Review
+                  {t("restaurant_details.write_review")}
                 </h2>
                 <form onSubmit={handleReviewSubmit} className="space-y-4">
                   {/* Multi-Criteria Σύρτες */}
                   {[
-                    { label: "Food", val: foodRating, set: setFoodRating },
                     {
-                      label: "Service",
+                      label: t("restaurant_details.form.food"),
+                      val: foodRating,
+                      set: setFoodRating,
+                    },
+                    {
+                      label: t("restaurant_details.form.service"),
                       val: serviceRating,
                       set: setServiceRating,
                     },
                     {
-                      label: "Atmosphere",
+                      label: t("restaurant_details.form.atmosphere"),
                       val: atmosphereRating,
                       set: setAtmosphereRating,
                     },
                     {
-                      label: "Value for Money",
+                      label: t("restaurant_details.form.vfm"),
                       val: vfmRating,
                       set: setVfmRating,
                     },
@@ -310,7 +320,7 @@ export default function RestaurantDetailsPage() {
                   {/* Textarea Σχολίου */}
                   <div className="space-y-1 pt-2">
                     <label className="block text-xs font-black uppercase text-black">
-                      Comment / Experience
+                      {t("restaurant_details.comment")}
                     </label>
                     <textarea
                       className="w-full p-3 border-2 border-black rounded-xl font-bold bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400 text-black h-24 resize-none text-sm"
@@ -326,7 +336,7 @@ export default function RestaurantDetailsPage() {
                       style={{ backgroundColor: "#50A2FF" }}
                       className="button_top block px-3 py-2.5 text-center font-black uppercase"
                     >
-                      Submit a Review
+                      {t("restaurant_details.submit_a_review")}
                     </span>
                   </button>
                 </form>
@@ -334,8 +344,8 @@ export default function RestaurantDetailsPage() {
             ) : (
               <div className="bg-white p-6 border-4 border-dashed border-black rounded-2xl text-center font-black text-sm text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 {currentUser
-                  ? "Only users with the Reviewer role can submit reviews."
-                  : "Log in as a Reviewer to write a review."}
+                  ? t("restaurant_details.only_users")
+                  : t("restaurant_details.login_required")}
               </div>
             )}
           </div>
@@ -343,16 +353,17 @@ export default function RestaurantDetailsPage() {
           {/* 💬 Λίστα Κριτικών */}
           <div className="lg:col-span-2 space-y-4">
             <h2 className="text-2xl font-black text-white uppercase tracking-tight [-webkit-text-stroke:4px_black] [paint-order:stroke_fill] text-left">
-              Reviews ({restaurant.reviews.length})
+              {t("restaurant_details.reviews_title")} (
+              {restaurant.reviews.length})
             </h2>
 
             {restaurant.reviews.length === 0 ? (
-              <div className="text-center py-12 border-4 border-dashed border-black rounded-2xl bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+              <div className="text-center py-12 border-4 px-4 border-dashed border-black rounded-2xl bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 <p className="font-black text-xl">
-                  There are no reviews yet...
+                  {t("restaurant_details.no_reviews")}
                 </p>
                 <p className="text-sm text-gray-500 font-bold mt-1">
-                  Be the first to write a review for this store!
+                  {t("restaurant_details.be_the_first")}
                 </p>
               </div>
             ) : (
@@ -371,23 +382,26 @@ export default function RestaurantDetailsPage() {
                       </span>
                     </div>
                     <span className="bg-blue-400 border-2 border-black text-black text-xs font-black px-2.5 py-1 rounded-lg shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-                      Average {rev.simpleAverage.toFixed(1)}/5
+                      {t("restaurant_details.avg_label")}{" "}
+                      {rev.simpleAverage.toFixed(1)}/5
                     </span>
                   </div>
 
                   {/* Sub-ratings Badges */}
                   <div className="flex flex-wrap gap-2 text-[11px] font-black uppercase">
                     <span className="bg-blue-200 border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] border-black px-2 py-0.5 rounded-lg">
-                      Food: {rev.foodRating}
+                      {t("restaurant_details.form.food")}: {rev.foodRating}
                     </span>
                     <span className="bg-blue-200 border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] border-black px-2 py-0.5 rounded-lg">
-                      Service: {rev.serviceRating}
+                      {t("restaurant_details.form.service")}:{" "}
+                      {rev.serviceRating}
                     </span>
                     <span className="bg-blue-200 border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] border-black px-2 py-0.5 rounded-lg">
-                      Atmosphere: {rev.atmosphereRating}
+                      {t("restaurant_details.form.atmosphere")}:{" "}
+                      {rev.atmosphereRating}
                     </span>
                     <span className="bg-blue-200 border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] border-black px-2 py-0.5 rounded-lg">
-                      VFM: {rev.vfmRating}
+                      {t("restaurant_details.form.vfm")}: {rev.vfmRating}
                     </span>
                   </div>
 

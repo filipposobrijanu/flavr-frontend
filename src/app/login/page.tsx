@@ -7,37 +7,67 @@ import Image from "next/image";
 import banana from "../../assets/ideativas-tlm-banana-6631298_1920.png";
 import fish from "../../assets/ideativas-tlm-fish-6600570_1920.png";
 import { useAuth } from "@/context/AuthContext";
+import { useLocale } from "@/context/LocaleContext";
+import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
 
-export default function LoginPage() {
+function LoginContent() {
+  const { t } = useLocale();
   const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState("");
 
   // 🛠️ State για errors ανά input field
   const [errors, setErrors] = useState({
     username: "",
     email: "",
+    password: "",
     general: "",
   });
   const router = useRouter();
+  const googleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      try {
+        const res = await fetch("/api/auth/google", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ accessToken: tokenResponse.access_token }),
+        });
 
+        if (res.ok) {
+          const user = await res.json();
+          login(user);
+          if (user.role === "ADMIN") router.push("/admin");
+          else router.push("/restaurants");
+        } else {
+          setErrors({ ...errors, general: "Αποτυχία σύνδεσης με Google" });
+        }
+      } catch (error) {
+        setErrors({ ...errors, general: "Σφάλμα δικτύου" });
+      }
+    },
+    onError: () => setErrors({ ...errors, general: "Το Google Login απέτυχε" }),
+  });
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Reset errors
     let hasErrors = false;
-    const newErrors = { username: "", email: "", general: "" };
+    const newErrors = { username: "", email: "", password: "", general: "" };
 
     if (!username.trim()) {
-      newErrors.username = "Username is required!";
+      newErrors.username = t("login.err_username_req");
       hasErrors = true;
     }
     if (!email.trim()) {
-      newErrors.email = "Email address is required!";
+      newErrors.email = t("login.err_email_req");
       hasErrors = true;
     } else if (!/\S+@\S+\.\S+/.test(email)) {
-      newErrors.email = "Please enter a valid email!";
+      newErrors.email = t("login.err_email_invalid");
+      hasErrors = true;
+    }
+    if (!password.trim()) {
+      newErrors.password = t("login.err_password_req"); // 👈 Password Validation
       hasErrors = true;
     }
 
@@ -47,32 +77,30 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-    setErrors({ username: "", email: "", general: "" });
+    setErrors({ username: "", email: "", password: "", general: "" });
 
     try {
-      // Στέλνουμε μόνο email και username στο API
+      // Στέλνουμε πλέον και το password στο login API σου
       const res = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username }),
+        body: JSON.stringify({ email, username, password }),
       });
 
       if (res.ok) {
         const loggedInUser = await res.json();
-
-        // Ο χρήστης έρχεται από τη βάση μαζί με τον ρόλο του (loggedInUser.role)
         login(loggedInUser);
 
         if (loggedInUser.role === "ADMIN") router.push("/admin");
         else if (loggedInUser.role === "OWNER") router.push("/owner");
         else router.push("/restaurants");
       } else {
-        newErrors.general = "Invalid credentials or user does not exist!";
+        newErrors.general = t("login.err_invalid_creds");
         setErrors(newErrors);
       }
     } catch (error) {
       console.error(error);
-      newErrors.general = "Something went wrong. Try again!";
+      newErrors.general = t("login.err_general");
       setErrors(newErrors);
     } finally {
       setLoading(false);
@@ -92,19 +120,9 @@ export default function LoginPage() {
             className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-blue-400 p-2"
           />
         </div>
-        <div className="flex justify-center items-center w-full">
-          <div className="flex lg:hidden justify-center items-center  mb-8 mt-2 w-44 h-44 transform rotate-8 transition-transform hover:scale-110">
-            <Image
-              priority
-              src={banana}
-              alt="Burger Illustration"
-              className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-blue-400 p-2"
-            />
-          </div>
-        </div>
 
         <h2 className="text-4xl md:text-5xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight mb-4 uppercase z-10">
-          Welcome Back
+          {t("login.welcome")}
         </h2>
 
         {/* 📦 Κάρτα */}
@@ -120,7 +138,7 @@ export default function LoginPage() {
             {/* Username Input */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
-                User name
+                {t("login.username_label")}
               </label>
               <input
                 type="text"
@@ -129,7 +147,7 @@ export default function LoginPage() {
                   setUsername(e.target.value);
                   setErrors({ ...errors, username: "" });
                 }}
-                placeholder="e.g. john_doe"
+                placeholder={t("login.username_ph")}
                 className={`w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none transition-all placeholder:text-gray-400 ${errors.username ? "bg-red-50 border-red-500" : ""}`}
               />
               {errors.username && (
@@ -142,7 +160,7 @@ export default function LoginPage() {
             {/* Email Input */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
-                Email address
+                {t("login.email_label")}
               </label>
               <input
                 type="email"
@@ -151,12 +169,32 @@ export default function LoginPage() {
                   setEmail(e.target.value);
                   setErrors({ ...errors, email: "" });
                 }}
-                placeholder="name@example.com"
+                placeholder={t("login.email_ph")}
                 className={`w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none transition-all placeholder:text-gray-400 ${errors.email ? "bg-red-50 border-red-500" : ""}`}
               />
               {errors.email && (
                 <p className="text-red-600 font-black text-[10px] uppercase tracking-wide mt-1 ml-1">
                   * {errors.email}
+                </p>
+              )}
+            </div>
+            <div className="text-left">
+              <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
+                {t("login.password_label")}
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  setErrors({ ...errors, password: "" });
+                }}
+                placeholder={t("login.password_ph")}
+                className={`w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none transition-all placeholder:text-gray-400 ${errors.password ? "bg-red-50 border-red-500" : ""}`}
+              />
+              {errors.password && (
+                <p className="text-red-600 font-black text-[10px] uppercase tracking-wide mt-1 ml-1">
+                  * {errors.password}
                 </p>
               )}
             </div>
@@ -170,19 +208,35 @@ export default function LoginPage() {
                 style={{ backgroundColor: "#0199ff", color: "white" }}
                 className="button_top px-3 py-2 font-black tracking-wider"
               >
-                {loading ? "LOGGING IN..." : "LOGIN"}
+                {loading ? t("login.btn_loading") : t("login.btn_login")}
               </span>
             </button>
           </form>
+          <div className="my-6 flex items-center justify-center relative">
+            <hr className="w-full border-black border-1" />
+          </div>
 
+          {/* 👇 Και αμέσως μετά ακολουθεί το κουμπί της Google που ήδη έχεις */}
+          <button
+            type="button"
+            onClick={() => googleLogin()}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border-2 border-black rounded-xl font-black uppercase text-sm shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
+          >
+            <img
+              src="https://www.svgrepo.com/show/475656/google-color.svg"
+              alt="Google Logo"
+              className="w-5 h-5"
+            />
+            {t("login.continue_with_google") || "Continue with Google"}
+          </button>
           <p className="mt-6 text-xs font-bold text-gray-600">
-            New to Flavr?{" "}
+            {t("login.new_user")}{" "}
             <Link
               href="/signup"
               style={{ color: "#0199ff" }}
               className="text-blue-600 underline font-black uppercase ml-1 hover:opacity-60"
             >
-              Create an account
+              {t("login.create_account")}
             </Link>
           </p>
         </div>
@@ -208,5 +262,13 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+export default function LoginPage() {
+  return (
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!}>
+      <title>Login | Flavr</title>
+      <LoginContent />
+    </GoogleOAuthProvider>
   );
 }

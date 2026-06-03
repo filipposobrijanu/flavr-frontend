@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Restaurant {
   id: string;
@@ -14,6 +15,7 @@ interface Restaurant {
 }
 
 export default function OwnerDashboard() {
+  const { t } = useLocale();
   const [image, setImage] = useState<File | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -87,15 +89,15 @@ export default function OwnerDashboard() {
     let isValid = true;
 
     if (!name.trim()) {
-      tempErrors.name = "Name is required";
+      tempErrors.name = t("owner.err_name");
       isValid = false;
     }
     if (!description.trim()) {
-      tempErrors.description = "Description is required";
+      tempErrors.description = "owner.err_desc";
       isValid = false;
     }
     if (!address.trim()) {
-      tempErrors.address = "Address is required";
+      tempErrors.address = "owner.err_address";
       isValid = false;
     }
 
@@ -106,7 +108,7 @@ export default function OwnerDashboard() {
   const handleSubmitApplication = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) {
-      showNotification("Please check the form for errors!", "error");
+      showNotification(t("owner.err_form"), "error");
       return;
     }
     // 1. Δείτε αν ξεκινάει η διαδικασία
@@ -128,13 +130,13 @@ export default function OwnerDashboard() {
     });
 
     if (res.ok) {
-      showNotification("Restaurant submitted successfully!", "success");
+      showNotification(t("owner.success_submit"), "success");
       setName("");
       setDescription("");
       setAddress("");
       if (userId) fetchMyRestaurants(userId);
     } else {
-      showNotification("Failed to submit application.", "error");
+      showNotification(t("owner.fail_submit"), "error");
       const errorData = await res.json();
       console.error("Server Error:", errorData);
     }
@@ -149,7 +151,7 @@ export default function OwnerDashboard() {
     }
     const user = JSON.parse(storedUser);
     if (user.role !== "OWNER") {
-      showNotification("Δεν έχετε πρόσβαση σε αυτή τη σελίδα!", "error");
+      showNotification(t("owner.no_access"), "error");
       router.push("/restaurants");
       return;
     }
@@ -180,7 +182,7 @@ export default function OwnerDashboard() {
       >
         <title>Owner Dashboard | Flavr</title>
         <div className="bg-white border-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] font-black text-xl text-black animate-pulse uppercase tracking-wider">
-          Data Control...
+          {t("owner.data_control")}
         </div>
       </div>
     );
@@ -204,14 +206,14 @@ export default function OwnerDashboard() {
         {/* 🍳 Φόρμα Υποβολής Νέου Εστιατορίου */}
         <div className="bg-white p-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] h-fit">
           <h2 className="text-3xl text-black mb-6 tracking-tight uppercase">
-            New Application
+            {t("owner.new_app")}
           </h2>
 
           <form onSubmit={handleSubmitApplication} className="space-y-5">
             {/* Όνομα */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
-                Restaurant Name
+                {t("owner.res_name")}
               </label>
               <input
                 type="text"
@@ -233,7 +235,7 @@ export default function OwnerDashboard() {
             {/* Διεύθυνση */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
-                Address
+                {t("owner.address")}
               </label>
               <input
                 type="text"
@@ -255,7 +257,7 @@ export default function OwnerDashboard() {
             {/* Τύπος Κουζίνας */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
-                Type of Cuisine
+                {t("owner.cuisine_type")}
               </label>
               <div className="relative">
                 <select
@@ -276,7 +278,7 @@ export default function OwnerDashboard() {
             {/* 🖼️ Image Upload */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
-                Restaurant Image
+                {t("owner.res_image")}
               </label>
               <input
                 type="file"
@@ -288,7 +290,7 @@ export default function OwnerDashboard() {
             {/* Περιγραφή */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
-                Description
+                {t("owner.description")}
               </label>
               <textarea
                 className="w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400 text-black h-24 resize-none"
@@ -313,7 +315,7 @@ export default function OwnerDashboard() {
                 style={{ backgroundColor: "#ff5e01", color: "white" }}
                 className="button_top px-3 py-2 "
               >
-                SUBMIT FOR APPROVAL
+                {t("owner.btn_submit")}
               </span>
             </button>
           </form>
@@ -322,7 +324,7 @@ export default function OwnerDashboard() {
         {/* 📋 Λίστα με τα Υπάρχοντα Μαγαζιά του Ιδιοκτήτη */}
         <div className="lg:col-span-2 space-y-6">
           <h2 className="text-3xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight uppercase">
-            My Restaurants
+            {t("owner.my_restaurants")}
           </h2>
           {isListLoading ? (
             /* ⏳ HIGH-FIDELITY LOADING SKELETON */
@@ -363,7 +365,7 @@ export default function OwnerDashboard() {
           ) : restaurants.length === 0 ? (
             <div className="bg-white p-12 rounded-2xl border-4 border-dashed border-black text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
               <p className="font-black text-lg text-black">
-                You have not registered a restaurant yet.
+                {t("owner.empty_state")}
               </p>
             </div>
           ) : (

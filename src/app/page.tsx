@@ -5,9 +5,10 @@ import food from "../assets/ideativas-tlm-food-8029158_1920.png";
 import { useEffect, useState } from "react";
 import burger from "../assets/ideativas-tlm-hamburger-6402790_1920.png";
 import Image from "next/image";
-
+import { useLocale } from "@/context/LocaleContext";
 export default function Home() {
   const [user, setUser] = useState<any>(null);
+  const { t, setLang } = useLocale();
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) setUser(JSON.parse(storedUser));
@@ -54,19 +55,15 @@ export default function Home() {
               style={{ backgroundColor: "#ffffff" }}
               className="border-2 border-b-4 border-black font-bold px-4 py-1.5 rounded-xl text-sm uppercase tracking-wider mb-3 inline-block"
             >
-              THE UNFILTERED RESTAURANT TRUTH HUB
+              {t("home.badge")}
             </span>
 
             <h1 className="text-5xl mt-6 mb-8 md:mb-5 md:text-6xl text-white [-webkit-text-stroke:6px_black] [paint-order:stroke_fill] tracking-tight leading-none">
-              Reliable Evaluation <br />
-              Without Expediency.
+              {t("home.title")}
             </h1>
 
             <p className="text-md text-black max-w-lg mx-auto">
-              Welcome to <strong style={{ color: "#FE2120" }}>Flavr</strong>, a
-              custom full-stack platform that uses the algorithm Bayesian
-              Average to provide fair and balanced restaurant rankings,
-              eliminating fake reviews.
+              {t("home.desc")}
             </p>
 
             {/* Buttons */}
@@ -79,7 +76,7 @@ export default function Home() {
                   style={{ backgroundColor: "#ffffff" }}
                   className="button_top px-3 py-2"
                 >
-                  RESTAURANT EXPLORATION
+                  {t("home.btnExploration")}
                 </span>
               </button>
               {!user ? (
@@ -87,7 +84,9 @@ export default function Home() {
                   onClick={() => router.push("login")}
                   className="button-main"
                 >
-                  <span className="button_top px-3 py-2">LOGIN / REGISTER</span>
+                  <span className="button_top px-3 py-2">
+                    {t("home.btnLogin")}
+                  </span>
                 </button>
               ) : null}
             </div>
@@ -122,11 +121,10 @@ export default function Home() {
         {/* 👑 ΝΕΟ ΚΕΙΜΕΝΟ ΑΠΟ ΠΑΝΩ (Section Header) */}
         <div className="text-center mb-8 md:mb-12 space-y-3">
           <h2 className="text-3xl md:text-5xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight">
-            Core Features
+            {t("home.featuresTitle")}
           </h2>
           <p className="text-base max-w-md mx-auto text-black">
-            Designed with strict engineering standards to ensure data integrity
-            and rock-solid performance.
+            {t("home.featuresDesc")}
           </p>
         </div>
 
@@ -140,15 +138,10 @@ export default function Home() {
           >
             <div>
               <h3 className="inline-flex gap-2 font-black text-2xl text-white mb-3 [-webkit-text-stroke:4px_black] [paint-order:stroke_fill] tracking-tight">
-                Role-Based Access
+                {t("home.roleBased")}
               </h3>
               <p className="text-sm  text-white leading-relaxed font-medium">
-                Whether you're just browsing (Visitor), dropping a raw review
-                (Reviewer), running the kitchen (Owner), or keeping the peace
-                (Admin), everyone has their rightful place. Our bulletproof
-                structure ensures zero overlapping powers and no conflict of
-                interest—keeping owners from rigging the scores and casual
-                lurkers from messing with the data.
+                {t("home.roleBasedDesc")}
               </p>
             </div>
           </div>
@@ -160,15 +153,10 @@ export default function Home() {
           >
             <div>
               <h3 className="inline-flex gap-2 font-black text-2xl text-white mb-3 [-webkit-text-stroke:4px_black] [paint-order:stroke_fill] tracking-tight">
-                Bayesian Ranking
+                {t("home.bayesian")}
               </h3>
               <p className="text-sm text-white leading-relaxed font-medium">
-                A single bad night shouldn't ruin a great spot's reputation, and
-                a wave of fake 5-star ratings from the owner’s cousins shouldn't
-                trick you into a bad dinner. Our smart, weighted scoring system
-                automatically looks at the bigger picture, filtering out
-                malicious spikes and isolated hype to keep the final grade 100%
-                honest.
+                {t("home.bayesianDesc")}
               </p>
             </div>
           </div>
@@ -180,12 +168,10 @@ export default function Home() {
           >
             <div>
               <h3 className="inline-flex gap-2 font-black text-2xl text-white mb-3 [-webkit-text-stroke:4px_black] [paint-order:stroke_fill] tracking-tight">
-                100% Transparent Logic
+                {t("home.transparent")}
               </h3>
               <p className="text-sm  text-white  leading-relaxed font-medium">
-                No shadow bans, no hidden algorithmic boosts, and no corporate
-                black boxes. Our system architecture is hardcoded for pure
-                fairness—what you see is always the real deal.
+                {t("home.transparentDesc")}
               </p>
             </div>
           </div>
@@ -199,27 +185,27 @@ export default function Home() {
       >
         <div className="text-center mb-8 md:mb-12 space-y-3">
           <h2 className="text-3xl md:text-5xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight">
-            How It Goes Down
+            {t("home.workflow")}
           </h2>
         </div>
         <div className="flex flex-col md:flex-row gap-6 justify-center items-center">
           {[
             {
               step: "1",
-              title: "Search",
-              desc: "Find the spot that fits your hunger.",
+              title: t("home.step1"),
+              desc: t("home.step1Desc"),
             },
             {
               step: "2",
-              title: "Review",
-              desc: "Drop your honest, unfiltered take.",
+              title: t("home.step2"),
+              desc: t("home.step2Desc"),
             },
             {
               step: "3",
-              title: "Verify",
-              desc: "Our algorithm does the math.",
+              title: t("home.step3"),
+              desc: t("home.step3Desc"),
             },
-            { step: "4", title: "Rank", desc: "Fair scores for everyone." },
+            { step: "4", title: t("home.step4"), desc: t("home.step4Desc") },
           ].map((item, i) => (
             <div key={i} className="flex flex-col items-center w-full md:w-1/4">
               <div className=" hover:scale-105 transition-transform w-22 h-22 bg-white border-2 border-b-4 border-black rounded-full flex  items-center justify-center font-black text-4xl mb-4 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
@@ -240,11 +226,10 @@ export default function Home() {
       >
         <div className="max-w-2xl bg-white border-4 border-black p-10 rounded-3xl shadow-[10px_10px_0px_0px_black] transform hover:-rotate-1 transition-transform">
           <h2 className="text-3xl md:text-4xl font-black mb-6 text-black tracking-tight">
-            Ready to find your next <br /> favorite meal?
+            {t("home.cta")}
           </h2>
           <p className="text-lg text-gray-700 mb-8 font-medium">
-            Stop relying on fake reviews and start trusting the data. Join the
-            community that values true culinary quality.
+            {t("home.ctaSub")}
           </p>
 
           <button
@@ -255,7 +240,7 @@ export default function Home() {
               style={{ backgroundColor: "#FE2120", color: "white" }}
               className="button_top px-3 py-2 py-3 px-6 text-lg inline-flex items-center justify-center"
             >
-              START <span className="hidden md:inline">EXPLORING</span> NOW
+              {t("home.ctaBtn")}
             </span>
           </button>
         </div>

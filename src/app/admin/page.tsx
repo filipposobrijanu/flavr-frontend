@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import person_Img from "../../assets/ideativas-tlm-kitchen-10152776_1920.png";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Restaurant {
   id: string;
@@ -18,6 +19,7 @@ interface Restaurant {
 }
 
 export default function AdminDashboard() {
+  const { t } = useLocale();
   const [pendingList, setPendingList] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -41,7 +43,7 @@ export default function AdminDashboard() {
     }
     const user = JSON.parse(storedUser);
     if (user.role !== "ADMIN") {
-      showNotification("You do not have administrator rights!", "error");
+      showNotification(t("admin.no_access"), "error");
       router.push("/restaurants");
       return;
     }
@@ -72,12 +74,12 @@ export default function AdminDashboard() {
 
     if (res.ok) {
       showNotification(
-        `The application was successfully updated to: ${status === "APPROVED" ? "APPROVED" : "DECLINED"}`,
+        `${status === "APPROVED" ? t("admin.update_approved") : t("admin.update_declined")}`,
         "success",
       );
       fetchPendingRestaurants(); // Ανανέωση της λίστας live
     } else {
-      showNotification(`Something went wrong during processing.`, "success");
+      showNotification(t("admin.update_error"), "success");
     }
   };
 
@@ -148,29 +150,29 @@ export default function AdminDashboard() {
                 alt="Banana Illustration"
                 className="object-contain border-2 w-16 h-16 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-green-400 p-1"
               />
-              Admin Dashboard
+              {t("admin.page_title")}
             </h2>
-            <p className="text-sm text-black  mt-1">
-              New Branch Application Management & Approval Center
-            </p>
+            <p className="text-sm text-black  mt-1">{t("admin.subtitle")}</p>
           </div>
           {/* Badge: System Overseer */}
           <span className="bg-purple-500 border-2 border-black text-white text-xs font-black px-4 py-2 rounded-xl uppercase tracking-wider shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] whitespace-nowrap">
-            System Overseer
+            {t("admin.badge_overseer")}
           </span>
         </div>
 
         {/* Τίτλος Ενότητας */}
         <h2 className="text-xl md:text-2xl font-black mb-6 text-black uppercase tracking-wide">
-          Pending Applications ({pendingList.length})
+          {t("admin.pending_apps")} ({pendingList.length})
         </h2>
 
         {/* Empty State */}
         {pendingList.length === 0 ? (
           <div className="bg-white p-12 rounded-2xl border-4 border-dashed border-black text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <p className="font-black text-xl text-black">All clear!</p>
+            <p className="font-black text-xl text-black">
+              {t("admin.all_clear")}
+            </p>
             <p className="text-sm text-gray-500 font-bold mt-1">
-              There are no pending applications for review at this time.
+              {t("admin.no_pending")}
             </p>
           </div>
         ) : (
@@ -204,7 +206,7 @@ export default function AdminDashboard() {
                   {/* Στοιχεία Ιδιοκτήτη (Footer Κάρτας) */}
                   <div className="pt-3 flex items-center gap-2 text-xs font-bold text-black border-t border-black/10 mt-3">
                     <span>
-                      Submitted by:{" "}
+                      {t("admin.submitted_by")}{" "}
                       <strong className="text-gray underline underline-offset-2">
                         {res.owner?.username || "N/A"}
                       </strong>{" "}
@@ -225,7 +227,7 @@ export default function AdminDashboard() {
                       style={{ backgroundColor: "#05DF72" }}
                       className="button_top px-3 py-2"
                     >
-                      APPROVE
+                      {t("admin.btn_approve")}
                     </span>
                   </button>
                   <button
@@ -236,7 +238,7 @@ export default function AdminDashboard() {
                       style={{ backgroundColor: "#ec3030", color: "white" }}
                       className="button_top px-3 py-2"
                     >
-                      DECLINE
+                      {t("admin.btn_decline")}
                     </span>
                   </button>
                 </div>

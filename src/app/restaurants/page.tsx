@@ -5,6 +5,7 @@ import rest_Image from "../../assets/ideativas-tlm-kitchen-10152789_1920.png";
 import { useState, useEffect } from "react";
 import Link from "next/link"; // 👈 1. ΠΡΟΣΘΗΚΗ: Εισαγωγή του Link για την πλοήγηση
 import { Metadata } from "next";
+import { useLocale } from "@/context/LocaleContext";
 
 interface Restaurant {
   id: string;
@@ -17,6 +18,8 @@ interface Restaurant {
 }
 
 export default function RestaurantsPage() {
+  const { t } = useLocale();
+
   const [isLoading, setIsLoading] = useState(true);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [search, setSearch] = useState("");
@@ -51,7 +54,7 @@ export default function RestaurantsPage() {
             alt="Banana Illustration"
             className="object-contain border-2 w-16 h-16 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-blue-400 p-1"
           />
-          Discover Restaurants
+          {t("restaurants_page.title")}
         </h2>
 
         {/* 🔍 Φίλτρα Αναζήτησης με Neobrutalist Στυλ */}
@@ -59,7 +62,7 @@ export default function RestaurantsPage() {
           {/* Input Αναζήτησης */}
           <input
             type="text"
-            placeholder="Search by name..."
+            placeholder={t("restaurants_page.search_placeholder")}
             className="flex-1 px-3 py-2 text-md border-2 border-black rounded-xl font-bold bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all placeholder:text-gray-400 text-black"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -72,10 +75,16 @@ export default function RestaurantsPage() {
               value={cuisine}
               onChange={(e) => setCuisine(e.target.value)}
             >
-              <option value="">ALL CUISINES</option>
-              <option value="ITALIAN">ITALIAN</option>
-              <option value="GREEK">GREEK</option>
-              <option value="MEXICAN">MEXICAN</option>
+              <option value="">{t("restaurants_page.all_cuisines")}</option>
+              <option value="ITALIAN">
+                {t("restaurants_page.cuisines.italian")}
+              </option>
+              <option value="GREEK">
+                {t("restaurants_page.cuisines.greek")}
+              </option>
+              <option value="MEXICAN">
+                {t("restaurants_page.cuisines.mexican")}
+              </option>
             </select>
             {/* Custom Βέλος */}
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-black font-bold">
@@ -117,7 +126,9 @@ export default function RestaurantsPage() {
         ) : restaurants.length === 0 ? (
           /* EMPTY STATE */
           <div className="text-center py-12 border-4 border-dashed border-black rounded-2xl bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            <p className="font-black text-xl">No restaurants found...</p>
+            <p className="font-black text-xl">
+              {t("restaurants_page.no_results")}
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -155,7 +166,7 @@ export default function RestaurantsPage() {
                       </svg>{" "}
                       {res.globalBayesianScore > 0
                         ? Number(res.globalBayesianScore).toFixed(1)
-                        : "NEW"}
+                        : t("restaurant_details.new")}
                     </span>
                   </div>
 
@@ -180,7 +191,7 @@ export default function RestaurantsPage() {
                       style={{ backgroundColor: "#50A2FF" }}
                       className="button_top px-3 py-2"
                     >
-                      VIEW & REVIEWS
+                      {t("restaurants_page.view_btn")}
                     </span>
                   </button>
                 </Link>

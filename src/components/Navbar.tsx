@@ -5,6 +5,9 @@ import { useRouter, usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import flavr_logo from "../assets/flavr_logo.png";
 import Image from "next/image";
+import { useLocale } from "@/context/LocaleContext";
+import greece_flag from "../assets/greece.png";
+import english_flag from "../assets/united-states.png";
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null);
@@ -22,6 +25,7 @@ export default function Navbar() {
     }
   }, [pathname]); // <-- Το μυστικό είναι εδώ!
 
+  const { lang, setLang, t } = useLocale();
   const handleLogout = () => {
     localStorage.removeItem("user");
     setUser(null); // Καθαρίζουμε το state αμέσως
@@ -37,7 +41,7 @@ export default function Navbar() {
           className="text-2xl font-black tracking-tight flex items-center gap-1"
         >
           <Image src={flavr_logo} alt="Flavr Logo" width={36} height={36} />
-          <span>Flavr</span>
+          <span className="font-ranchers-class">Flavr</span>
         </Link>
 
         {/* Desktop Navigation (Κρυφό σε κινητά) */}
@@ -47,6 +51,28 @@ export default function Navbar() {
             pathname={pathname}
             handleLogout={handleLogout}
           />
+          <button
+            onClick={() => setLang(lang === "el" ? "en" : "el")}
+            className="flex items-center justify-center"
+          >
+            {lang === "el" ? (
+              <Image
+                src={english_flag}
+                alt="English"
+                width={28}
+                height={28}
+                className="border-2 border-black rounded-full shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:opacity-80 cursor-pointer" // Εδώ προσθέτεις το stroke
+              />
+            ) : (
+              <Image
+                src={greece_flag}
+                alt="Greek"
+                width={28}
+                height={28}
+                className="border-2 border-black rounded-full shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:opacity-80 cursor-pointer" // Εδώ προσθέτεις το stroke
+              />
+            )}
+          </button>
         </div>
 
         {/* Mobile Hamburger Button */}
@@ -64,21 +90,50 @@ export default function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {isMenuOpen && (
-        <div className="md:hidden mt-4 pt-4 border-t-2 border-black flex flex-col gap-4">
+        <div className="md:hidden mt-4 pt-4 pb-2 border-t-2 border-black flex flex-col gap-4">
           <NavLinks
             user={user}
             pathname={pathname}
             handleLogout={handleLogout}
             isMobile
           />
+          <button
+            onClick={() => setLang(lang === "el" ? "en" : "el")}
+            className="flex items-center justify-start"
+          >
+            {lang === "el" ? (
+              <div className="flex items-center gap-2 font-bold hover:opacity-80 cursor-pointer">
+                <Image
+                  src={english_flag}
+                  alt="English"
+                  width={28}
+                  height={28}
+                  className="border-2 border-black rounded-full shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]  cursor-pointer" // Εδώ προσθέτεις το stroke
+                />
+                Αγγλικά
+              </div>
+            ) : (
+              <div className="flex items-center gap-2 hover:opacity-80 cursor-pointer">
+                <Image
+                  src={greece_flag}
+                  alt="Greek"
+                  width={28}
+                  height={28}
+                  className="border-2 border-black rounded-full shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:opacity-80 cursor-pointer" // Εδώ προσθέτεις το stroke
+                />
+                Greek
+              </div>
+            )}
+          </button>
         </div>
       )}
     </nav>
   );
 }
+
 function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
   const router = useRouter();
-
+  const { lang, setLang, t } = useLocale();
   const baseClass = isMobile
     ? "block py-2"
     : "font-semibold hover:opacity-80 transition-colors";
@@ -89,7 +144,7 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
         href="/restaurants"
         className={`${pathname === "/restaurants" ? "text-blue-600" : "hover:text-blue-600"} font-semibold hover:opacity-80 transition-colors`}
       >
-        Restaurants
+        {t("navbar.restaurants")}
       </Link>
 
       {user?.role === "OWNER" && (
@@ -97,7 +152,7 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
           href="/owner"
           className={`${pathname === "/owner" ? "text-orange-600" : "hover:text-orange-600"} font-semibold hover:opacity-80 transition-colors`}
         >
-          Owner Dashboard
+          {t("navbar.owner")}
         </Link>
       )}
       {user?.role === "ADMIN" && (
@@ -105,7 +160,7 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
           href="/admin"
           className={`${pathname === "/admin" ? "text-purple-600" : "hover:text-purple-600"} font-semibold hover:opacity-80 transition-colors`}
         >
-          Admin Dashboard
+          {t("navbar.admin")}
         </Link>
       )}
       {user && (
@@ -113,7 +168,7 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
           href="/dashboard"
           className={`${pathname === "/dashboard" ? "text-black" : "hover:text-black"} font-semibold hover:opacity-80 transition-colors`}
         >
-          My Profile
+          {t("navbar.profile")}
         </Link>
       )}
       {user ? (
@@ -137,14 +192,14 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
               style={{ backgroundColor: "#ec3030", color: "white" }}
               className="button_top px-3 py-2 font-black tracking-wider"
             >
-              EXIT
+              {t("navbar.exit")}
             </span>
           </button>
         </div>
       ) : (
         <button onClick={() => router.push("/login")} className="button-main">
           <span className="button_top px-3 py-2 font-black tracking-wider">
-            LOGIN
+            {t("navbar.login")}
           </span>
         </button>
       )}

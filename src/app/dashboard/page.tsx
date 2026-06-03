@@ -4,8 +4,10 @@ import UserActivityFeed from "@/components/UserActivityFeed";
 import Image from "next/image";
 import rest_Image from "../../assets/ideativas-tlm-waffles-8748848_1920.png";
 import { cookies } from "next/headers";
+import { useLocale } from "@/context/LocaleContext";
 
 export default async function DashboardPage() {
+  const { t } = useLocale();
   const cookieStore = await cookies();
   const userId = cookieStore.get("userId")?.value;
 
@@ -29,14 +31,14 @@ export default async function DashboardPage() {
             alt="Banana Illustration"
             className="object-contain border-2 w-16 h-16 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-orange-400 p-1"
           />
-          Dashboard
+          {t("dashboard.title")}
         </h2>
         <div className="flex gap-4 mt-4">
           <div className="bg-yellow-400 border-2 text-black border-black px-4 py-2 font-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-            {totalReviews} REVIEWS POSTED
+            {totalReviews} {t("dashboard.reviews_posted")}
           </div>
           <div className="bg-blue-400 border-2 border-black px-4 py-2 font-black text-black rounded-lg shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] ">
-            TRUST SCORE: HIGH
+            {t("dashboard.trust_score")}
           </div>
         </div>
       </div>
