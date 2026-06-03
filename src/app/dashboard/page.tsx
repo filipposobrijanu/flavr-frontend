@@ -1,4 +1,6 @@
 // src/app/dashboard/page.tsx
+"use client";
+
 import { prisma } from "@/lib/db";
 import UserActivityFeed from "@/components/UserActivityFeed";
 import Image from "next/image";
