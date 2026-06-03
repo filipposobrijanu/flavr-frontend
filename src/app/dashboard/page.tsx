@@ -5,7 +5,7 @@ import { prisma } from "@/lib/db";
 import UserActivityFeed from "@/components/UserActivityFeed";
 import Image from "next/image";
 import rest_Image from "../../assets/ideativas-tlm-waffles-8748848_1920.png";
-import { cookies } from "next/headers";
+
 import { useLocale } from "@/context/LocaleContext";
 
 export default async function DashboardPage() {
