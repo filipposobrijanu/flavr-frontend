@@ -106,7 +106,6 @@ export default function Footer({
 
           {/* Copyright Section - Moves to bottom on mobile, stays left on desktop */}
           <div className="text-center lg:text-left text-sm font-medium text-gray-600 lg:row-[1/3] lg:col-[1/4] order-3 mt-4 lg:mt-0">
-            <div>{t("footer.copyright_text")}</div>
             {copyrightLicense && (
               <div className="text-xs text-gray-500 mt-1">
                 {t("footer.copyright")}

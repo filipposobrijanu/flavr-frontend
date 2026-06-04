@@ -1,5 +1,25 @@
 export const translations = {
   el: {
+    filters: {
+      all_cuisines: "Όλες οι Κουζίνες",
+      all_prices: "Όλες οι Τιμές",
+      all_areas: "Όλες οι Περιοχές",
+      clear_filters: "Καθαρισμός",
+    },
+    search: {
+      placeholder: "Αναζήτηση για εστιατόρια, κουζίνες, διευθύνσεις...",
+      no_results: "Δεν βρέθηκε κανένα εστιατόριο",
+      new: "ΝΕΟ",
+    },
+    favorites: {
+      title: "Τα Αγαπημένα Μου",
+      no_favorites: "Δεν βρέθηκαν αγαπημένα",
+      explore_prompt:
+        "Εξερεύνησε τα εστιατόρια της κοινότητας και πάτα την καρδιά για να τα δεις εδώ!",
+      explore_btn: "ΕΞΕΡΕΥΝΗΣΗ ΕΣΤΙΑΤΟΡΙΩΝ",
+      view_btn: "ΠΡΟΒΟΛΗ ΜΑΓΑΖΙΟΥ",
+      back: "Επιστροφή στα Εστιατόρια",
+    },
     navbar: {
       restaurants: "Εστιατόρια",
       owner: "Dashboard Ιδιοκτήτη",
@@ -7,6 +27,7 @@ export const translations = {
       profile: "Το Προφίλ μου",
       login: "ΣΥΝΔΕΣΗ",
       exit: "ΕΞΟΔΟΣ",
+      favorite: "Αγαπημένα",
     },
     footer: {
       restaurants: "Εστιατόρια",
@@ -16,6 +37,11 @@ export const translations = {
       copyright: "© 2026 Flavr. Με επιφύλαξη παντός δικαιώματος.",
     },
     home: {
+      leaderboardTitle: "Top Reviewers της Κοινότητας",
+      leaderboardDesc:
+        "Οι foodies με την υψηλότερη αξιοπιστία. Οι κριτικές τους διαμορφώνουν το πραγματικό score των εστιατορίων.",
+      trustScore: "Trust Score",
+      reviews: "Κριτικές",
       badge: "Ο ΑΛΗΘΙΝΟΣ ΚΟΣΜΟΣ ΤΩΝ ΕΣΤΙΑΤΟΡΙΩΝ",
       title: "Αξιόπιστη Αξιολόγηση \nΧωρίς Σκοπιμότητες.",
       desc: "Καλώς ήρθατε στο Flavr, μια πλατφόρμα που χρησιμοποιεί τον αλγόριθμο Bayesian Average για δίκαιες κατατάξεις, εξαλείφοντας τα ψεύτικα reviews.",
@@ -75,8 +101,11 @@ export const translations = {
     },
     restaurants_page: {
       title: "Εξερεύνηση Εστιατορίων",
+
+      load_more: "Φόρτωση Περισσότερων",
       search_placeholder: "Αναζήτηση με όνομα...",
       all_cuisines: "ΟΛΕΣ ΟΙ ΚΟΥΖΙΝΕΣ",
+      favorites: "Αγαπημένα",
       cuisines: {
         italian: "ΙΤΑΛΙΚΗ",
         greek: "ΕΛΛΗΝΙΚΗ",
@@ -96,6 +125,11 @@ export const translations = {
       reviews_title: "Κριτικές",
       no_reviews: "Δεν υπάρχουν ακόμη κριτικές...",
       avg_label: "Μέσος όρος",
+      add_images: "Πρόσθεσε φωτογραφίες στην κριτική σου",
+      select_images: "ΕΠΙΛΟΓΗ ΦΩΤΟΓΡΑΦΙΩΝ",
+      review_image_alt: "Φωτογραφία φαγητού κριτικής",
+      fullscreen_image_alt: "Φαγητό σε πλήρη οθόνη",
+      close_button: "ΚΛΕΙΣΙΜΟ",
       success_msg: "Η κριτική σας υποβλήθηκε!",
       new: "ΝΕΟ",
       submit_a_review: "Υποβολή Αξιολόγησης",
@@ -119,6 +153,7 @@ export const translations = {
       },
     },
     signup: {
+      continue_with_google: "Συνδεθείτε με Google",
       title: "Γίνε μέλος",
       username_label: "Επίλεξε Όνομα Χρήστη",
       username_placeholder: "π.χ. food_critic_99",
@@ -178,6 +213,7 @@ export const translations = {
         "Έχετε τον απόλυτο έλεγχο. Μπορείτε να ζητήσετε τη διαγραφή του λογαριασμού σας ή των κριτικών που έχετε υποβάλει ανά πάσα στιγμή, στέλνοντας ένα μήνυμα στην ομάδα υποστήριξης του Flavr.",
     },
     login: {
+      continue_with_google: "Συνδέση με Google",
       title: "Σύνδεση",
       welcome: "Καλως ηρθες ξανα",
       err_username_req: "Το όνομα χρήστη είναι υποχρεωτικό!",
@@ -282,6 +318,26 @@ export const translations = {
     },
   },
   en: {
+    filters: {
+      all_cuisines: "All Cuisines",
+      all_prices: "All Prices",
+      all_areas: "All Areas",
+      clear_filters: "Clear Filters",
+    },
+    search: {
+      placeholder: "Search for restaurants, cuisines, addresses...",
+      no_results: "No restaurants found",
+      new: "NEW",
+    },
+    favorites: {
+      title: "My Favorites",
+      no_favorites: "No favorites found",
+      explore_prompt:
+        "Explore the community's restaurants and hit the heart icon to see them here!",
+      explore_btn: "EXPLORE RESTAURANTS",
+      view_btn: "VIEW RESTAURANT",
+      back: "Back to Restaurants",
+    },
     navbar: {
       restaurants: "Restaurants",
       owner: "Owner Dashboard",
@@ -289,6 +345,7 @@ export const translations = {
       profile: "My Profile",
       login: "LOGIN",
       exit: "EXIT",
+      favorite: "Favorites",
     },
 
     footer: {
@@ -299,6 +356,11 @@ export const translations = {
       copyright: "© 2026 Flavr. All rights reserved.",
     },
     home: {
+      leaderboardTitle: "Community Top Reviewers",
+      leaderboardDesc:
+        "The foodies with the highest credibility. Their reviews shape the real score of the restaurants.",
+      trustScore: "Trust Score",
+      reviews: "Reviews",
       badge: "THE UNFILTERED RESTAURANT TRUTH HUB",
       title: "Reliable Evaluation \nWithout Expediency.",
       desc: "Welcome to Flavr, a platform that uses the Bayesian Average algorithm to provide fair and balanced restaurant rankings, eliminating fake reviews.",
@@ -358,9 +420,11 @@ export const translations = {
         "Reviews express solely the personal opinions of the users who write them and not Flavr. Flavr bears no responsibility for the content, accuracy or validity of the reviews published by the community, nor for any temporary malfunctions of its live calculation service.",
     },
     restaurants_page: {
+      load_more: "Load More Restaurants",
       title: "Discover Restaurants",
       search_placeholder: "Search by name...",
       all_cuisines: "ALL CUISINES",
+      favorites: "Favorites",
       cuisines: {
         italian: "ITALIAN",
         greek: "GREEK",
@@ -373,6 +437,11 @@ export const translations = {
       back_btn: "Back to Restaurants",
       bayesian_score: "Bayesian Score",
       reviews_count: "reviews",
+      review_image_alt: "Review food photo",
+      fullscreen_image_alt: "Food in full screen",
+      close_button: "CLOSE",
+      add_images: "Add images to your review",
+      select_images: "SELECT IMAGES",
       write_review: "Write a Review",
       only_users: "Only users with the Reviewer role can submit reviews.",
       login_required: "Log in as a Reviewer to write a review.",
@@ -402,6 +471,7 @@ export const translations = {
       },
     },
     signup: {
+      continue_with_google: "Continue with Google",
       title: "Join the club",
       username_label: "Choose Username",
       username_placeholder: "e.g. food_critic_99",
@@ -473,6 +543,7 @@ export const translations = {
       email_ph: "name@example.com",
       btn_loading: "LOGGING IN...",
       btn_login: "LOGIN",
+      continue_with_google: "Continue with Google",
       new_user: "New to Flavr?",
       create_account: "Create an account",
       password_label: "PASSWORD",

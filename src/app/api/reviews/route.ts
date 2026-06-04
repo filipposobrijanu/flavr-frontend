@@ -11,6 +11,7 @@ export async function POST(request: Request) {
       vfmRating,
       restaurantId,
       userId,
+      images,
     } = await request.json();
 
     if (!restaurantId || !userId) {
@@ -38,6 +39,7 @@ export async function POST(request: Request) {
         vfmRating: Number(vfmRating),
         simpleAverage: calculatedAverage, // 👈 Αποθήκευση του μέσου όρου της κριτικής
         restaurantId,
+        images,
         rating: Math.round(calculatedAverage),
         userId,
       },

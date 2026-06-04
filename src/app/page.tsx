@@ -4,6 +4,9 @@ import { useRouter } from "next/navigation";
 import food from "../assets/ideativas-tlm-food-8029158_1920.png";
 import { useEffect, useState } from "react";
 import burger from "../assets/ideativas-tlm-hamburger-6402790_1920.png";
+import fries from "../assets/ideativas-tlm-french-fries-8029125_1920.png";
+import beer from "../assets/ideativas-tlm-beer-6515485_1920.png";
+import cherry from "../assets/ideativas-tlm-cherries-6631301_1920.png";
 import Image from "next/image";
 import { useLocale } from "@/context/LocaleContext";
 export default function Home() {
@@ -14,6 +17,31 @@ export default function Home() {
     if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
   const router = useRouter();
+
+  const topReviewers = [
+    {
+      name: "Filippos O.",
+      avatar: fries,
+      trust: "9.8",
+      reviewsCount: 42,
+      color: "#9333EA",
+    },
+    {
+      name: "Elena K.",
+      avatar: beer,
+      trust: "9.4",
+      reviewsCount: 29,
+      color: "#22C55E",
+    },
+    {
+      name: "Alex M.",
+      avatar: cherry,
+      trust: "8.9",
+      reviewsCount: 35,
+      color: "#EF4444",
+    },
+  ];
+
   return (
     <>
       <div className="w-full min-h-[calc(100vh-4rem)] md:min-h-[calc(90vh-4rem)] lg:min-h-[calc(70vh-4rem)]   flex items-center justify-center px-6 text-black overflow-hidden">
@@ -215,6 +243,66 @@ export default function Home() {
                 {item.title}
               </h4>
               <p className="text-sm mt-2 opacity-80">{item.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="w-full border-t-4 border-black py-12 md:py-16 px-6 text-black flex flex-col items-center justify-center bg-[#A7F3D0]">
+        <div className="text-center mb-8 md:mb-12 space-y-3">
+          <h2 className="text-3xl md:text-5xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight ">
+            {t("home.leaderboardTitle")}
+          </h2>
+          <p className="text-base max-w-md mx-auto text-black  opacity-90">
+            {t("home.leaderboardDesc")}
+          </p>
+        </div>
+
+        <div className="w-full max-w-3xl flex flex-col gap-4">
+          {topReviewers.map((reviewer, idx) => (
+            <div
+              key={idx}
+              className="bg-white border-2 border-black p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform hover:translate-x-1 transition-transform"
+            >
+              {/* Αριστερό μέρος: Rank, Avatar & Όνομα */}
+              <div className="flex items-center gap-4 w-full sm:w-auto justify-start">
+                <span className="font-black text-2xl  text-center bg-yellow-300 border-2 border-black rounded-md px-2 shadow-[2px_2px_0px_0px_black]">
+                  #{idx + 1}
+                </span>
+                <div
+                  style={{ backgroundColor: reviewer.color }}
+                  className="w-12 h-12 rounded-xl border-2 border-black flex items-center justify-center text-2xl shadow-[2px_2px_0px_0px_black]"
+                >
+                  <Image
+                    priority
+                    src={reviewer.avatar}
+                    className="object-contain p-1"
+                    alt={reviewer.name}
+                  />
+                </div>
+                <span className="font-black text-xl tracking-tight text-black">
+                  {reviewer.name}
+                </span>
+              </div>
+
+              {/* Δεξί μέρος: Στατιστικά / Scores */}
+              <div className="flex gap-4 w-full sm:w-auto justify-between sm:justify-end items-center border-t-2 sm:border-t-0 pt-2 sm:pt-0 border-black/10">
+                <div className="bg-yellow-400 flex items-center gap-1 text-black border-2 border-black font-black px-3 py-1 rounded-lg text-sm shadow-[2px_2px_0px_0px_black]">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="12"
+                    height="12"
+                    fill="black"
+                    className="bi bi-star"
+                    viewBox="0 0 16 16"
+                  >
+                    <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                  </svg>{" "}
+                  {reviewer.reviewsCount} {t("home.reviews")}
+                </div>
+                <div className="bg-pink-400 text-black border-2 border-black font-black px-4 py-1 rounded-lg text-sm shadow-[2px_2px_0px_0px_black]">
+                  {t("home.trustScore")}: {reviewer.trust}
+                </div>
+              </div>
             </div>
           ))}
         </div>
