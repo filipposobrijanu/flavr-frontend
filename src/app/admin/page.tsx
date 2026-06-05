@@ -20,7 +20,12 @@ interface Restaurant {
 
 export default function AdminDashboard() {
   const { t } = useLocale();
-  const [pendingList, setPendingList] = useState<Restaurant[]>([]);
+
+  // 🆕 ΑΛΛΑΓΗ 1: Το pendingList έγινε restaurants γιατί πλέον φέρνουμε όλα τα εστιατόρια
+  const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
+  // 🆕 ΑΛΛΑΓΗ 2: Νέο state για να ελέγχουμε ποιο Tab είναι ανοιχτό
+  const [activeTab, setActiveTab] = useState<"PENDING" | "MANAGE">("PENDING");
+
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -43,28 +48,31 @@ export default function AdminDashboard() {
     }
     const user = JSON.parse(storedUser);
     if (user.role !== "ADMIN") {
-      showNotification(t("admin.no_access"), "error");
+      showNotification(t("admin.no_access") || "No Access", "error");
       router.push("/restaurants");
       return;
     }
-    fetchPendingRestaurants();
+    // 🆕 ΑΛΛΑΓΗ 3: Μετονομασία της κλήσης
+    fetchRestaurants();
   }, []);
 
-  const fetchPendingRestaurants = async () => {
+  // 🆕 ΑΛΛΑΓΗ 4: Μετονομασία της συνάρτησης
+  const fetchRestaurants = async () => {
     setLoading(true);
     const res = await fetch("/api/admin", {
       cache: "no-store", // 👈 Forces fresh data fetch
     });
     if (res.ok) {
       const data = await res.json();
-      setPendingList(data);
+      setRestaurants(data); // 🆕 ΑΛΛΑΓΗ 5: Αποθήκευση στο νέο state
     }
     setLoading(false);
   };
 
+  // 🆕 ΑΛΛΑΓΗ 6: Προσθήκη του "HIDDEN" στους αποδεκτούς τύπους status
   const handleAction = async (
     restaurantId: string,
-    status: "APPROVED" | "REJECTED",
+    status: "APPROVED" | "REJECTED" | "HIDDEN",
   ) => {
     const res = await fetch("/api/admin", {
       method: "PUT",
@@ -73,15 +81,52 @@ export default function AdminDashboard() {
     });
 
     if (res.ok) {
-      showNotification(
-        `${status === "APPROVED" ? t("admin.update_approved") : t("admin.update_declined")}`,
-        "success",
-      );
-      fetchPendingRestaurants(); // Ανανέωση της λίστας live
+      // 🆕 ΑΛΛΑΓΗ 7: Δυναμικό μήνυμα ανάλογα με την ενέργεια
+      let msg = "";
+      if (status === "APPROVED")
+        msg = t("admin.update_approved") || "Approved!";
+      if (status === "REJECTED")
+        msg = t("admin.update_declined") || "Declined!";
+      if (status === "HIDDEN") msg = t("admin.update_hidden") || "Hidden!";
+
+      showNotification(msg, "success");
+      fetchRestaurants(); // Ανανέωση της λίστας live
     } else {
-      showNotification(t("admin.update_error"), "success");
+      showNotification(t("admin.update_error") || "Error", "error");
     }
   };
+
+  // 🆕 ΑΛΛΑΓΗ 8: Νέα συνάρτηση για οριστική διαγραφή του εστιατορίου (DELETE)
+  const handleDelete = async (restaurantId: string) => {
+    if (
+      !window.confirm(
+        "Είσαι σίγουρος ότι θέλεις να διαγράψεις οριστικά αυτό το εστιατόριο;",
+      )
+    )
+      return;
+
+    const res = await fetch(`/api/admin?id=${restaurantId}`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      showNotification(
+        t("admin.delete_success") || "Deleted successfully!",
+        "success",
+      );
+      fetchRestaurants();
+    } else {
+      showNotification(t("admin.delete_error") || "Failed to delete", "error");
+    }
+  };
+
+  // 🆕 ΑΛΛΑΓΗ 9: Διαχωρισμός της λίστας ανάλογα με το status
+  const pendingList = restaurants.filter((r) => r.status === "PENDING");
+  const manageList = restaurants.filter((r) =>
+    ["APPROVED", "HIDDEN"].includes(r.status),
+  );
+  // Αυτή είναι η λίστα που θα γίνει .map() στο HTML
+  const displayList = activeTab === "PENDING" ? pendingList : manageList;
 
   if (loading) {
     return (
@@ -160,28 +205,57 @@ export default function AdminDashboard() {
           </span>
         </div>
 
-        {/* Τίτλος Ενότητας */}
-        <h2 className="text-xl md:text-2xl font-black mb-6 text-black uppercase tracking-wide">
-          {t("admin.pending_apps")} ({pendingList.length})
-        </h2>
+        {/* 🆕 ΑΛΛΑΓΗ 10: TABS για εναλλαγή προβολής */}
+        <div className="flex flex-wrap gap-4 mb-8">
+          <button
+            onClick={() => setActiveTab("PENDING")}
+            className={`px-6 py-3 cursor-pointer border-2 border-black font-black uppercase tracking-wider rounded-xl transition-all ${
+              activeTab === "PENDING"
+                ? "bg-yellow-400 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] translate-x-[-2px] translate-y-[-2px]"
+                : "bg-white text-gray-500 hover:bg-gray-100 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            }`}
+          >
+            {t("admin.pending_apps")} ({pendingList.length})
+          </button>
+          <button
+            onClick={() => setActiveTab("MANAGE")}
+            className={`px-6 py-3 cursor-pointer border-2 border-black font-black uppercase tracking-wider rounded-xl transition-all ${
+              activeTab === "MANAGE"
+                ? "bg-blue-400 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] translate-x-[-2px] translate-y-[-2px]"
+                : "bg-white text-gray-500 hover:bg-gray-100 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+            }`}
+          >
+            {t("admin.manage_restaurants") || "Manage Active"} (
+            {manageList.length})
+          </button>
+        </div>
 
-        {/* Empty State */}
-        {pendingList.length === 0 ? (
+        {/* Empty State δυναμικό βάσει του Tab */}
+        {displayList.length === 0 ? (
           <div className="bg-white p-12 rounded-2xl border-4 border-dashed border-black text-center shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <p className="font-black text-xl text-black">
-              {t("admin.all_clear")}
+              {activeTab === "PENDING"
+                ? t("admin.all_clear")
+                : "No active restaurants yet."}
             </p>
-            <p className="text-sm text-gray-500 font-bold mt-1">
-              {t("admin.no_pending")}
-            </p>
+            {activeTab === "PENDING" && (
+              <p className="text-sm text-gray-500 font-bold mt-1">
+                {t("admin.no_pending")}
+              </p>
+            )}
           </div>
         ) : (
-          /* 📋 Λίστα Αιτήσεων */
+          /* 📋 Λίστα Δυναμική */
           <div className="space-y-6">
-            {pendingList.map((res) => (
+            {displayList.map((res) => (
               <div
                 key={res.id}
-                className="bg-white p-6 rounded-2xl border-2 border-b-4 border-black flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all"
+                // 🆕 ΑΛΛΑΓΗ 11: Αν το status είναι HIDDEN, δίνουμε εφέ θαμπώματος στην κάρτα
+                className={`bg-white p-6 rounded-2xl border-2 border-b-4 border-black flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all ${
+                  res.status === "HIDDEN"
+                    ? "opacity-60 bg-gray-50 grayscale"
+                    : ""
+                }`}
               >
                 {/* Πληροφορίες Αίτησης (Αριστερό Block) */}
                 <div className="space-y-2 flex-1 w-full">
@@ -190,9 +264,15 @@ export default function AdminDashboard() {
                       {res.name}
                     </h3>
                     {/* Badge Κουζίνας */}
-                    <span className="bg-yellow-400 border-2 border-black text-black text-xs font-black px-2.5 py-0.5 rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase">
+                    <span className="bg-blue-400 border-2 border-black text-black text-xs font-black px-2.5 py-0.5 rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase">
                       {res.cuisineType}
                     </span>
+                    {/* 🆕 ΑΛΛΑΓΗ 12: Ένδειξη HIDDEN δίπλα στον τίτλο */}
+                    {res.status === "HIDDEN" && (
+                      <span className="bg-gray-800 border-2 border-black text-white text-xs font-black px-2.5 py-0.5 rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase">
+                        HIDDEN
+                      </span>
+                    )}
                   </div>
 
                   <p className="text-xs font-black uppercase tracking-wider text-[#3a8bd6]">
@@ -215,32 +295,82 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                {/* Κουμπιά Action (Δεξί Block) */}
-                <div className="flex sm:flex-row lg:flex-col xl:flex-row gap-3 w-full lg:w-auto shrink-0 border-t-2 border-dashed border-black/10 lg:border-t-0 pt-4 lg:pt-0">
-                  {/* Κουμπί: Έγκριση */}
+                {/* 🆕 ΑΛΛΑΓΗ 13: Δυναμικά Κουμπιά Action ανάλογα με το ενεργό Tab */}
+                <div className="flex flex-wrap sm:flex-row lg:flex-col xl:flex-row gap-3 w-full lg:w-auto shrink-0 border-t-2 border-dashed border-black/10 lg:border-t-0 pt-4 lg:pt-0">
+                  {activeTab === "PENDING" ? (
+                    // Κουμπιά για εκκρεμείς αιτήσεις
+                    <>
+                      <button
+                        onClick={() => handleAction(res.id, "APPROVED")}
+                        className="button-main"
+                      >
+                        <span
+                          style={{ backgroundColor: "#05DF72" }}
+                          className="button_top px-3 py-2"
+                        >
+                          {t("admin.btn_approve")}
+                        </span>
+                      </button>
+                      <button
+                        onClick={() => handleAction(res.id, "REJECTED")}
+                        className="button-main"
+                      >
+                        <span
+                          style={{ backgroundColor: "#ec3030", color: "white" }}
+                          className="button_top px-3 py-2"
+                        >
+                          {t("admin.btn_decline")}
+                        </span>
+                      </button>
+                    </>
+                  ) : (
+                    // Κουμπιά για διαχείριση εγκεκριμένων (Hide / Unhide / Delete)
+                    <>
+                      {res.status === "APPROVED" ? (
+                        <button
+                          onClick={() => handleAction(res.id, "HIDDEN")}
+                          className="button-main"
+                        >
+                          <span
+                            style={{
+                              backgroundColor: "#fbbf24",
+                              color: "black",
+                            }}
+                            className="button_top px-3 py-2"
+                          >
+                            {t("admin.btn_hide") || "Hide"}
+                          </span>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleAction(res.id, "APPROVED")}
+                          className="button-main"
+                        >
+                          <span
+                            style={{
+                              backgroundColor: "#60a5fa",
+                              color: "black",
+                            }}
+                            className="button_top px-3 py-2"
+                          >
+                            {t("admin.btn_unhide") || "Unhide"}
+                          </span>
+                        </button>
+                      )}
 
-                  <button
-                    onClick={() => handleAction(res.id, "APPROVED")}
-                    className="button-main "
-                  >
-                    <span
-                      style={{ backgroundColor: "#05DF72" }}
-                      className="button_top px-3 py-2"
-                    >
-                      {t("admin.btn_approve")}
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => handleAction(res.id, "REJECTED")}
-                    className="button-main"
-                  >
-                    <span
-                      style={{ backgroundColor: "#ec3030", color: "white" }}
-                      className="button_top px-3 py-2"
-                    >
-                      {t("admin.btn_decline")}
-                    </span>
-                  </button>
+                      <button
+                        onClick={() => handleDelete(res.id)}
+                        className="button-main"
+                      >
+                        <span
+                          style={{ backgroundColor: "#ec3030", color: "white" }}
+                          className="button_top px-3 py-2"
+                        >
+                          {t("admin.btn_delete") || "Delete"}
+                        </span>
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             ))}

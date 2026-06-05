@@ -9,6 +9,7 @@ import PageTransition from "../components/PageTransition";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { LocaleProvider } from "@/context/LocaleContext";
+import FaqTooltip from "@/components/FaqTooltip";
 
 const ranchersFont = DynaPuff({
   subsets: ["latin"],
@@ -122,14 +123,15 @@ export default async function RootLayout({
                   label: "Tiktok",
                 },
               ]}
-              mainLinks={[{ href: "/restaurants", key: "restaurants" }]}
+              mainLinks={[{ href: "/restaurants", label: "restaurants" }]}
               legalLinks={[
-                { href: "/privacy", key: "privacy" },
-                { href: "/terms", key: "terms" },
-                { href: "/about", key: "about" },
+                { href: "/privacy", label: "privacy" },
+                { href: "/terms", label: "terms" },
+                { href: "/about", label: "about" },
               ]}
               copyrightLicense="All rights reserved."
             />
+            <FaqTooltip />
           </AuthProvider>
         </LocaleProvider>
       </body>

@@ -21,10 +21,6 @@ interface FooterProps {
     href: string;
     label: string;
   }>;
-  copyright: {
-    text: string;
-    license?: string;
-  };
   copyrightLicense?: string;
 }
 interface NavLink {
@@ -81,7 +77,7 @@ export default function Footer({
                     href={link.href}
                     className="text-sm font-bold underline-offset-4 hover:opacity-80"
                   >
-                    {t(`footer.${link.key}`)}
+                    {t(`footer.${link.label}`)}
                   </Link>
                 </li>
               ))}
@@ -97,7 +93,7 @@ export default function Footer({
                     href={link.href}
                     className="text-sm text-gray-600 underline-offset-4 hover:opacity-80"
                   >
-                    {t(`footer.${link.key}`)}
+                    {t(`footer.${link.label}`)}
                   </Link>
                 </li>
               ))}

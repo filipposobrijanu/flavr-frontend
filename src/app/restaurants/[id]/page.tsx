@@ -407,11 +407,11 @@ export default function RestaurantDetailsPage() {
             {restaurant.views}
           </div>
           {/* 📊 Μεγάλο Bayesian Score Sticker */}
-          <div className="bg-yellow-400 border-4 border-black p-6 rounded-2xl text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] min-w-[180px] w-full md:w-auto shrink-0">
+          <div className="bg-yellow-400 border-4 border-black  p-6 rounded-2xl text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] min-w-[180px] w-full md:w-auto shrink-0">
             <p className="text-xs font-black uppercase tracking-wider text-black">
               Bayesian Score
             </p>
-            <p className="text-4xl font-black mt-1 text-black flex items-center gap-2">
+            <p className="text-4xl font-black mt-1 text-black text-center justify-center flex items-center gap-2">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="28"
@@ -575,7 +575,8 @@ export default function RestaurantDetailsPage() {
                         {rev.atmosphereRating}
                       </span>
                       <span className="bg-blue-200 border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] border-black px-2 py-0.5 rounded-lg">
-                        {t("restaurant_details.form.vfm")}: {rev.vfmRating}
+                        {t("restaurant_details.form.vfm_label")}:{" "}
+                        {rev.vfmRating}
                       </span>
                     </div>
 

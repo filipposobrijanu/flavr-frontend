@@ -1,5 +1,18 @@
 export const translations = {
   el: {
+    faq: {
+      title: "Πληροφορίες",
+      close: "ΚΛΕΙΣΙΜΟ",
+      trigger: "ΒΟΗΘΕΙΑ;",
+      questions: {
+        q1: "Τι είναι το Bayesian Score;",
+        a1: "Είναι ο τρόπος μας να διασφαλίζουμε δίκαιες κατατάξεις ισορροπώντας τις μεμονωμένες κριτικές με δεδομένα της κοινότητας.",
+        q2: "Πώς μπορώ να προσθέσω το εστιατόριό μου;",
+        a2: "Πλοηγήσου στο Dashboard Ιδιοκτήτη και υπέβαλε τα στοιχεία του εστιατορίου σου για έγκριση.",
+        q3: "Τι εμφανίζεται στο Dashboard μου;",
+        a3: "Η ροή δραστηριότητας, οι συνολικές κριτικές, η αγαπημένη σου κουζίνα και το συνολικό σου σκορ αξιοπιστίας.",
+      },
+    },
     filters: {
       all_cuisines: "Όλες οι Κουζίνες",
       all_prices: "Όλες οι Τιμές",
@@ -21,6 +34,7 @@ export const translations = {
       back: "Επιστροφή στα Εστιατόρια",
     },
     navbar: {
+      settings: "Ρυθμίσεις",
       restaurants: "Εστιατόρια",
       owner: "Dashboard Ιδιοκτήτη",
       admin: "Dashboard Admin",
@@ -267,6 +281,13 @@ export const translations = {
       tech_p2: "React • Next.js • Tailwind CSS • Prisma • SQLite",
     },
     admin: {
+      manage_restaurants: "Διαχείριση Ενεργών",
+      btn_hide: "ΑΠΟΚΡΥΨΗ",
+      btn_unhide: "ΕΜΦΑΝΙΣΗ",
+      btn_delete: "ΔΙΑΓΡΑΦΗ",
+      update_hidden: "Το εστιατόριο κρύφτηκε επιτυχώς!",
+      delete_success: "Το εστιατόριο διαγράφηκε οριστικά!",
+      delete_error: "Αποτυχία διαγραφής εστιατορίου.",
       no_access: "Δεν έχετε δικαιώματα διαχειριστή!",
       update_approved: "Η αίτηση ενημερώθηκε επιτυχώς σε: ΕΓΚΡΙΘΗΚΕ",
       update_declined: "Η αίτηση ενημερώθηκε επιτυχώς σε: ΑΠΟΡΡΙΦΘΗΚΕ",
@@ -318,6 +339,20 @@ export const translations = {
     },
   },
   en: {
+    faq: {
+      title: "Help & Info",
+      close: "CLOSE",
+      trigger: "HELP?",
+      questions: {
+        q1: "What is the Bayesian Score?",
+        a1: "It's our way of ensuring fair rankings by balancing individual reviews with community data.",
+        q2: "How can I add my restaurant?",
+        a2: "Navigate to the Owner Dashboard and submit your restaurant details for approval.",
+        q3: "What shows up in my Dashboard?",
+        a3: "Your activity feed, total reviews, your top cuisine, and your overall trust score as a reviewer.",
+      },
+    },
+
     filters: {
       all_cuisines: "All Cuisines",
       all_prices: "All Prices",
@@ -339,6 +374,7 @@ export const translations = {
       back: "Back to Restaurants",
     },
     navbar: {
+      settings: "Settings",
       restaurants: "Restaurants",
       owner: "Owner Dashboard",
       admin: "Admin Dashboard",
@@ -583,6 +619,13 @@ export const translations = {
       tech_p2: "React • Next.js • Tailwind CSS • Prisma • SQLite",
     },
     admin: {
+      manage_restaurants: "Manage Active",
+      btn_hide: "HIDE",
+      btn_unhide: "UNHIDE",
+      btn_delete: "DELETE",
+      update_hidden: "Restaurant is now hidden!",
+      delete_success: "Restaurant deleted successfully!",
+      delete_error: "Failed to delete restaurant.",
       no_access: "You do not have administrator rights!",
       update_approved: "The application was successfully updated to: APPROVED",
       update_declined: "The application was successfully updated to: DECLINED",

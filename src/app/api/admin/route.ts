@@ -4,37 +4,42 @@ import { RestaurantService } from "@/lib/backend/RestaurantService";
 
 const restaurantService = new RestaurantService();
 
-// GET: Φέρνει όλα τα εκκρεμή (PENDING) εστιατόρια για να τα ελέγξει ο Admin
+// GET: Φέρνει όλα τα PENDING, APPROVED και HIDDEN εστιατόρια
 export async function GET() {
   try {
-    const pendingRestaurants = await prisma.restaurant.findMany({
-      where: { status: "PENDING" },
-      include: { owner: true }, // Κάνουμε join τον πίνακα User για να δούμε τα στοιχεία του ιδιοκτήτη
+    const allRestaurants = await prisma.restaurant.findMany({
+      where: {
+        status: { in: ["PENDING", "APPROVED", "HIDDEN"] },
+      },
+      include: { owner: true },
       orderBy: { createdAt: "desc" },
     });
-    return NextResponse.json(pendingRestaurants);
+    return NextResponse.json(allRestaurants);
   } catch (error) {
     return NextResponse.json(
-      { error: "Αποτυχία ανάκτησης αιτήσεων" },
+      { error: "Αποτυχία ανάκτησης δεδομένων" },
       { status: 500 },
     );
   }
 }
 
-// PUT: Αλλάζει την κατάσταση της αίτησης (Έγκριση ή Απόρριψη)
+// PUT: Αλλάζει την κατάσταση της αίτησης (Έγκριση, Απόρριψη, Απόκρυψη)
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const { restaurantId, status } = body; // Το status πρέπει να είναι 'APPROVED' ή 'REJECTED'
+    const { restaurantId, status } = body;
 
-    if (!restaurantId || !["APPROVED", "REJECTED"].includes(status)) {
+    // Προσθέσαμε το HIDDEN και το APPROVED
+    if (
+      !restaurantId ||
+      !["APPROVED", "REJECTED", "HIDDEN", "PENDING"].includes(status)
+    ) {
       return NextResponse.json(
         { error: "Μη έγκυρα δεδομένα" },
         { status: 400 },
       );
     }
 
-    // Κλήση της μεθόδου changeStatus του RestaurantService (OOP Logic)
     const updatedRestaurant = await restaurantService.changeStatus(
       restaurantId,
       status,
@@ -44,6 +49,35 @@ export async function PUT(request: Request) {
     return NextResponse.json(
       { error: "Αποτυχία ενημέρωσης κατάστασης" },
       { status: 400 },
+    );
+  }
+}
+
+// DELETE: Διαγραφή εστιατορίου (Μόνιμη)
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const restaurantId = searchParams.get("id");
+
+    if (!restaurantId) {
+      return NextResponse.json(
+        { error: "Το ID του εστιατορίου είναι υποχρεωτικό" },
+        { status: 400 },
+      );
+    }
+
+    await prisma.restaurant.delete({
+      where: { id: restaurantId },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Το εστιατόριο διαγράφηκε",
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Αποτυχία διαγραφής εστιατορίου" },
+      { status: 500 },
     );
   }
 }

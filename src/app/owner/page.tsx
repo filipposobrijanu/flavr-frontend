@@ -373,7 +373,12 @@ export default function OwnerDashboard() {
               {restaurants.map((res) => (
                 <div
                   key={res.id}
-                  className="bg-white p-5 rounded-2xl border-2 border-b-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all"
+                  // 🆕 ΑΛΛΑΓΗ: Προστέθηκε λογική opacity-60 & grayscale αν είναι HIDDEN
+                  className={`bg-white p-5 rounded-2xl border-2 border-b-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all ${
+                    res.status === "HIDDEN"
+                      ? "opacity-60 bg-gray-50 grayscale"
+                      : ""
+                  }`}
                 >
                   <div>
                     {/* Header Κάρτας */}
@@ -382,21 +387,25 @@ export default function OwnerDashboard() {
                         {res.name}
                       </h3>
 
-                      {/* Status Badge με Neobrutalist Sticker Style */}
+                      {/* 🆕 ΑΛΛΑΓΗ: Ενημερώθηκε το Status Badge για να υποστηρίζει HIDDEN και REJECTED σωστά */}
                       <span
                         className={`px-2.5 py-1 rounded-lg text-2xs font-black border-2 border-black uppercase tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] shrink-0 ${
                           res.status === "APPROVED"
                             ? "bg-green-400 text-black"
                             : res.status === "PENDING"
                               ? "bg-yellow-400 text-black"
-                              : "bg-red-400 text-black"
+                              : res.status === "HIDDEN"
+                                ? "bg-gray-800 text-white"
+                                : "bg-red-400 text-black" // REJECTED
                         }`}
                       >
                         {res.status === "APPROVED"
                           ? "APPROVED"
                           : res.status === "PENDING"
                             ? "PENDING"
-                            : "DECLINED"}
+                            : res.status === "HIDDEN"
+                              ? "HIDDEN"
+                              : "DECLINED"}
                       </span>
                     </div>
 

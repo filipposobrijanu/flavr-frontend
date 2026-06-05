@@ -60,7 +60,7 @@ export default function Home() {
           {/* Κείμενο & Κουμπιά (z-10 για να είναι πάντα από πάνω) */}
           <div className="max-w-2xl text-center space-y-6 z-10 px-4">
             <div className="flex justify-center items-center w-full">
-              <div className="flex lg:hidden justify-center items-center  mb-2 mt-10 w-55 h-55 transform -rotate-8 transition-transform hover:scale-110">
+              <div className="flex lg:hidden justify-center items-center  mb-0 mt-10 w-55 h-55 transform -rotate-8 transition-transform hover:scale-110">
                 <Image
                   priority
                   src={burger}
@@ -81,7 +81,7 @@ export default function Home() {
             </div>
             <span
               style={{ backgroundColor: "#ffffff" }}
-              className="border-2 border-b-4 border-black font-bold px-4 py-1.5 rounded-xl text-sm uppercase tracking-wider mb-3 inline-block"
+              className="border-2 border-b-4 border-black font-bold px-4 py-1.5 rounded-xl text-sm uppercase tracking-wider mb-3  hidden lg:inline-block"
             >
               {t("home.badge")}
             </span>

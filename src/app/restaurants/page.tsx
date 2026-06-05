@@ -80,7 +80,7 @@ export default function RestaurantsPage() {
         </h2>
 
         {/* 🔍 Φίλτρα Αναζήτησης με Neobrutalist Στυλ */}
-        <div className="flex flex-col sm:flex-row gap-4 mt-4 mb-12 items-center">
+        <div className="flex flex-col md:flex-row sm:flex-wrap gap-4 mt-4 mb-12 lg:items-center items-start">
           {/* Input Αναζήτησης */}
 
           <SearchBar restaurants={restaurants} />

@@ -163,12 +163,20 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
           {t("navbar.admin")}
         </Link>
       )}
-      {user && (
+      {user?.role === "REVIEWER" && (
         <Link
           href="/dashboard"
           className={`${pathname === "/dashboard" ? "text-black" : "hover:text-black"} font-semibold hover:opacity-80 transition-colors`}
         >
           {t("navbar.profile")}
+        </Link>
+      )}
+      {user && (
+        <Link
+          href="/settings"
+          className={`${pathname === "/settings" ? "text-black" : "hover:text-black"} font-semibold hover:opacity-80 transition-colors`}
+        >
+          {t("navbar.settings")}
         </Link>
       )}
       {user ? (
