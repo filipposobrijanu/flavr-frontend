@@ -9,37 +9,39 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(uuid())
-  email        String     @unique
-  username     String     @unique
-  role         Role       @default(REVIEWER)
+  id           String       @id @default(uuid())
+  email        String       @unique
+  username     String       @unique
+  role         Role         @default(REVIEWER)
   passwordHash String?
-  restaurants  Restaurant[] // Εδώ ίσως θέλεις να κρατήσεις τα εστιατόρια ή να τα διαγράψεις
-  reviews      Review[]   @relation("UserReviews") // Πρόσθεσε όνομα relation
-  favorites    Favorite[] @relation("UserFavorites") // Πρόσθεσε όνομα relation
+  restaurants  Restaurant[]
+  // Χρησιμοποιούμε το όνομα relation εδώ
+  reviews      Review[]     @relation("UserReviews")
+  favorites    Favorite[]   @relation("UserFavorites")
 }
+
 model Favorite {
-  id           String     @id @default(uuid())
+  id           String   @id @default(uuid())
   userId       String
   restaurantId String
-  createdAt    DateTime   @default(now())
+  createdAt    DateTime @default(now())
 
-  // Σχέσεις
-  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
-  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  // Πρέπει να έχει το ίδιο όνομα relation με το User
+  user       User       @relation("UserFavorites", fields: [userId], references: [id], onDelete: Cascade)
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
 
-  // Μοναδικός συνδυασμός: Ο ίδιος χρήστης δεν μπορεί να κάνει favorite το ίδιο μαγαζί 2 φορές
   @@unique([userId, restaurantId])
 }
+
 model Restaurant {
   id                  String           @id @default(uuid())
   name                String
   description         String
   cuisineType         String
   address             String
-  priceRange  String  @default("$$") // π.χ. "$", "$$", "$$$", "$$$$"
-  area        String  @default("Athens") // Ή μπορείς να φιλτράρεις με βάση το address
-  views Int    @default(0)
+  priceRange          String           @default("$$") // π.χ. "$", "$$", "$$$", "$$$$"
+  area                String           @default("Athens") // Ή μπορείς να φιλτράρεις με βάση το address
+  views               Int              @default(0)
   globalBayesianScore Float            @default(0.0)
   ownerId             String
   status              RestaurantStatus @default(PENDING)
@@ -47,13 +49,13 @@ model Restaurant {
   imageUrl            String?
   owner               User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   reviews             Review[]
-  favorites Favorite[]
+  favorites           Favorite[]
 }
 
 model Review {
-  id               String     @id @default(uuid())
+  id               String   @id @default(uuid())
   rating           Int
-  createdAt        DateTime   @default(now())
+  createdAt        DateTime @default(now())
   restaurantId     String
   userId           String
   atmosphereRating Int
@@ -61,12 +63,13 @@ model Review {
   upvotes          Int      @default(0)
   serviceRating    Int
   simpleAverage    Float
-  images       String[]
+  images           String[]
   text             String
   vfmRating        Int
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  restaurant       Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
-  user             User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  // Πρέπει να έχει το ίδιο όνομα relation με το User
+  user       User       @relation("UserReviews", fields: [userId], references: [id], onDelete: Cascade)
 }
 
 enum RestaurantStatus {
