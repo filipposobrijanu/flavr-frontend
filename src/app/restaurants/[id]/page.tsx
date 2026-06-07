@@ -5,6 +5,9 @@ import Link from "next/link";
 import { useLocale } from "@/context/LocaleContext";
 import ImageUploadWidget from "@/components/ImageUploadWidget";
 import ReviewImageGallery from "@/components/ReviewImageGallery";
+import UserBadge from "@/components/UserBadge";
+import ReviewComments from "@/components/ReviewComments";
+import OwnerResponse from "@/components/OwnerResponse";
 
 interface Review {
   id: string;
@@ -17,8 +20,23 @@ interface Review {
   simpleAverage: number;
   upvotes: number;
   createdAt: string;
+  ownerReply: {
+    id: string;
+    text: string;
+    createdAt: string;
+  } | null;
+  comments: {
+    id: string;
+    text: string;
+    createdAt: string;
+    user: { username: string };
+  }[];
   user: {
     username: string;
+    _count?: {
+      // 👈 Προσθήκη του _count ως optional
+      reviews: number;
+    };
   };
 }
 
@@ -32,6 +50,9 @@ interface Restaurant {
   reviews: Review[];
   imageUrl?: string;
   views: number;
+  ownerId: string;
+  openTime: string;
+  closeTime: string;
 }
 
 export default function RestaurantDetailsPage() {
@@ -39,12 +60,24 @@ export default function RestaurantDetailsPage() {
   const { id } = useParams();
   const router = useRouter();
 
+  const [isMainImgOpen, setIsMainImgOpen] = useState(false);
+
+  useEffect(() => {
+    if (!isMainImgOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsMainImgOpen(false);
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMainImgOpen]);
+
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState<any>(null);
 
   const [visibleReviews, setVisibleReviews] = useState(5);
   const [upvotedReviews, setUpvotedReviews] = useState<Set<string>>(new Set());
+  const isOwner = currentUser?.role === "OWNER";
 
   const [notification, setNotification] = useState<{
     message: string;
@@ -373,11 +406,46 @@ export default function RestaurantDetailsPage() {
         <div className="bg-white p-6 md:p-8 border-4 border-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row justify-between items-start gap-6">
           <div className="space-y-3 flex-1">
             {restaurant.imageUrl && (
-              <img
-                src={restaurant.imageUrl}
-                alt={restaurant.name}
-                className="w-64 h-64 object-cover rounded-xl border-2 border-black mb-6"
-              />
+              <>
+                <img
+                  src={restaurant.imageUrl}
+                  alt={restaurant.name}
+                  onClick={() => setIsMainImgOpen(true)} // 👈 Ανοίγει το modal με κλικ
+                  className="w-64 h-64 object-cover rounded-xl border-2 border-black mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all cursor-zoom-in bg-gray-100"
+                />
+
+                {/* 🌌 Σκοτεινό Lightbox Modal για την Κύρια Εικόνα */}
+                {isMainImgOpen && (
+                  <div className="fixed inset-0 z-[100] h-screen flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-fade-in animate-duration-200">
+                    {/* Κουμπί Κλεισίματος */}
+                    <button
+                      onClick={() => setIsMainImgOpen(false)}
+                      className="absolute top-6 right-6 z-[110] bg-red-500 text-black border-2 border-black font-black p-2 rounded-xl text-sm uppercase shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
+                      title="Close (ESC)"
+                    >
+                      {t("restaurant_details.close_button")}
+                    </button>
+
+                    {/* 🖼️ Container Εικόνας */}
+                    <div
+                      className="relative max-w-4xl max-h-[100vh] flex items-center justify-center border-4 border-black bg-zinc-900 p-2 rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
+                      onClick={(e) => e.stopPropagation()} // Stop propagation για να μην κλείνει όταν κάνεις κλικ πάνω στην εικόνα
+                    >
+                      <img
+                        src={restaurant.imageUrl}
+                        alt={restaurant.name}
+                        className="max-w-full max-h-[80vh] object-contain rounded-lg select-none"
+                      />
+                    </div>
+
+                    {/* Κλείσιμο με κλικ οπουδήποτε στο μαύρο background */}
+                    <div
+                      className="absolute inset-0 w-full h-full -z-10 cursor-zoom-out"
+                      onClick={() => setIsMainImgOpen(false)}
+                    />
+                  </div>
+                )}
+              </>
             )}
             <span className="bg-blue-400 text-black text-xs font-black px-3 py-1 border-2 border-black rounded-lg uppercase tracking-wide inline-block shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               {restaurant.cuisineType}
@@ -391,6 +459,14 @@ export default function RestaurantDetailsPage() {
             <p className="text-gray-800 pt-2 font-medium leading-relaxed max-w-3xl border-t-2 border-black border-dashed">
               {restaurant.description}
             </p>
+            <div className="flex items-center gap-2 bg-black text-white px-4 py-2 rounded-xl font-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] w-fit mb-6">
+              <span className="text-sm">
+                {t("filters.open")} - {t("filters.closed")}
+              </span>
+              <span className="text-sm">
+                {restaurant.openTime} - {restaurant.closeTime}
+              </span>
+            </div>
           </div>
           <div className="text-md font-bold text-gray-700 mt-2 flex gap-1 items-center">
             <svg
@@ -548,8 +624,11 @@ export default function RestaurantDetailsPage() {
                   >
                     <div className="flex justify-between items-start border-b-2 border-black pb-2 gap-2">
                       <div>
-                        <span className="font-black text-gray-900 block text-base">
-                          {rev.user.username}
+                        <span className="font-black text-gray-900 block text-base flex items-center gap-2">
+                          {rev.user?.username || "Anonymous"}
+                          <UserBadge
+                            reviewCount={rev.user?._count?.reviews ?? 0}
+                          />
                         </span>
                         <span className="text-xs text-gray-500 font-bold">
                           {new Date(rev.createdAt).toLocaleDateString("el-GR")}
@@ -608,6 +687,19 @@ export default function RestaurantDetailsPage() {
                         Helpful ({rev.upvotes || 0})
                       </button>
                     </div>
+                    <ReviewComments
+                      reviewId={rev.id}
+                      initialComments={rev.comments ?? []}
+                      currentUserId={currentUser?.id || ""}
+                    />
+                    {isOwner && restaurant.ownerId === currentUser.id && (
+                      <OwnerResponse
+                        reviewId={rev.id}
+                        initialReply={rev.ownerReply}
+                        userRole={currentUser?.role || "USER"} // 👈 Περνάμε το ρόλο του τωρινού χρήστη
+                        currentUserId={currentUser?.id || ""}
+                      />
+                    )}
                   </div>
                 ))}
 

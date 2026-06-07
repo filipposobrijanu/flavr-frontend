@@ -52,7 +52,7 @@ export default function FaqTooltip() {
       {/* Trigger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="bg-gray-200 cursor-pointer text-black px-3 py-2 font-black rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_black] hover:translate-y-[-2px] transition-all"
+        className={` ${isOpen ? "bg-red-500" : "bg-gray-200"} cursor-pointer text-black px-3 py-2 font-black rounded-2xl border-2 border-black shadow-[3px_3px_0px_0px_black] hover:translate-y-[-2px] transition-all`}
       >
         {isOpen ? (
           <svg

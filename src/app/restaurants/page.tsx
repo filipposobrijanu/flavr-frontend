@@ -9,6 +9,7 @@ import { useLocale } from "@/context/LocaleContext";
 import FavoriteButton from "@/components/FavoriteButton";
 import SearchBar from "@/components/SearchBar";
 import { useMemo } from "react";
+import gmap_icon from "../../assets/gmap_icon.png";
 
 interface Restaurant {
   id: string;
@@ -22,10 +23,13 @@ interface Restaurant {
   views: number;
   imageUrl?: string;
   favorites: { userId: string }[];
+  openTime: string;
+  closeTime: string;
 }
 
 export default function RestaurantsPage() {
   const { t } = useLocale();
+  const [sortBy, setSortBy] = useState("rating"); // "rating" | "views" | "new"
 
   const [visibleCount, setVisibleCount] = useState(6);
 
@@ -36,16 +40,72 @@ export default function RestaurantsPage() {
   const [price, setPrice] = useState("");
   const [area, setArea] = useState("");
 
+  const [isOpenNow, setIsOpenNow] = useState(false);
+  const isRestaurantOpen = (openTime: string, closeTime: string) => {
+    if (!openTime || !closeTime) return true; // Fallback αν λείπουν δεδομένα
+
+    const now = new Date();
+    const currentTotalMinutes = now.getHours() * 60 + now.getMinutes();
+
+    const [openH, openM] = openTime.split(":").map(Number);
+    const openTotalMinutes = openH * 60 + openM;
+
+    const [closeH, closeM] = closeTime.split(":").map(Number);
+    const closeTotalMinutes = closeH * 60 + closeM;
+
+    // Αν κλείνει μετά τα μεσάνυχτα (π.χ. ανοίγει 18:00, κλείνει 02:00)
+    if (closeTotalMinutes < openTotalMinutes) {
+      return (
+        currentTotalMinutes >= openTotalMinutes ||
+        currentTotalMinutes <= closeTotalMinutes
+      );
+    }
+
+    // Κανονικό ωράριο (π.χ. 09:00 με 23:00)
+    return (
+      currentTotalMinutes >= openTotalMinutes &&
+      currentTotalMinutes <= closeTotalMinutes
+    );
+  };
+
   const filteredRestaurants = useMemo(() => {
-    return restaurants.filter((res) => {
+    // 1. Φιλτράρισμα
+    let filtered = restaurants.filter((res) => {
       const matchCuisine = cuisine ? res.cuisineType === cuisine : true;
       const matchPrice = price ? res.priceRange === price : true;
       const matchArea = area
         ? res.area === area || res.address.includes(area)
         : true;
-      return matchCuisine && matchPrice && matchArea;
+
+      // 👈 2. ΔΙΟΡΘΩΣΗ: Προσθήκη του φίλτρου Open Now
+      const matchOpenNow = isOpenNow
+        ? isRestaurantOpen(res.openTime, res.closeTime)
+        : true;
+
+      return matchCuisine && matchPrice && matchArea && matchOpenNow;
     });
-  }, [restaurants, cuisine, price, area]);
+
+    // 2. Ταξινόμηση
+    return filtered.sort((a, b) => {
+      switch (sortBy) {
+        case "rating_high":
+          return b.globalBayesianScore - a.globalBayesianScore;
+        case "rating_low":
+          return a.globalBayesianScore - b.globalBayesianScore;
+        case "views_high":
+          return b.views - a.views;
+        case "views_low":
+          return a.views - b.views;
+        case "new":
+          return Number(b.id) - Number(a.id);
+        case "old":
+          return Number(a.id) - Number(b.id);
+        default:
+          return 0;
+      }
+    });
+    // 👈 3. ΔΙΟΡΘΩΣΗ: Προσθήκη του isOpenNow στα dependencies του useMemo
+  }, [restaurants, cuisine, price, area, sortBy, isOpenNow]);
 
   useEffect(() => {
     const getRestaurants = async () => {
@@ -84,15 +144,42 @@ export default function RestaurantsPage() {
           {/* Input Αναζήτησης */}
 
           <SearchBar restaurants={restaurants} />
-
+          <div className="relative">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-2 font-black text-sm uppercase bg-white border-2 border-black rounded-xl cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all appearance-none pr-8"
+            >
+              <option value="rating_high">{t("filters.rating_high")}</option>
+              <option value="rating_low">{t("filters.rating_low")}</option>
+              <option value="views_high">{t("filters.views_high")}</option>
+              <option value="views_low">{t("filters.views_low")}</option>
+              <option value="new">{t("filters.new")}</option>
+              <option value="old">{t("filters.old")}</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex text-sm items-center px-3 text-black font-black">
+              ▼
+            </div>
+          </div>
           {/* Dropdown Επιλογής Κουζίνας */}
-          <div className="flex flex-wrap gap-4 items-center">
+          <div className="flex flex-wrap gap-2 items-center">
+            <button
+              onClick={() => setIsOpenNow(!isOpenNow)}
+              className={`px-3 py-2 font-black text-sm uppercase border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all flex items-center gap-1 cursor-pointer hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)] ${
+                isOpenNow ? "bg-green-400 text-black" : "bg-white text-black"
+              }`}
+            >
+              <span
+                className={`w-2.5 h-2.5 rounded-full border border-black ${isOpenNow ? "bg-white animate-pulse" : "bg-gray-300"}`}
+              ></span>
+              {t("filters.open_now")}
+            </button>
             {/* Κουζίνα (Blue) */}
             <div className="relative">
               <select
                 value={cuisine}
                 onChange={(e) => setCuisine(e.target.value)}
-                className="px-3 py-2 font-black text-sm uppercase bg-white border-2 border-black rounded-xl cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all appearance-none pr-10"
+                className="px-3 py-2 font-black text-sm uppercase bg-white border-2 border-black rounded-xl cursor-pointer shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] focus:outline-none focus:translate-x-[1px] focus:translate-y-[1px] focus:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all appearance-none pr-8"
               >
                 <option value="">{t("filters.all_cuisines")}</option>
                 <option value="ITALIAN">
@@ -105,18 +192,24 @@ export default function RestaurantsPage() {
                   {t("restaurants_page.cuisines.mexican")}
                 </option>
               </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-black font-black">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex text-sm items-center px-3 text-black font-black">
                 ▼
               </div>
             </div>
 
             {/* Clear Button (Red - με το ίδιο hover/active style των κουμπιών σου) */}
-            {(cuisine || price || area) && (
+            {(cuisine ||
+              price ||
+              area ||
+              isOpenNow ||
+              sortBy !== "rating_high") && (
               <button
                 onClick={() => {
                   setCuisine("");
                   setPrice("");
                   setArea("");
+                  setIsOpenNow(false); // Reset το Open Now
+                  setSortBy("rating_high"); // Reset το Sorting στο default
                 }}
                 className="px-3 cursor-pointer py-2 bg-red-500 text-white font-black text-sm uppercase border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)]"
               >
@@ -189,6 +282,8 @@ export default function RestaurantsPage() {
           <div className="grid  grid-cols-1 md:grid-cols-3 gap-8">
             {filteredRestaurants.slice(0, visibleCount).map((res) => {
               const isFavorite = (res.favorites?.length ?? 0) > 0;
+
+              const isOpen = isRestaurantOpen(res.openTime, res.closeTime);
               return (
                 <div
                   key={res.id}
@@ -202,6 +297,16 @@ export default function RestaurantsPage() {
                           alt={res.name}
                           className="w-full h-full object-cover"
                         />
+
+                        <span
+                          className={`absolute top-2 left-2 px-2 py-0.5 text-[10px] font-black uppercase border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] z-10 ${
+                            isOpen
+                              ? "bg-green-400 text-black"
+                              : "bg-red-400 text-black"
+                          }`}
+                        >
+                          {isOpen ? t("filters.open") : t("filters.closed")}
+                        </span>
                       </div>
                     )}
                     {/* Header Κάρτας: Όνομα & Σκορ */}
@@ -262,21 +367,35 @@ export default function RestaurantsPage() {
                       {res.description}
                     </p>
                   </div>
+                  <div className="w-full flex flex-col items-center gap-3">
+                    <Link
+                      href={`/restaurants/${res.id}`}
+                      className="w-full h-full"
+                    >
+                      <button className="w-full h-full button-main">
+                        <span
+                          style={{ backgroundColor: "#50A2FF" }}
+                          className="button_top px-3 py-2 h-full flex items-center justify-center"
+                        >
+                          {t("restaurants_page.view_btn")}
+                        </span>
+                      </button>
+                    </Link>
 
-                  {/* 👈 2. ΔΙΟΡΘΩΣΗ: Προσθήκη Link γύρω από το Neobrutalist κουμπί */}
-                  <Link
-                    href={`/restaurants/${res.id}`}
-                    className="w-full block"
-                  >
-                    <button className="w-full button-main">
-                      <span
-                        style={{ backgroundColor: "#50A2FF" }}
-                        className="button_top px-3 py-2"
-                      >
-                        {t("restaurants_page.view_btn")}
-                      </span>
-                    </button>
-                  </Link>
+                    <a
+                      href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(res.address)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full h-full inline-flex items-center justify-center gap-1 bg-white text-black px-2 py-2 rounded-xl font-black border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
+                    >
+                      <Image
+                        src={gmap_icon}
+                        alt="Google Maps Icon"
+                        className="w-5 h-5 object-contain"
+                      />
+                      {t("restaurants_page.googleMaps")}
+                    </a>
+                  </div>
                 </div>
               );
             })}

@@ -18,6 +18,8 @@ model User {
   // Χρησιμοποιούμε το όνομα relation εδώ
   reviews      Review[]     @relation("UserReviews")
   favorites    Favorite[]   @relation("UserFavorites")
+  comments  Comment[]
+  ownerReplies OwnerReply[]
 }
 
 model Favorite {
@@ -50,8 +52,21 @@ model Restaurant {
   owner               User             @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   reviews             Review[]
   favorites           Favorite[]
-}
 
+  openTime    String   @default("10:00") // Ώρα ανοίγματος (π.χ. "10:00")
+  closeTime   String   @default("23:30") // Ώρα κλεισίματος (π.χ. "23:30")
+}
+model OwnerReply {
+  id        String   @id @default(uuid())
+  text      String
+  createdAt DateTime @default(now())
+  
+  reviewId  String   @unique // 👈 @unique για να εξασφαλίσουμε τη σχέση 1:1
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  
+  userId    String   // Το ID του Owner που απάντησε
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
 model Review {
   id               String   @id @default(uuid())
   rating           Int
@@ -66,12 +81,25 @@ model Review {
   images           String[]
   text             String
   vfmRating        Int
+  comments  Comment[]
+
+  ownerReply OwnerReply?
 
   restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
   // Πρέπει να έχει το ίδιο όνομα relation με το User
   user       User       @relation("UserReviews", fields: [userId], references: [id], onDelete: Cascade)
 }
-
+model Comment {
+  id        String   @id @default(cuid())
+  text      String
+  createdAt DateTime @default(now())
+  
+  reviewId  String
+  review    Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
 enum RestaurantStatus {
   PENDING
   APPROVED

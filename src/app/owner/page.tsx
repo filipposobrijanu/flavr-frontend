@@ -12,6 +12,8 @@ interface Restaurant {
   status: string;
   globalBayesianScore: number;
   imageUrl?: string;
+  openingTime: string;
+  closingTime: string;
 }
 
 export default function OwnerDashboard() {
@@ -21,6 +23,9 @@ export default function OwnerDashboard() {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) setImage(e.target.files[0]);
   };
+
+  const [openingTime, setOpeningTime] = useState("09:00");
+  const [closingTime, setClosingTime] = useState("23:00");
 
   const uploadToCloudinary = async () => {
     if (!image) return null;
@@ -126,6 +131,8 @@ export default function OwnerDashboard() {
         cuisineType,
         ownerId: userId,
         imageUrl,
+        openingTime,
+        closingTime,
       }),
     });
 
@@ -307,7 +314,31 @@ export default function OwnerDashboard() {
                 </p>
               )}
             </div>
-
+            {/* 🕒 Ώρες Λειτουργίας */}
+            <div className="grid grid-cols-2 gap-4">
+              <div className="text-left">
+                <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
+                  {t("filters.open")}
+                </label>
+                <input
+                  type="time"
+                  className="w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none text-black"
+                  value={openingTime}
+                  onChange={(e) => setOpeningTime(e.target.value)}
+                />
+              </div>
+              <div className="text-left">
+                <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
+                  {t("filters.closed")}
+                </label>
+                <input
+                  type="time"
+                  className="w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] focus:bg-white focus:outline-none text-black"
+                  value={closingTime}
+                  onChange={(e) => setClosingTime(e.target.value)}
+                />
+              </div>
+            </div>
             {/* Κουμπί Υποβολής */}
 
             <button type="submit" className="w-full button-main ">

@@ -10,16 +10,32 @@ export async function GET(
     // 2. Προσθέτουμε το `await` πριν κάνουμε destructuring το id
     const { id } = await params;
 
-    // Από εδώ και κάτω ο κώδικάς σου συνεχίζει κανονικά...
-    // Φέρνουμε το εστιατόριο και κάνουμε include (join) τις κριτικές
+    // Φέρνουμε το εστιατόριο με το σωστό φώλιασμα (nesting)
     const restaurant = await prisma.restaurant.findUnique({
       where: { id },
       include: {
         reviews: {
           include: {
-            user: true,
+            // 👈 ΔΙΟΡΘΩΣΗ 1: Φέρνουμε τον χρήστη που έγραψε το REVIEW (για το Badge)
+            user: {
+              include: {
+                _count: {
+                  select: { reviews: true },
+                },
+              },
+            },
+            // 👈 ΔΙΟΡΘΩΣΗ 2: Παράλληλα, φέρνουμε τα σχόλια του review
+            comments: {
+              include: {
+                user: {
+                  select: { username: true }, // Φέρνουμε το username αυτού που σχολίασε
+                },
+              },
+              orderBy: { createdAt: "asc" }, // Τα σχόλια καλό είναι να φαίνονται από το παλαιότερο στο νεότερο
+            },
+            ownerReply: true,
           },
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: "desc" }, // Τα reviews από το νεότερο στο παλαιότερο
         },
       },
     });
