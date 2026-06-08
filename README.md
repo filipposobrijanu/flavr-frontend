@@ -1,11 +1,11 @@
-# 🥘 Flavr
+# Flavr Website
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-View_Project-success?style=for-the-badge)](https://flavr-frontend-7f4unumgt-monkass-projects.vercel.app/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
 A Neobrutalist platform for restaurant evaluation. Flavr combines a modern, bold aesthetic with a robust backend to provide a fair and transparent discovery experience for food lovers, while offering restaurant owners a comprehensive dashboard to manage their profiles and engage with their community.
 
-![Flavr Home Screenshot](Images/1.PNG)
+![Flavr](images/1.PNG)
 
 ## ✨ Core Features
 
