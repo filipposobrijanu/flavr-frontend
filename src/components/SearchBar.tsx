@@ -121,7 +121,7 @@ export default function SearchBar({ restaurants }: SearchBarProps) {
                 <div className="flex-1 ">
                   <div className="inline-flex gap-2 items-center">
                     <h3 className="font-black truncate max-w-[80px] sm:max-w-[100%] text-black text-lg leading-tight">
-                      {restaurant.name}sssssssssssssssssssssssss
+                      {restaurant.name}
                     </h3>
                     <span className="bg-blue-400 px-2 text-xs py-0.5 border-[1.5]  rounded-lg border-black text-black rounded shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] uppercase">
                       {restaurant.cuisineType}
