@@ -19,6 +19,7 @@ A Neobrutalist platform for restaurant evaluation. Flavr combines a modern, bold
 * **Interactive Media Gallery:** Features a sleek lightbox-enabled gallery, allowing users to explore restaurant imagery with a modern Neobrutalist touch.
 * **Seamless Navigation:** Integrated "Go to Maps" functionality that uses encoded addresses for instant, accurate directions.
 * **Role-Based Security:** Strict backend authorization ensuring that only the verified owners of a specific restaurant can modify its data or reply to reviews.
+
 ![Flavr](images/6.PNG)
 ![Flavr](images/7.PNG)
 ![Flavr](images/8.PNG)
