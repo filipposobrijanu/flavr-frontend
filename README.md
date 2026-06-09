@@ -35,8 +35,6 @@ A Neobrutalist platform for restaurant evaluation. Flavr combines a modern, bold
   <img src="https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white" alt="Cloudinary" />
 </p>
 
-![Owner Dashboard View](Images/2.PNG)
-
 ## 🚀 Getting Started
 
 1. **Clone the repository:**
