@@ -287,7 +287,6 @@ export default function OwnerDashboard() {
       )}
       <title>Owner Dashboard | Flavr</title>
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* 🍳 Φόρμα Υποβολής Νέου Εστιατορίου */}
         <motion.div
           variants={itemVariants}
           className="bg-white p-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] h-fit"
@@ -297,7 +296,6 @@ export default function OwnerDashboard() {
           </h2>
 
           <form onSubmit={handleSubmitApplication} className="space-y-5">
-            {/* Όνομα */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
                 {t("owner.res_name")}
@@ -319,7 +317,6 @@ export default function OwnerDashboard() {
               )}
             </div>
 
-            {/* Διεύθυνση */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
                 {t("owner.address")}
@@ -341,7 +338,6 @@ export default function OwnerDashboard() {
               )}
             </div>
 
-            {/* Τύπος Κουζίνας */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
                 {t("owner.cuisine_type")}
@@ -362,7 +358,6 @@ export default function OwnerDashboard() {
                 </div>
               </div>
             </div>
-            {/* 🖼️ Image Upload */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
                 {t("owner.res_image")}
@@ -374,7 +369,6 @@ export default function OwnerDashboard() {
                 className="w-full px-3 py-2 border-2 border-black rounded-xl font-bold bg-gray-50 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-black file:bg-blue-400 file:text-black hover:file:bg-blue-500 transition-all"
               />
             </div>
-            {/* Περιγραφή */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
                 {t("owner.description")}
@@ -394,7 +388,6 @@ export default function OwnerDashboard() {
                 </p>
               )}
             </div>
-            {/* 🕒 Ώρες Λειτουργίας */}
             <div className="grid grid-cols-2 gap-4">
               <div className="text-left">
                 <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
@@ -419,7 +412,6 @@ export default function OwnerDashboard() {
                 />
               </div>
             </div>
-            {/* Κουμπί Υποβολής */}
             <button type="submit" className="w-full button-main ">
               <span
                 style={{ backgroundColor: "#ff5e01", color: "white" }}
@@ -431,7 +423,6 @@ export default function OwnerDashboard() {
           </form>
         </motion.div>
 
-        {/* 📋 Λίστα με τα Υπάρχοντα Μαγαζιά του Ιδιοκτήτη */}
         <motion.div variants={itemVariants} className="lg:col-span-2 space-y-6">
           <h2 className="text-3xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight uppercase">
             {t("owner.my_restaurants")}
@@ -486,7 +477,6 @@ export default function OwnerDashboard() {
                   }`}
                 >
                   <div>
-                    {/* Header Κάρτας */}
                     <div className="flex justify-between items-start gap-2 mb-2">
                       <h3 className="text-xl truncate max-w-[150px] sm:max-w-[100%] font-black tracking-tight text-black line-clamp-1">
                         {res.name}
@@ -513,7 +503,6 @@ export default function OwnerDashboard() {
                       </span>
                     </div>
 
-                    {/* Κουζίνα & Τοποθεσία */}
                     <p className="text-xs font-black uppercase tracking-wider text-[#3a8bd6] mb-3">
                       {res.cuisineType} •{" "}
                       <span className="text-gray-600 normal-case font-bold">
@@ -521,7 +510,6 @@ export default function OwnerDashboard() {
                       </span>
                     </p>
 
-                    {/* Περιγραφή */}
                     <p className="text-sm font-medium text-gray-700 leading-relaxed line-clamp-2 mb-4">
                       {res.description}
                     </p>
@@ -546,7 +534,6 @@ export default function OwnerDashboard() {
                       </span>
                     </div>
 
-                    {/* 🗑️ Κουμπί Διαγραφής */}
                     <button
                       onClick={() =>
                         setRestaurantToDelete({ id: res.id, name: res.name })

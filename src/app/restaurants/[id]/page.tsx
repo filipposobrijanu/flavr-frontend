@@ -291,42 +291,30 @@ export default function RestaurantDetailsPage() {
     return (
       <div className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black animate-pulse">
         <div className="max-w-6xl mx-auto space-y-8">
-          {/* Back Button Skeleton */}
           <div className="h-10 w-40 bg-gray-200 rounded-xl border-2 border-black"></div>
 
-          {/* Hero Card Skeleton */}
           <div className="bg-white p-6 md:p-8 border-4 border-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row justify-between items-start gap-6">
             <div className="space-y-3 flex-1">
-              {/* Image Placeholder */}
               <div className="w-64 h-64 bg-gray-200 rounded-xl border-2 border-black mb-6"></div>
-              {/* Cuisine Tag */}
               <div className="h-6 w-24 bg-gray-200 rounded-lg"></div>
-              {/* Title */}
               <div className="h-10 w-3/4 bg-gray-200 rounded-lg"></div>
-              {/* Address */}
               <div className="h-4 w-1/3 bg-gray-200 rounded-md"></div>
-              {/* Description */}
               <div className="space-y-2 pt-4 border-t-2 border-black border-dashed">
                 <div className="h-4 w-full bg-gray-200 rounded"></div>
                 <div className="h-4 w-2/3 bg-gray-200 rounded"></div>
               </div>
-              {/* Hours */}
               <div className="h-10 w-48 bg-gray-200 rounded-xl mt-4"></div>
             </div>
 
-            {/* Sidebar Meta Info (Views/Share) */}
             <div className="flex flex-col gap-4">
               <div className="h-6 w-20 bg-gray-200 rounded"></div>
               <div className="h-10 w-32 bg-gray-200 rounded-xl"></div>
             </div>
 
-            {/* Score Badge Skeleton */}
             <div className="h-[140px] w-full md:w-[180px] bg-gray-200 border-4 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"></div>
           </div>
 
-          {/* Form & Reviews Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            {/* Sidebar Form Skeleton */}
             <div className="h-[450px] w-full bg-white border-4 border-black rounded-2xl p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
               <div className="h-8 w-1/2 bg-gray-200 rounded mb-6"></div>
               <div className="space-y-6">
@@ -339,7 +327,6 @@ export default function RestaurantDetailsPage() {
               </div>
             </div>
 
-            {/* Reviews List Skeleton */}
             <div className="lg:col-span-2 space-y-4">
               <div className="h-8 w-48 bg-gray-200 rounded-lg"></div>
               <div className="h-40 w-full bg-white border-2 border-b-4 border-black rounded-2xl p-5 space-y-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
@@ -394,8 +381,6 @@ export default function RestaurantDetailsPage() {
       )}
       <title>Restaurant | Flavr</title>
       <div className="max-w-6xl mx-auto space-y-8">
-        {/* Πίσω στις αναζητήσεις */}
-
         <Link
           href="/restaurants"
           className="inline-block font-black inline-flex gap-2 text-md uppercase tracking-wider border-2 border-black bg-gray-200 px-4 py-2 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
@@ -403,7 +388,6 @@ export default function RestaurantDetailsPage() {
           {t("restaurant_details.back_btn")}
         </Link>
 
-        {/* 🏛️ Κεντρικό Card Εστιατορίου */}
         <motion.div
           initial={{ y: 50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -422,7 +406,6 @@ export default function RestaurantDetailsPage() {
 
                 {isMainImgOpen && (
                   <div className="fixed inset-0 z-[100] h-screen flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-fade-in animate-duration-200">
-                    {/* Κουμπί Κλεισίματος */}
                     <button
                       onClick={() => setIsMainImgOpen(false)}
                       className="absolute top-6 right-6 z-[110] bg-red-500 text-black border-2 border-black font-black p-2 rounded-xl text-sm uppercase shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] cursor-pointer"
@@ -512,14 +495,12 @@ export default function RestaurantDetailsPage() {
           </div>
         </motion.div>
 
-        {/* Κάτω Πλέγμα: Φόρμα & Κριτικές */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3, duration: 0.5 }}
           className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start"
         >
-          {/* ✍️ Φόρμα Κριτικής */}
           <div className="lg:col-span-1">
             {currentUser?.role === "REVIEWER" ? (
               <div className="bg-white p-6 border-4 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] sticky top-6">
@@ -527,7 +508,6 @@ export default function RestaurantDetailsPage() {
                   {t("restaurant_details.write_review")}
                 </h2>
                 <form onSubmit={handleReviewSubmit} className="space-y-4">
-                  {/* Multi-Criteria Σύρτες */}
                   {[
                     {
                       label: t("restaurant_details.form.food"),
@@ -568,7 +548,6 @@ export default function RestaurantDetailsPage() {
                     </div>
                   ))}
 
-                  {/* Textarea Σχολίου */}
                   <div className="space-y-1 pt-2">
                     <label className="block text-xs font-black uppercase text-black">
                       {t("restaurant_details.comment")}
@@ -586,7 +565,6 @@ export default function RestaurantDetailsPage() {
                       onImagesSelected={(files) => setSelectedFiles(files)}
                     />
                   </div>
-                  {/* Neobrutalist Submit Button */}
                   <button type="submit" className="w-full button-main">
                     <span
                       style={{ backgroundColor: "#50A2FF" }}
@@ -606,7 +584,6 @@ export default function RestaurantDetailsPage() {
             )}
           </div>
 
-          {/* 💬 Λίστα Κριτικών */}
           <div className="lg:col-span-2 space-y-4">
             <h2 className="text-2xl font-black text-white uppercase tracking-tight [-webkit-text-stroke:4px_black] [paint-order:stroke_fill] text-left">
               {t("restaurant_details.reviews_title")} (
@@ -624,7 +601,6 @@ export default function RestaurantDetailsPage() {
               </div>
             ) : (
               <>
-                {/* Εδώ χρησιμοποιούμε το displayedReviews (που περιλαμβάνει το slice) */}
                 {displayedReviews.map((rev) => (
                   <motion.div
                     key={rev.id}
@@ -651,7 +627,6 @@ export default function RestaurantDetailsPage() {
                       </span>
                     </div>
 
-                    {/* Sub-ratings Badges */}
                     <div className="flex flex-wrap gap-2 text-[11px] font-black uppercase">
                       <span className="bg-blue-200 border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] border-black px-2 py-0.5 rounded-lg">
                         {t("restaurant_details.form.food")}: {rev.foodRating}
@@ -714,7 +689,6 @@ export default function RestaurantDetailsPage() {
                   </motion.div>
                 ))}
 
-                {/* 🔘 Το Κουμπί Load More ΜΕΣΑ στο col-span-2 */}
                 {visibleReviews < restaurant.reviews.length && (
                   <div className="flex justify-center pt-4">
                     <button
@@ -729,7 +703,6 @@ export default function RestaurantDetailsPage() {
               </>
             )}
           </div>
-          {/* 👈 ΠΡΟΣΘΗΚΗ: Κουμπί Load More */}
           {visibleReviews < restaurant.reviews.length && (
             <div className="flex justify-center pt-6">
               <button

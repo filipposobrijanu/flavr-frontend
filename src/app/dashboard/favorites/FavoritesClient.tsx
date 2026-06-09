@@ -47,7 +47,6 @@ export default function FavoritesClient({
         >
           {t("favorites.back")}
         </Link>
-        {/* 👑 Τίτλος Σελίδας (Neobrutalism) */}
         <div className="mb-8">
           <h2 className="text-4xl md:text-5xl text-white items-center inline-flex gap-3 [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight uppercase ">
             <Image
@@ -60,7 +59,6 @@ export default function FavoritesClient({
           </h2>
         </div>
 
-        {/* ❌ EMPTY STATE: Αν δεν έχει αγαπημένα */}
         {initialFavorites.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, rotate: -2 }}
@@ -86,7 +84,6 @@ export default function FavoritesClient({
             </Link>
           </motion.div>
         ) : (
-          /* 🍔 FAVORITES GRID */
           <motion.div
             variants={containerVariants}
             className="grid grid-cols-1 md:grid-cols-3 gap-8"
@@ -119,7 +116,6 @@ export default function FavoritesClient({
                         </h2>
 
                         <div className="flex items-center  gap-2">
-                          {/* Badge Σκορ σαν Sticker */}
                           <span className="bg-yellow-400 border-2 border-black font-black px-2.5 py-1 rounded-lg text-xs tracking-wide shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-1">
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -146,7 +142,6 @@ export default function FavoritesClient({
                         </div>
                       </div>
 
-                      {/* Subtitle: Κουζίνα & Διεύθυνση */}
                       <p className="text-xs font-black uppercase tracking-wider text-blue-500 mb-4">
                         {restaurant.cuisineType} •{" "}
                         <span className="text-gray-600 normal-case font-bold">
@@ -154,13 +149,11 @@ export default function FavoritesClient({
                         </span>
                       </p>
 
-                      {/* Περιγραφή με περιορισμό 3 γραμμών */}
                       <p className="text-sm font-medium text-black line-clamp-3 leading-relaxed mb-6">
                         {restaurant.description}
                       </p>
                     </div>
 
-                    {/* View Button */}
                     <Link
                       href={`/restaurants/${restaurant.id}`}
                       className="w-full block"

@@ -29,7 +29,6 @@ export default function PrivacyPolicyPage() {
         variants={itemVariants}
         className="max-w-4xl mx-auto space-y-8"
       >
-        {/* Κουμπί Επιστροφής */}
         <Link
           href="/"
           className="inline-block font-black inline-flex gap-2 text-md uppercase tracking-wider border-2 border-black bg-gray-200 px-4 py-2 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all"
@@ -37,7 +36,6 @@ export default function PrivacyPolicyPage() {
           {t("privacy.back")}
         </Link>
 
-        {/* 📄 Κεντρικός Τίτλος */}
         <div className="bg-yellow-400 border-4 border-black p-6 rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
           <h1 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-black">
             {t("privacy.title")}
@@ -47,12 +45,9 @@ export default function PrivacyPolicyPage() {
           </p>
         </div>
 
-        {/* Εισαγωγή */}
         <p className="text-md  leading-relaxed  pl-2 ">{t("privacy.intro")}</p>
 
-        {/* Sections με Neobrutalist Cards */}
         <div className="space-y-6">
-          {/* Section 1 */}
           <div className="bg-white p-6 border-2 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-3">
             <h2 className="text-2xl font-black uppercase tracking-tight flex items-center gap-2 text-black">
               <span className="bg-blue-400 border-2 border-black px-2 py-0.5 rounded text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -79,7 +74,6 @@ export default function PrivacyPolicyPage() {
             </div>
           </div>
 
-          {/* Section 2 */}
           <div className="bg-white p-6 border-2 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-3">
             <h2 className="text-2xl font-black uppercase tracking-tight flex items-center gap-2 text-black">
               <span className="bg-green-400 border-2 border-black px-2 py-0.5 rounded text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -103,7 +97,6 @@ export default function PrivacyPolicyPage() {
             </div>
           </div>
 
-          {/* Section 3 */}
           <div className="bg-white p-6 border-2 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-3">
             <h2 className="text-2xl font-black uppercase tracking-tight flex items-center gap-2 text-black">
               <span className="bg-purple-400 border-2 border-black px-2 py-0.5 rounded text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -116,7 +109,6 @@ export default function PrivacyPolicyPage() {
             </p>
           </div>
 
-          {/* Section 4 */}
           <div className="bg-white p-6 border-2 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-3">
             <h2 className="text-2xl font-black uppercase tracking-tight flex items-center gap-2 text-black">
               <span className="bg-red-400 border-2 border-black px-2 py-0.5 rounded text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">

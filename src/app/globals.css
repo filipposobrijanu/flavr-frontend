@@ -36,7 +36,6 @@ body {
 }
 
 .button-main {
-  /* Variables */
   --button_radius: 0.75em;
   --button_color: #ffb834;
   --button_outline_color: #000000;

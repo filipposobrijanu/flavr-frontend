@@ -131,7 +131,6 @@ function LoginContent() {
     >
       <title>Login | Flavr</title>
       <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center">
-        {/* 🍌 Μπανάνα */}
         <motion.div
           variants={itemVariants}
           className="hidden lg:block absolute left-0 xl:left-4 top-1/2 -translate-y-1/2 w-48 h-48 xl:w-56 xl:h-56 z-0 transform -rotate-12 transition-transform hover:scale-110"
@@ -151,12 +150,10 @@ function LoginContent() {
           {t("login.welcome")}
         </motion.h2>
 
-        {/* 📦 Κάρτα */}
         <motion.div
           variants={itemVariants}
           className="bg-white p-8 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-full max-w-md transition-all z-10"
         >
-          {/* General Global Error Box */}
           {errors.general && (
             <div className="mb-4 p-3 bg-red-200 border-2 border-black rounded-xl font-bold text-xs uppercase text-red-700 tracking-wide text-left shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
               {errors.general}
@@ -164,7 +161,6 @@ function LoginContent() {
           )}
 
           <form onSubmit={handleLogin} className="space-y-5">
-            {/* Username Input */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
                 {t("login.username_label")}
@@ -186,7 +182,6 @@ function LoginContent() {
               )}
             </div>
 
-            {/* Email Input */}
             <div className="text-left">
               <label className="block text-xs font-black uppercase tracking-wider mb-1.5 text-black">
                 {t("login.email_label")}
@@ -245,7 +240,6 @@ function LoginContent() {
             <hr className="w-full border-black border-1" />
           </div>
 
-          {/* 👇 Και αμέσως μετά ακολουθεί το κουμπί της Google που ήδη έχεις */}
           <button
             type="button"
             onClick={() => googleLogin()}
@@ -270,7 +264,6 @@ function LoginContent() {
           </p>
         </motion.div>
 
-        {/* 🐟 Ψάρι */}
         <motion.div
           variants={itemVariants}
           className="hidden lg:block absolute right-0 xl:right-4 top-1/2 -translate-y-1/2 w-48 h-48 xl:w-56 xl:h-56 z-0 transform rotate-12 transition-transform hover:scale-110"

@@ -148,7 +148,6 @@ export default function RestaurantsPage() {
     >
       <title>Discover Restaurants | Flavr</title>
       <div className="max-w-6xl mx-auto">
-        {/* 🌐 Τίτλος Σελίδας με Stroke Εφέ */}
         <h2 className="text-4xl md:text-5xl text-white items-center inline-flex gap-3 [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight uppercase">
           <Image
             priority
@@ -159,10 +158,7 @@ export default function RestaurantsPage() {
           {t("restaurants_page.title")}
         </h2>
 
-        {/* 🔍 Φίλτρα Αναζήτησης με Neobrutalist Στυλ */}
         <div className="flex flex-col md:flex-row sm:flex-wrap gap-4 mt-4 mb-12 lg:items-center items-start">
-          {/* Input Αναζήτησης */}
-
           <SearchBar restaurants={restaurants} />
           <div className="relative">
             <select
@@ -181,7 +177,6 @@ export default function RestaurantsPage() {
               ▼
             </div>
           </div>
-          {/* Dropdown Επιλογής Κουζίνας */}
           <div className="flex flex-wrap gap-2 items-center">
             <button
               onClick={() => setIsOpenNow(!isOpenNow)}
@@ -194,7 +189,6 @@ export default function RestaurantsPage() {
               ></span>
               {t("filters.open_now")}
             </button>
-            {/* Κουζίνα (Blue) */}
             <div className="relative">
               <select
                 value={cuisine}
@@ -260,7 +254,6 @@ export default function RestaurantsPage() {
           </Link>
         </div>
         {isLoading ? (
-          /* ⏳ IMPROVED LOADING SKELETON */
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[1, 2, 3].map((i) => (
               <div
@@ -268,16 +261,12 @@ export default function RestaurantsPage() {
                 className="bg-white border-2 border-b-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] w-full flex flex-col justify-between"
               >
                 <div className="animate-pulse space-y-4">
-                  {/* Header Skeleton */}
                   <div className="flex justify-between items-start gap-2">
                     <div className="h-8 bg-gray-200 rounded-lg w-2/3"></div>
                     <div className="h-8 bg-gray-200 rounded-lg w-12"></div>
                   </div>
-
-                  {/* Metadata Skeleton */}
                   <div className="h-4 bg-gray-200 rounded-md w-1/3"></div>
 
-                  {/* Description Lines Skeleton */}
                   <div className="space-y-2 pt-2">
                     <div className="h-4 bg-gray-200 rounded-md w-full"></div>
                     <div className="h-4 bg-gray-200 rounded-md w-full"></div>
@@ -285,13 +274,11 @@ export default function RestaurantsPage() {
                   </div>
                 </div>
 
-                {/* Button Skeleton */}
                 <div className="mt-8 h-12 bg-gray-200 rounded-xl w-full animate-pulse border-2 border-black"></div>
               </div>
             ))}
           </div>
         ) : restaurants.length === 0 ? (
-          /* EMPTY STATE */
           <div className="text-center py-12 border-4 border-dashed border-black rounded-2xl bg-white shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <p className="font-black text-xl">
               {t("restaurants_page.no_results")}
@@ -334,7 +321,6 @@ export default function RestaurantsPage() {
                         </span>
                       </div>
                     )}
-                    {/* Header Κάρτας: Όνομα & Σκορ */}
                     <div className="flex justify-between items-start gap-2 mb-3">
                       <h2 className="text-2xl font-black tracking-tight text-black line-clamp-1">
                         {res.name}
@@ -354,7 +340,6 @@ export default function RestaurantsPage() {
                           </svg>{" "}
                           {res.views}
                         </div>
-                        {/* Badge Σκορ σαν Sticker */}
                         <span className="bg-yellow-400 border-2 border-black font-black px-2.5 py-1 rounded-lg text-xs tracking-wide shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] flex items-center gap-1">
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
@@ -379,7 +364,6 @@ export default function RestaurantsPage() {
                       </div>
                     </div>
 
-                    {/* Subtitle: Κουζίνα & Διεύθυνση */}
                     <p className="text-xs font-black uppercase tracking-wider text-blue-500 mb-4">
                       {res.cuisineType} •{" "}
                       <span className="text-gray-600 normal-case font-bold">
@@ -387,7 +371,6 @@ export default function RestaurantsPage() {
                       </span>
                     </p>
 
-                    {/* Περιγραφή με περιορισμό 3 γραμμών */}
                     <p className="text-sm font-medium text-black line-clamp-3 leading-relaxed mb-6">
                       {res.description}
                     </p>

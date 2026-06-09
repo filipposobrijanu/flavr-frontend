@@ -138,7 +138,6 @@ export default function SettingsPage() {
       animate="visible"
       className="relative p-6 md:p-12 max-w-4xl mx-auto min-h-[calc(80vh-4rem)]"
     >
-      {/* Notification UI */}
       {notification && (
         <div
           className={`fixed bottom-20 right-6 z-50 p-4 border-4 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-black transition-all ${
@@ -163,7 +162,6 @@ export default function SettingsPage() {
         </h2>
 
         <motion.div variants={containerVariants} className="space-y-8">
-          {/* --- Profile Update Card --- */}
           <motion.div
             variants={itemVariants}
             className="bg-yellow-400 border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
@@ -202,7 +200,6 @@ export default function SettingsPage() {
             </form>
           </motion.div>
 
-          {/* --- Security Card --- */}
           <motion.div
             variants={itemVariants}
             className="bg-blue-400 border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
@@ -253,7 +250,6 @@ export default function SettingsPage() {
             </form>
           </motion.div>
 
-          {/* --- Danger Zone Card --- */}
           <motion.div
             variants={itemVariants}
             className="bg-red-500 border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"

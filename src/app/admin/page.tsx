@@ -135,12 +135,9 @@ export default function AdminDashboard() {
 
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5 pb-6">
           <div className="flex items-center gap-3 w-full sm:w-auto">
-            {/* Image / Avatar Box */}
             <div className="w-16 h-16 bg-gray-300 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] rounded-2xl shrink-0"></div>
             <div className="space-y-2 flex-1 sm:flex-initial">
-              {/* Title Text */}
               <div className="h-10 w-56 bg-gray-300 rounded-lg"></div>
-              {/* Subtitle Text */}
               <div className="h-4 w-40 bg-gray-200 rounded"></div>
             </div>
           </div>
@@ -152,37 +149,30 @@ export default function AdminDashboard() {
           <div className="h-12 w-48 bg-gray-200 border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"></div>
         </div>
 
-        {/* List Skeletons */}
         <div className="space-y-6">
           {[1, 2].map((i) => (
             <div
               key={i}
               className="bg-white p-6 rounded-2xl border-2 border-b-4 border-black flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"
             >
-              {/* Left Content Side */}
               <div className="space-y-3 flex-1 w-full">
-                {/* Title & Cuisine Badge */}
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="h-8 w-48 bg-gray-300 rounded-lg"></div>
                   <div className="h-6 w-20 bg-gray-200 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"></div>
                 </div>
 
-                {/* Address */}
                 <div className="h-4 w-32 bg-gray-200 rounded"></div>
 
-                {/* Description (2 Lines) */}
                 <div className="space-y-2">
                   <div className="h-4 w-full bg-gray-200 rounded"></div>
                   <div className="h-4 w-5/6 bg-gray-200 rounded"></div>
                 </div>
 
-                {/* Submitted By / Owner Info */}
                 <div className="pt-3 border-t border-black/10 mt-3 flex items-center gap-2">
                   <div className="h-4 w-64 bg-gray-200 rounded"></div>
                 </div>
               </div>
 
-              {/* Right Side: Action Buttons Skeleton (Matches button-main structure) */}
               <div className="flex flex-wrap sm:flex-row lg:flex-col xl:flex-row gap-3 w-full lg:w-auto shrink-0 border-t-2 border-dashed border-black/10 lg:border-t-0 pt-4 lg:pt-0">
                 <div className="h-10 w-24 bg-gray-300 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"></div>
                 <div className="h-10 w-24 bg-gray-300 border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"></div>
@@ -214,7 +204,6 @@ export default function AdminDashboard() {
       )}
       <title>Admin Dashboard | Flavr</title>
       <div className="max-w-5xl mx-auto">
-        {/* 🛡️ Header Πίνακα Ελέγχου */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5 border-black pb-6">
           <div>
             <h2 className="text-4xl md:text-5xl text-white items-center inline-flex gap-3 [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight uppercase">
@@ -308,7 +297,6 @@ export default function AdminDashboard() {
                     {res.description}
                   </p>
 
-                  {/* Στοιχεία Ιδιοκτήτη (Footer Κάρτας) */}
                   <div className="pt-3 flex items-center gap-2 text-xs font-bold text-black border-t border-black/10 mt-3">
                     <span>
                       {t("admin.submitted_by")}{" "}
