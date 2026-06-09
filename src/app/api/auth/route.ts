@@ -1,4 +1,3 @@
-// src/app/api/auth/route.ts
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import bcrypt from "bcryptjs";
@@ -16,14 +15,12 @@ export async function POST(request: Request) {
       );
     }
 
-    // 1. Βρίσκουμε τον χρήστη είτε με email είτε με username
     const user = await prisma.user.findFirst({
       where: {
         OR: [{ email: email || "" }, { username: username || "" }],
       },
     });
 
-    // 1.5 Ελέγχουμε αν υπάρχει ο χρήστης ΚΑΙ αν έχει αποθηκευμένο κωδικό
     if (!user || !user.passwordHash) {
       return NextResponse.json(
         { message: "Λάθος στοιχεία σύνδεσης" },
@@ -31,7 +28,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // 2. Ελέγχουμε αν ο κωδικός ταιριάζει (πλέον το TS ξέρει ότι το passwordHash είναι 100% string)
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
     if (!isPasswordValid) {
@@ -41,17 +37,15 @@ export async function POST(request: Request) {
       );
     }
 
-    // 3. Αποθηκεύουμε το userId στα Cookies (απαραίτητο για το Dashboard)
     const cookieStore = await cookies();
     cookieStore.set("userId", user.id, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // Το cookie λήγει σε 7 μέρες
+      maxAge: 60 * 60 * 24 * 7,
     });
 
-    // 4. Επιστρέφουμε τα στοιχεία του χρήστη (ΧΩΡΙΣ τον κωδικό για ασφάλεια)
     const { passwordHash: _, ...safeUser } = user;
 
     return NextResponse.json(safeUser, { status: 200 });

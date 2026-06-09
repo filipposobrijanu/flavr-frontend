@@ -1,5 +1,10 @@
 export const translations = {
   el: {
+    restaurant: {
+      share: "ΜΟΙΡΑΣΟΥ ΤΟ",
+      copied: "ΑΝΤΙΓΡΑΦΗΚΕ!",
+      share_text: "Δες το {name} στο Flavr!",
+    },
     reviews: {
       owner_badge: "Απάντηση από τον Ιδιοκτήτη",
       reply_placeholder: "Γράψτε μια επίσημη απάντηση...",
@@ -356,6 +361,16 @@ export const translations = {
       btn_decline: "ΑΠΟΡΡΙΨΗ",
     },
     owner: {
+      modal_title: "Είστε σίγουροι;",
+      modal_desc_1: "Πρόκειται να διαγράψετε το ",
+      modal_desc_2: ". Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.",
+      btn_cancel: "Ακύρωση",
+      btn_confirm_delete: "Ναι, Διαγραφή",
+      btn_delete: "ΔΙΑΓΡΑΦΗ",
+      confirm_delete:
+        "Είστε σίγουροι ότι θέλετε να διαγράψετε το κατάστημα {name}; Αυτή η ενέργεια δεν αναιρείται.",
+      success_delete: "Το εστιατόριο διαγράφηκε επιτυχώς!",
+      fail_delete: "Αποτυχία διαγραφής εστιατορίου.",
       no_access: "Δεν έχετε πρόσβαση σε αυτή τη σελίδα!",
       data_control: "Έλεγχος Δεδομένων...",
       err_form: "Παρακαλώ ελέγξτε τη φόρμα για σφάλματα!",
@@ -390,6 +405,11 @@ export const translations = {
     },
   },
   en: {
+    restaurant: {
+      share: "SHARE",
+      copied: "COPIED!",
+      share_text: "Check out {name} on Flavr!",
+    },
     reviews: {
       owner_badge: "Response from Owner",
       reply_placeholder: "Write an official response...",
@@ -745,6 +765,16 @@ export const translations = {
       btn_decline: "DECLINE",
     },
     owner: {
+      modal_title: "Are you sure?",
+      modal_desc_1: "You are about to delete ",
+      modal_desc_2: ". This action cannot be undone.",
+      btn_cancel: "Cancel",
+      btn_confirm_delete: "Yes, Delete",
+      btn_delete: "DELETE",
+      confirm_delete:
+        "Are you sure you want to delete {name}? This action cannot be undone.",
+      success_delete: "Restaurant deleted successfully!",
+      fail_delete: "Failed to delete restaurant.",
       no_access: "You do not have access to this page!",
       data_control: "Data Control...",
       err_form: "Please check the form for errors!",

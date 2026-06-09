@@ -1,12 +1,11 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // 👈 Σιγουρέψου ότι το path είναι σωστό (π.χ. @/lib/db ή @/lib/prisma)
+import { prisma } from "@/lib/prisma";
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }, // 👈 1. Ορίζουμε το params ως Promise
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    // 2. Κάνουμε await τα params για να πάρουμε το id με ασφάλεια
     const { id } = await params;
 
     const { text, userId } = await req.json();
@@ -21,7 +20,7 @@ export async function POST(
     const newComment = await prisma.comment.create({
       data: {
         text,
-        reviewId: id, // 👈 3. Χρήση του ξετυλιγμένου id εδώ
+        reviewId: id,
         userId: userId,
       },
       include: {

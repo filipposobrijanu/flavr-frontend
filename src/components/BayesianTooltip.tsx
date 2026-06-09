@@ -1,4 +1,3 @@
-// components/BayesianTooltip.tsx
 "use client";
 import { useState } from "react";
 

@@ -1,10 +1,10 @@
 export interface BadgeInfo {
-  nameKey: string; // Το κλειδί για τη μετάφραση
-  color: string; // Tailwind κλάση για Neobrutalist background
+  nameKey: string;
+  color: string;
 }
 
 export function getUserBadge(reviewCount: number): BadgeInfo | null {
-  if (reviewCount === 0) return null; // Νέος χρήστης χωρίς reviews
+  if (reviewCount === 0) return null;
 
   if (reviewCount >= 1 && reviewCount <= 3) {
     return {
@@ -27,7 +27,6 @@ export function getUserBadge(reviewCount: number): BadgeInfo | null {
     };
   }
 
-  // 20+ Reviews
   return {
     nameKey: "badges.top_reviewer",
     color: "bg-yellow-400",

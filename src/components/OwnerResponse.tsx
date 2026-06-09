@@ -12,7 +12,7 @@ interface Reply {
 interface OwnerResponseProps {
   reviewId: string;
   initialReply: Reply | null;
-  userRole: string; // "USER" ή "OWNER"
+  userRole: string;
   currentUserId: string;
 }
 
@@ -51,13 +51,11 @@ export default function OwnerResponse({
     }
   };
 
-  // Αν δεν υπάρχει απάντηση και ο χρήστης ΔΕΝ είναι Owner, δεν δείχνουμε τίποτα
   if (!reply && userRole !== "OWNER") return null;
 
   return (
     <div className="mt-4 pl-4">
       {reply ? (
-        // Εμφάνιση της επίσημης απάντησης
         <div className="bg-purple-50 border-2 border-purple-900 p-4 rounded-xl shadow-[4px_4px_0px_0px_rgba(147,51,234,1)]">
           <div className="flex justify-between items-center mb-1">
             <span className="text-xs font-black uppercase tracking-wider text-purple-700 flex items-center gap-1">
@@ -72,7 +70,6 @@ export default function OwnerResponse({
           </p>
         </div>
       ) : (
-        // Φόρμα απάντησης μόνο για τον Owner
         <form
           onSubmit={handleSubmit}
           className="bg-gray-50 border-2 border-dashed border-black p-3 rounded-xl space-y-2"

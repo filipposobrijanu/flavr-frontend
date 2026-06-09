@@ -6,7 +6,7 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = await params; // Το reviewId
+    const { id } = await params;
     const { text, userId } = await req.json();
 
     if (!text || text.trim() === "") {
@@ -16,7 +16,6 @@ export async function POST(
       );
     }
 
-    // 1. Έλεγχος αν ο χρήστης υπάρχει και είναι όντως OWNER
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -28,7 +27,6 @@ export async function POST(
       );
     }
 
-    // 2. Δημιουργία της απάντησης
     const reply = await prisma.ownerReply.create({
       data: {
         text,

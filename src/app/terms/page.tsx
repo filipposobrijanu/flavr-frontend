@@ -2,13 +2,39 @@
 
 import Link from "next/link";
 import { useLocale } from "@/context/LocaleContext";
+import { motion } from "framer-motion";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+} as const;
 
 export default function TermsOfServicePage() {
   const { t } = useLocale();
   return (
-    <div className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black"
+    >
       <title>Terms of Service | Flavr</title>
-      <div className="max-w-4xl mx-auto space-y-8">
+      <motion.div
+        variants={itemVariants}
+        className="max-w-4xl mx-auto space-y-8"
+      >
         {/* Κουμπί Επιστροφής */}
         <Link
           href="/"
@@ -33,7 +59,7 @@ export default function TermsOfServicePage() {
         </p>
 
         {/* Sections με Neobrutalist Cards */}
-        <div className="space-y-6">
+        <motion.div variants={containerVariants} className="space-y-6">
           {/* Section 1 */}
           <div className="bg-white p-6 border-2 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-3">
             <h2 className="text-2xl font-black uppercase tracking-tight flex items-center gap-2 text-black">
@@ -100,8 +126,8 @@ export default function TermsOfServicePage() {
               <span className="font-black">Bayesian Score</span>.
             </p>
           </div>
-        </div>
-      </div>
-    </div>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 }

@@ -25,7 +25,7 @@ interface FooterProps {
 }
 interface NavLink {
   href: string;
-  key: string; // Using 'key' to look up translation
+  key: string;
 }
 export default function Footer({
   brandName,
@@ -36,10 +36,8 @@ export default function Footer({
 }: FooterProps) {
   const { t } = useLocale();
   return (
-    // 🛠️ ΔΙΟΡΘΩΣΗ: w-full και bg-white για να είναι όλο κάτασπρο και να πιάνει όλη την οθόνη
     <footer className="w-full border-t-4 border-black bg-white text-black pt-8 pb-6 mt-auto">
       <div className="max-w-6xl mx-auto px-6">
-        {/* TOP SECTION: Logo & Socials */}
         <div className="flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
           <Link
             href="/"

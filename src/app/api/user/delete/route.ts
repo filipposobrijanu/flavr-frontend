@@ -4,7 +4,6 @@ import { cookies } from "next/headers";
 
 export async function DELETE() {
   try {
-    // 1. Παίρνουμε το userId από τα cookies
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value;
 
@@ -12,8 +11,6 @@ export async function DELETE() {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
 
-    // 2. Διαγραφή του χρήστη (το Prisma θα διαγράψει και τα reviews αν έχεις cascade delete)
-    // Αν δεν έχεις cascade delete στο Prisma schema, πρέπει πρώτα να διαγράψεις τα reviews του χρήστη!
     await prisma.review.deleteMany({
       where: { userId: userId },
     });
@@ -22,7 +19,6 @@ export async function DELETE() {
       where: { id: userId },
     });
 
-    // 3. Διαγραφή του cookie για να αποσυνδεθεί ο χρήστης
     cookieStore.delete("userId");
 
     return NextResponse.json(

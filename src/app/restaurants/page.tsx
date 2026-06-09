@@ -3,14 +3,35 @@
 import Image from "next/image";
 import rest_Image from "../../assets/ideativas-tlm-kitchen-10152789_1920.png";
 import { useState, useEffect } from "react";
-import Link from "next/link"; // 👈 1. ΠΡΟΣΘΗΚΗ: Εισαγωγή του Link για την πλοήγηση
+import Link from "next/link";
 import { Metadata } from "next";
 import { useLocale } from "@/context/LocaleContext";
 import FavoriteButton from "@/components/FavoriteButton";
 import SearchBar from "@/components/SearchBar";
 import { useMemo } from "react";
 import gmap_icon from "../../assets/gmap_icon.png";
+import { motion } from "framer-motion";
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 },
+  },
+};
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
+const cardVariants = {
+  hidden: { opacity: 0, scale: 0.95, y: 20 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+} as const;
 interface Restaurant {
   id: string;
   name: string;
@@ -29,7 +50,7 @@ interface Restaurant {
 
 export default function RestaurantsPage() {
   const { t } = useLocale();
-  const [sortBy, setSortBy] = useState("rating"); // "rating" | "views" | "new"
+  const [sortBy, setSortBy] = useState("rating");
 
   const [visibleCount, setVisibleCount] = useState(6);
 
@@ -42,7 +63,7 @@ export default function RestaurantsPage() {
 
   const [isOpenNow, setIsOpenNow] = useState(false);
   const isRestaurantOpen = (openTime: string, closeTime: string) => {
-    if (!openTime || !closeTime) return true; // Fallback αν λείπουν δεδομένα
+    if (!openTime || !closeTime) return true;
 
     const now = new Date();
     const currentTotalMinutes = now.getHours() * 60 + now.getMinutes();
@@ -53,7 +74,6 @@ export default function RestaurantsPage() {
     const [closeH, closeM] = closeTime.split(":").map(Number);
     const closeTotalMinutes = closeH * 60 + closeM;
 
-    // Αν κλείνει μετά τα μεσάνυχτα (π.χ. ανοίγει 18:00, κλείνει 02:00)
     if (closeTotalMinutes < openTotalMinutes) {
       return (
         currentTotalMinutes >= openTotalMinutes ||
@@ -61,7 +81,6 @@ export default function RestaurantsPage() {
       );
     }
 
-    // Κανονικό ωράριο (π.χ. 09:00 με 23:00)
     return (
       currentTotalMinutes >= openTotalMinutes &&
       currentTotalMinutes <= closeTotalMinutes
@@ -69,7 +88,6 @@ export default function RestaurantsPage() {
   };
 
   const filteredRestaurants = useMemo(() => {
-    // 1. Φιλτράρισμα
     let filtered = restaurants.filter((res) => {
       const matchCuisine = cuisine ? res.cuisineType === cuisine : true;
       const matchPrice = price ? res.priceRange === price : true;
@@ -77,7 +95,6 @@ export default function RestaurantsPage() {
         ? res.area === area || res.address.includes(area)
         : true;
 
-      // 👈 2. ΔΙΟΡΘΩΣΗ: Προσθήκη του φίλτρου Open Now
       const matchOpenNow = isOpenNow
         ? isRestaurantOpen(res.openTime, res.closeTime)
         : true;
@@ -85,7 +102,6 @@ export default function RestaurantsPage() {
       return matchCuisine && matchPrice && matchArea && matchOpenNow;
     });
 
-    // 2. Ταξινόμηση
     return filtered.sort((a, b) => {
       switch (sortBy) {
         case "rating_high":
@@ -104,12 +120,11 @@ export default function RestaurantsPage() {
           return 0;
       }
     });
-    // 👈 3. ΔΙΟΡΘΩΣΗ: Προσθήκη του isOpenNow στα dependencies του useMemo
   }, [restaurants, cuisine, price, area, sortBy, isOpenNow]);
 
   useEffect(() => {
     const getRestaurants = async () => {
-      setIsLoading(true); // Ξεκινάει το loading
+      setIsLoading(true);
       try {
         const res = await fetch("/api/restaurants?search=&cuisine=");
         const data = await res.json();
@@ -119,13 +134,18 @@ export default function RestaurantsPage() {
       } catch (error) {
         console.error(error);
       } finally {
-        setIsLoading(false); // Σταματάει το loading είτε πετύχει είτε όχι
+        setIsLoading(false);
       }
     };
     getRestaurants();
   }, [search, cuisine]);
   return (
-    <div className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black"
+    >
       <title>Discover Restaurants | Flavr</title>
       <div className="max-w-6xl mx-auto">
         {/* 🌐 Τίτλος Σελίδας με Stroke Εφέ */}
@@ -197,7 +217,6 @@ export default function RestaurantsPage() {
               </div>
             </div>
 
-            {/* Clear Button (Red - με το ίδιο hover/active style των κουμπιών σου) */}
             {(cuisine ||
               price ||
               area ||
@@ -208,8 +227,8 @@ export default function RestaurantsPage() {
                   setCuisine("");
                   setPrice("");
                   setArea("");
-                  setIsOpenNow(false); // Reset το Open Now
-                  setSortBy("rating_high"); // Reset το Sorting στο default
+                  setIsOpenNow(false);
+                  setSortBy("rating_high");
                 }}
                 className="px-3 cursor-pointer py-2 bg-red-500 text-white font-black text-sm uppercase border-2 border-black rounded-xl shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-[0px_0px_0px_0px_rgba(0,0,0,1)]"
               >
@@ -279,14 +298,20 @@ export default function RestaurantsPage() {
             </p>
           </div>
         ) : (
-          <div className="grid  grid-cols-1 md:grid-cols-3 gap-8">
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            className="grid  grid-cols-1 md:grid-cols-3 gap-8"
+          >
             {filteredRestaurants.slice(0, visibleCount).map((res) => {
               const isFavorite = (res.favorites?.length ?? 0) > 0;
 
               const isOpen = isRestaurantOpen(res.openTime, res.closeTime);
               return (
-                <div
+                <motion.div
                   key={res.id}
+                  variants={cardVariants}
                   className="bg-white relative border-2 border-b-4 border-black p-6 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all"
                 >
                   <div>
@@ -396,10 +421,10 @@ export default function RestaurantsPage() {
                       {t("restaurants_page.googleMaps")}
                     </a>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
-          </div>
+          </motion.div>
         )}
         {visibleCount < filteredRestaurants.length && (
           <div className="flex justify-center mt-12">
@@ -412,6 +437,6 @@ export default function RestaurantsPage() {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

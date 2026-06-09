@@ -8,6 +8,7 @@ import Image from "next/image";
 import { useLocale } from "@/context/LocaleContext";
 import greece_flag from "../assets/greece.png";
 import english_flag from "../assets/united-states.png";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
   const [user, setUser] = useState<any>(null);
@@ -15,25 +16,28 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  // 🔥 Τρέχει ΚΑΘΕ ΦΟΡΑ που αλλάζει η σελίδα (route change)
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     } else {
-      setUser(null); // Αν δεν υπάρχει χρήστης, καθαρίζει το state
+      setUser(null);
     }
-  }, [pathname]); // <-- Το μυστικό είναι εδώ!
+  }, [pathname]);
 
   const { lang, setLang, t } = useLocale();
   const handleLogout = () => {
     localStorage.removeItem("user");
-    setUser(null); // Καθαρίζουμε το state αμέσως
-    router.push("/"); // Φεύγουμε χωρίς κανένα άσχημο page reload!
+    setUser(null);
+    router.push("/");
   };
 
   return (
-    <nav className="w-[calc(100%-2rem)] max-w-6xl mx-auto mt-4 px-6 py-3 bg-white border-2 border-b-4 border-black rounded-2xl sticky top-4 z-50 text-black">
+    <motion.nav
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      className="w-[calc(100%-2rem)] max-w-6xl mx-auto mt-4 px-6 py-3 bg-white border-2 border-b-4 border-black rounded-2xl sticky top-4 z-50 text-black"
+    >
       <div className="flex items-center justify-between">
         {/* Logo */}
         <Link
@@ -61,7 +65,7 @@ export default function Navbar() {
                 alt="English"
                 width={28}
                 height={28}
-                className="border-2 border-black rounded-full shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:opacity-80 cursor-pointer" // Εδώ προσθέτεις το stroke
+                className="border-2 border-black rounded-full shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:opacity-80 cursor-pointer"
               />
             ) : (
               <Image
@@ -69,7 +73,7 @@ export default function Navbar() {
                 alt="Greek"
                 width={28}
                 height={28}
-                className="border-2 border-black rounded-full shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:opacity-80 cursor-pointer" // Εδώ προσθέτεις το stroke
+                className="border-2 border-black rounded-full shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:opacity-80 cursor-pointer"
               />
             )}
           </button>
@@ -87,60 +91,79 @@ export default function Navbar() {
           </div>
         </button>
       </div>
-
-      {/* Mobile Menu Dropdown */}
-      {isMenuOpen && (
-        <div className="md:hidden mt-4 pt-4 pb-2 border-t-2 border-black flex flex-col gap-4">
-          <NavLinks
-            user={user}
-            pathname={pathname}
-            handleLogout={handleLogout}
-            isMobile
-          />
-          <button
-            onClick={() => setLang(lang === "el" ? "en" : "el")}
-            className="flex items-center justify-start"
+      <AnimatePresence>
+        {/* Mobile Menu Dropdown */}
+        {isMenuOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="md:hidden mt-4 pt-4 pb-2 border-t-2 border-black flex flex-col gap-4"
           >
-            {lang === "el" ? (
-              <div className="flex items-center gap-2 font-bold hover:opacity-80 cursor-pointer">
-                <Image
-                  src={english_flag}
-                  alt="English"
-                  width={28}
-                  height={28}
-                  className="border-2 border-black rounded-full shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]  cursor-pointer" // Εδώ προσθέτεις το stroke
-                />
-                Αγγλικά
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 hover:opacity-80 cursor-pointer">
-                <Image
-                  src={greece_flag}
-                  alt="Greek"
-                  width={28}
-                  height={28}
-                  className="border-2 border-black rounded-full shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:opacity-80 cursor-pointer" // Εδώ προσθέτεις το stroke
-                />
-                Greek
-              </div>
-            )}
-          </button>
-        </div>
-      )}
-    </nav>
+            <NavLinks
+              user={user}
+              pathname={pathname}
+              handleLogout={handleLogout}
+              isMobile
+              closeMenu={() => setIsMenuOpen(false)}
+            />
+            <button
+              onClick={() => setLang(lang === "el" ? "en" : "el")}
+              className="flex items-center justify-start"
+            >
+              {lang === "el" ? (
+                <div className="flex items-center gap-2 font-bold hover:opacity-80 cursor-pointer">
+                  <Image
+                    src={english_flag}
+                    alt="English"
+                    width={28}
+                    height={28}
+                    className="border-2 border-black rounded-full shadow-[1px_1px_0px_0px_rgba(0,0,0,1)]  cursor-pointer"
+                  />
+                  Αγγλικά
+                </div>
+              ) : (
+                <div className="flex items-center gap-2 hover:opacity-80 cursor-pointer">
+                  <Image
+                    src={greece_flag}
+                    alt="Greek"
+                    width={28}
+                    height={28}
+                    className="border-2 border-black rounded-full shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] hover:opacity-80 cursor-pointer"
+                  />
+                  Greek
+                </div>
+              )}
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.nav>
   );
 }
 
-function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
+function NavLinks({
+  user,
+  pathname,
+  handleLogout,
+  isMobile = false,
+  closeMenu,
+}: any) {
   const router = useRouter();
   const { lang, setLang, t } = useLocale();
   const baseClass = isMobile
     ? "block py-2"
     : "font-semibold hover:opacity-80 transition-colors";
 
+  const handleClick = (e: React.MouseEvent) => {
+    if (isMobile && closeMenu) {
+      closeMenu(); // Closes menu when a link is clicked
+    }
+  };
   return (
     <>
       <Link
+        onClick={handleClick}
         href="/restaurants"
         className={`${pathname === "/restaurants" ? "text-blue-600" : "hover:text-blue-600"} font-semibold hover:opacity-80 transition-colors`}
       >
@@ -149,6 +172,7 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
 
       {user?.role === "OWNER" && (
         <Link
+          onClick={handleClick}
           href="/owner"
           className={`${pathname === "/owner" ? "text-orange-600" : "hover:text-orange-600"} font-semibold hover:opacity-80 transition-colors`}
         >
@@ -157,6 +181,7 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
       )}
       {user?.role === "ADMIN" && (
         <Link
+          onClick={handleClick}
           href="/admin"
           className={`${pathname === "/admin" ? "text-purple-600" : "hover:text-purple-600"} font-semibold hover:opacity-80 transition-colors`}
         >
@@ -165,6 +190,7 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
       )}
       {user?.role === "REVIEWER" && (
         <Link
+          onClick={handleClick}
           href="/dashboard"
           className={`${pathname === "/dashboard" ? "text-black" : "hover:text-black"} font-semibold hover:opacity-80 transition-colors`}
         >
@@ -173,6 +199,7 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
       )}
       {user && (
         <Link
+          onClick={handleClick}
           href="/settings"
           className={`${pathname === "/settings" ? "text-black" : "hover:text-black"} font-semibold hover:opacity-80 transition-colors`}
         >
@@ -181,7 +208,7 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
       )}
       {user ? (
         <div className="flex items-center gap-4">
-          <div className="inline-flex items-center gap-1 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-bold text-black bg-gray-100 border-2 border-black px-3 py-1 rounded-xl text-sm">
+          <div className="inline-flex items-center gap-1 min-w-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] font-bold text-black bg-gray-100 border-2 border-black px-3 py-1 rounded-xl text-sm">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="18"
@@ -192,7 +219,10 @@ function NavLinks({ user, pathname, handleLogout, isMobile = false }: any) {
             >
               <path d="M12 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2m-1 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-3 4c2.623 0 4.146.826 5 1.755V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-1.245C3.854 11.825 5.377 11 8 11" />
             </svg>
-            {user.username} <span className="text-xs ml-1">({user.role})</span>
+            <span className="truncate max-w-[50px] sm:max-w-[100px] md:max-w-[70px] lg:max-w-[150px] block">
+              {user.username}
+            </span>{" "}
+            <span className="text-xs ml-1">({user.role})</span>
           </div>
 
           <button onClick={handleLogout} className="button-main">

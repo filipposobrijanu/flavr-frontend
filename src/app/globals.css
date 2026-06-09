@@ -16,10 +16,8 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  /* font-family: var(--font-ranchers), sans-serif; <--- ΣΒΗΣΕ ΑΥΤΟ */
 }
 
-/* Πρόσθεσε αυτές τις κλάσεις για να τις χρησιμοποιήσεις στο Layout */
 .font-ranchers-class {
   font-family: var(--font-ranchers), sans-serif;
 }
@@ -36,9 +34,7 @@ body {
   opacity: 1 !important;
   transition: opacity 0.3s ease-in-out;
 }
-/* 2. Αντικαθιστούμε το Arial με τη CSS μεταβλητή του Ranchers */
 
-/* From Uiverse.io by Voxybuns */
 .button-main {
   /* Variables */
   --button_radius: 0.75em;
@@ -64,11 +60,9 @@ body {
 }
 
 .button-main:hover .button_top {
-  /* Pull the button upwards when hovered */
   transform: translateY(-0.33em);
 }
 
 .button-main:active .button_top {
-  /* Push the button downwards when pressed */
   transform: translateY(0);
 }

@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
-// Πρόσθεσε το Promise<any> στο params
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    // 👈 ΕΔΩ ΕΙΝΑΙ Η ΑΛΛΑΓΗ: Πρέπει να κάνεις await τα params
     const { id } = await params;
 
     if (!id) {

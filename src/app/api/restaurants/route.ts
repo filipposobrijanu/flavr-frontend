@@ -1,16 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { RestaurantService } from "@/lib/backend/RestaurantService";
-import { cookies } from "next/headers"; // 👈 1. ΠΡΟΣΘΗΚΗ: Εισαγωγή των cookies για το Auth check
+import { cookies } from "next/headers";
 
 const restaurantService = new RestaurantService();
 
 export const dynamic = "force-dynamic";
 
-// GET: Φέρνει τα εγκεκριμένα εστιατόρια με φίλτρα ΚΑΙ τα favorites του χρήστη
 export async function GET(request: Request) {
   try {
-    // 2. ΠΡΟΣΘΗΚΗ: Διαβάζουμε το userId από τα cookies
     const cookieStore = await cookies();
     const userId = cookieStore.get("userId")?.value || "";
 
@@ -23,15 +21,14 @@ export async function GET(request: Request) {
         status: "APPROVED",
         name: {
           contains: search,
-          mode: "insensitive", // 👈 Τώρα στην PostgreSQL παίζει τέλεια!
+          mode: "insensitive",
         },
         ...(cuisine ? { cuisineType: cuisine } : {}),
       },
-      // 3. ΔΙΟΡΘΩΣΗ: Κάνουμε include τα favorites ΜΟΝΟ για αυτόν τον χρήστη
       include: {
         favorites: {
           where: {
-            userId: userId, // Αν το έχει κάνει favorite, το array θα έχει 1 στοιχείο, αλλιώς []
+            userId: userId,
           },
         },
       },
@@ -47,8 +44,34 @@ export async function GET(request: Request) {
     );
   }
 }
+export async function DELETE(req: Request) {
+  try {
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
 
-// POST: Δημιουργία νέας αίτησης από Owner (Το αφήνουμε όπως είναι, παίζει μια χαρά)
+    if (!id) {
+      return NextResponse.json(
+        { error: "Restaurant ID is required" },
+        { status: 400 },
+      );
+    }
+
+    await prisma.restaurant.delete({
+      where: { id },
+    });
+
+    return NextResponse.json(
+      { message: "Deleted successfully" },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("Error deleting restaurant:", error);
+    return NextResponse.json(
+      { error: "Failed to delete restaurant" },
+      { status: 500 },
+    );
+  }
+}
 export async function POST(request: Request) {
   try {
     const body = await request.json();

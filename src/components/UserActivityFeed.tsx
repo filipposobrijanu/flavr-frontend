@@ -1,4 +1,3 @@
-// components/UserActivityFeed.tsx
 "use client";
 
 import { useLocale } from "@/context/LocaleContext";

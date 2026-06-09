@@ -6,9 +6,8 @@ export function LanguageSwitcher() {
   const router = useRouter();
 
   const changeLanguage = (newLocale: string) => {
-    // Αφαιρούμε το παλιό locale από το path (π.χ. /el/dashboard -> /dashboard)
     const segments = pathname.split("/");
-    segments[1] = newLocale; // Αντικαθιστούμε το locale
+    segments[1] = newLocale;
     router.push(segments.join("/"));
   };
 

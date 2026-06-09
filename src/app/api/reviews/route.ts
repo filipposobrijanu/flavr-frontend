@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma"; // Χρήση του global instance
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   try {
@@ -21,7 +21,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // 🎯 Υπολογισμός του simpleAverage για τη συγκεκριμένη κριτική
     const calculatedAverage =
       (Number(foodRating) +
         Number(serviceRating) +
@@ -29,15 +28,14 @@ export async function POST(request: Request) {
         Number(vfmRating)) /
       4;
 
-    // 1. Αποθήκευση της νέας κριτικής στη βάση με τα αληθινά σου πεδία
     const newReview = await prisma.review.create({
       data: {
-        text, // 👈 text αντί για comment
+        text,
         foodRating: Number(foodRating),
         serviceRating: Number(serviceRating),
         atmosphereRating: Number(atmosphereRating),
         vfmRating: Number(vfmRating),
-        simpleAverage: calculatedAverage, // 👈 Αποθήκευση του μέσου όρου της κριτικής
+        simpleAverage: calculatedAverage,
         restaurantId,
         images,
         rating: Math.round(calculatedAverage),
@@ -45,34 +43,25 @@ export async function POST(request: Request) {
       },
     });
 
-    // 2. ΥΠΟΛΟΓΙΣΜΟΣ BAYESIAN SCORE (Βασισμένο στο ολοκαίνουριο simpleAverage)
-
-    // Α. Βρες τον μέσο όρο (C) όλων των simpleAverage παγκοσμίως στη βάση
     const allReviewsAggregate = await prisma.review.aggregate({
       _avg: { simpleAverage: true },
     });
-    // Χρήση optional chaining (?.) για να μην παραπονιέται το TS αν είναι undefined
     const C = allReviewsAggregate._avg?.simpleAverage || 3.0;
 
-    // Β. Βρες τον αριθμό κριτικών (v) του συγκεκριμένου εστιατορίου
-    // Το σπάμε σε ξεχωριστό .count() για να αποφύγουμε το TS bug του aggregate count!
     const v = await prisma.review.count({
       where: { restaurantId },
     });
 
-    // Γ. Βρες τον μέσο όρο (R) των simpleAverage του συγκεκριμένου εστιατορίου
     const thisRestAggregate = await prisma.review.aggregate({
       where: { restaurantId },
       _avg: { simpleAverage: true },
     });
     const R = thisRestAggregate._avg?.simpleAverage || 0;
 
-    const m = 1.0; // Ελάχιστο όριο κριτικών
+    const m = 1.0;
 
-    // Δ. Εφαρμογή του τύπου Bayesian Average
     const bayesianScore = (v * R + m * C) / (v + m);
 
-    // 3. Ενημέρωση του πεδίου στο Restaurant μοντέλο
     await prisma.restaurant.update({
       where: { id: restaurantId },
       data: { globalBayesianScore: bayesianScore },

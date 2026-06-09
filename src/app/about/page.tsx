@@ -2,13 +2,33 @@
 
 import Link from "next/link";
 import { useLocale } from "@/context/LocaleContext";
+import { motion } from "framer-motion";
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 },
+  },
+};
 
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+} as const;
 export default function AboutPage() {
   const { t } = useLocale();
   return (
-    <div className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black"
+    >
       <title>About | Flavr</title>
-      <div className="max-w-4xl mx-auto space-y-12">
+      <motion.div
+        variants={itemVariants}
+        className="max-w-4xl mx-auto space-y-12"
+      >
         {/* Κουμπί Επιστροφής */}
         <Link
           href="/"
@@ -115,7 +135,7 @@ export default function AboutPage() {
             {t("about.tech_p2")}
           </p>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

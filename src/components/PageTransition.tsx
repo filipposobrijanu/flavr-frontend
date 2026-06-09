@@ -13,7 +13,6 @@ export default function PageTransition({
     <AnimatePresence mode="wait">
       <motion.div
         key={pathname}
-        // Προσθήκη initial opacity 0 στο style για να μην φαίνεται πριν φορτώσει
         style={{ opacity: 0 }}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}

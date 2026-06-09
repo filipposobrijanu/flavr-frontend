@@ -14,7 +14,6 @@ export default function ReviewImageGallery({
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Διαχείριση πλήκτρων (ArrowLeft, ArrowRight, Escape)
   useEffect(() => {
     if (!isOpen) return;
 
@@ -64,13 +63,11 @@ export default function ReviewImageGallery({
         ))}
       </div>
 
-      {/* 🌌 LIGHTBOX MODAL */}
       {isOpen && (
         <div
           className="fixed inset-0 bg-black/90 z-[60] flex items-center justify-center p-4 backdrop-blur-sm animate-fadeIn"
           onClick={() => setIsOpen(false)}
         >
-          {/* Κουμπί Κλεισίματος */}
           <button
             onClick={() => setIsOpen(false)}
             className="absolute cursor-pointer top-6 right-6 z-[70] bg-red-500 border-2 border-black text-black px-4 py-2 font-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] transition-all"
@@ -78,7 +75,6 @@ export default function ReviewImageGallery({
             {t("restaurant_details.close_button")}
           </button>
 
-          {/* Container Εικόνας & Controls */}
           <div
             className="relative flex items-center justify-center max-w-5xl w-full h-full"
             onClick={(e) => e.stopPropagation()}

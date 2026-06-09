@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/db";
 
 export class RestaurantService {
-  // 1. Δημιουργία Νέου Εστιατορίου (Αίτηση από Owner)
   async createRestaurant(data: {
     name: string;
     description: string;
@@ -20,12 +19,11 @@ export class RestaurantService {
         imageUrl: data.imageUrl,
         status: "PENDING",
         globalBayesianScore: 0.0,
-        createdAt: new Date(), // <--- Προσθήκη εδώ
+        createdAt: new Date(),
       },
     });
   }
 
-  // 2. Αλλαγή Κατάστασης (Έγκριση/Απόρριψη από Admin)
   async changeStatus(restaurantId: string, status: "APPROVED" | "REJECTED") {
     return await prisma.restaurant.update({
       where: { id: restaurantId },

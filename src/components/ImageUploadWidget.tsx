@@ -19,17 +19,14 @@ export default function ImageUploadWidget({
 
     const files = Array.from(e.target.files);
 
-    // Ενημερώνουμε το parent component με τα πραγματικά αρχεία
     onImagesSelected(files);
 
-    // Φτιάχνουμε previews για το UI
     const newPreviews = files.map((file) => URL.createObjectURL(file));
     setPreviews((prev) => [...prev, ...newPreviews]);
   };
 
   const removeImage = (indexToRemove: number) => {
     setPreviews((prev) => prev.filter((_, idx) => idx !== indexToRemove));
-    // Εδώ ιδανικά θα φιλτράρεις και τα αρχεία στο parent component
   };
 
   return (
@@ -62,7 +59,6 @@ export default function ImageUploadWidget({
           />
         </label>
 
-        {/* PREVIEWS GRID */}
         <div className="flex flex-wrap gap-3">
           {previews.map((src, index) => (
             <div
@@ -74,7 +70,6 @@ export default function ImageUploadWidget({
                 alt={`Preview ${index}`}
                 className="w-full h-full object-cover"
               />
-              {/* Κουμπί Διαγραφής (X) */}
               <button
                 type="button"
                 onClick={() => removeImage(index)}

@@ -2,7 +2,16 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useLocale } from "@/context/LocaleContext";
+import { motion, AnimatePresence } from "framer-motion";
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+};
 
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0 },
+};
 interface Restaurant {
   id: string;
   name: string;
@@ -31,11 +40,11 @@ export default function OwnerDashboard() {
     if (!image) return null;
 
     const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
-    console.log("Cloud Name being used:", cloudName); // Δες αν είναι σωστό στο Console
+    console.log("Cloud Name being used:", cloudName);
 
     const formData = new FormData();
     formData.append("file", image);
-    formData.append("upload_preset", "my_flavr_preset"); // Σιγουρέψου ότι αυτό υπάρχει στο dashboard σου!
+    formData.append("upload_preset", "my_flavr_preset");
 
     try {
       const res = await fetch(
@@ -49,7 +58,6 @@ export default function OwnerDashboard() {
       const data = await res.json();
 
       if (!res.ok) {
-        // ΕΔΩ ΘΑ ΔΟΥΜΕ ΤΟ ΠΡΑΓΜΑΤΙΚΟ ΛΑΘΟΣ (π.χ. "invalid cloud name" ή "preset not found")
         console.error("FULL CLOUDINARY ERROR:", data);
         return null;
       }
@@ -64,14 +72,17 @@ export default function OwnerDashboard() {
   const [isListLoading, setIsListLoading] = useState(true);
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
 
-  // Input states
+  const [restaurantToDelete, setRestaurantToDelete] = useState<{
+    id: string;
+    name: string;
+  } | null>(null);
+
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [address, setAddress] = useState("");
   const [cuisineType, setCuisineType] = useState("ITALIAN");
   const [userId, setUserId] = useState<string | null>(null);
 
-  // Validation State
   const [errors, setErrors] = useState({
     name: "",
     description: "",
@@ -116,7 +127,6 @@ export default function OwnerDashboard() {
       showNotification(t("owner.err_form"), "error");
       return;
     }
-    // 1. Δείτε αν ξεκινάει η διαδικασία
     console.log("Submitting...");
 
     const imageUrl = await uploadToCloudinary();
@@ -149,7 +159,37 @@ export default function OwnerDashboard() {
     }
   };
 
-  // Έλεγχος αν ο χρήστης είναι πράγματι OWNER
+  const executeDelete = async () => {
+    if (!restaurantToDelete) return;
+
+    try {
+      const res = await fetch(`/api/restaurants?id=${restaurantToDelete.id}`, {
+        method: "DELETE",
+      });
+
+      if (res.ok) {
+        showNotification(
+          t("owner.success_delete") || "Restaurant deleted successfully!",
+          "success",
+        );
+        if (userId) fetchMyRestaurants(userId);
+      } else {
+        showNotification(
+          t("owner.fail_delete") || "Failed to delete restaurant.",
+          "error",
+        );
+      }
+    } catch (error) {
+      console.error("Error deleting restaurant:", error);
+      showNotification(
+        t("owner.fail_delete") || "Failed to delete restaurant.",
+        "error",
+      );
+    } finally {
+      setRestaurantToDelete(null);
+    }
+  };
+
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
     if (!storedUser) {
@@ -196,7 +236,12 @@ export default function OwnerDashboard() {
   }
 
   return (
-    <div className="min-h-[calc(90vh-4rem)]  p-6 md:p-12 text-black">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="min-h-[calc(90vh-4rem)]  p-6 md:p-12 text-black"
+    >
       {notification && (
         <div
           className={`fixed bottom-20 right-6 z-50 p-4 border-4 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-black ${
@@ -208,10 +253,45 @@ export default function OwnerDashboard() {
           {notification.message}
         </div>
       )}
+      {restaurantToDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fade-in">
+          <div className="bg-white border-4 border-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6 max-w-sm w-full animate-in zoom-in-95 duration-200">
+            <h3 className="text-2xl font-black uppercase tracking-tight text-black mb-2">
+              {t("owner.modal_title") || "Are you sure?"}
+            </h3>
+            <p className="text-sm font-bold text-gray-700 mb-6 leading-snug">
+              {t("owner.modal_desc_1") || "You are about to delete "}
+              <span className="px-1.5 py-0.5 rounded  font-black text-black">
+                {restaurantToDelete.name}
+              </span>
+              {t("owner.modal_desc_2") || ". This action cannot be undone."}
+            </p>
+            <div className="flex gap-4">
+              <button
+                type="button"
+                onClick={() => setRestaurantToDelete(null)}
+                className="flex-1 bg-gray-200 border-2 border-black font-black uppercase text-md py-2 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer text-black"
+              >
+                {t("owner.btn_cancel") || "Cancel"}
+              </button>
+              <button
+                type="button"
+                onClick={executeDelete}
+                className="flex-1 bg-red-500 text-black border-2 border-black font-black uppercase text-md py-2 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer"
+              >
+                {t("owner.btn_confirm_delete") || "Yes, Delete"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <title>Owner Dashboard | Flavr</title>
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* 🍳 Φόρμα Υποβολής Νέου Εστιατορίου */}
-        <div className="bg-white p-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] h-fit">
+        <motion.div
+          variants={itemVariants}
+          className="bg-white p-6 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] h-fit"
+        >
           <h2 className="text-3xl text-black mb-6 tracking-tight uppercase">
             {t("owner.new_app")}
           </h2>
@@ -340,7 +420,6 @@ export default function OwnerDashboard() {
               </div>
             </div>
             {/* Κουμπί Υποβολής */}
-
             <button type="submit" className="w-full button-main ">
               <span
                 style={{ backgroundColor: "#ff5e01", color: "white" }}
@@ -350,47 +429,43 @@ export default function OwnerDashboard() {
               </span>
             </button>
           </form>
-        </div>
+        </motion.div>
 
         {/* 📋 Λίστα με τα Υπάρχοντα Μαγαζιά του Ιδιοκτήτη */}
-        <div className="lg:col-span-2 space-y-6">
+        <motion.div variants={itemVariants} className="lg:col-span-2 space-y-6">
           <h2 className="text-3xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight uppercase">
             {t("owner.my_restaurants")}
           </h2>
           {isListLoading ? (
-            /* ⏳ HIGH-FIDELITY LOADING SKELETON */
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {[1, 2].map((i) => (
-                <div
+                <motion.div
                   key={i}
+                  layout
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
                   className="bg-white p-5 rounded-2xl border-2 border-b-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between animate-pulse"
                 >
                   <div className="space-y-4">
-                    {/* Header Skeleton */}
                     <div className="flex justify-between items-start gap-2">
                       <div className="h-7 w-3/4 bg-gray-200 rounded-lg"></div>
                       <div className="h-7 w-20 bg-gray-200 rounded-lg"></div>
                     </div>
-
-                    {/* Cuisine & Address Skeleton */}
                     <div className="space-y-2">
-                      <div className="h-4 w-1/2 bg-gray-200 rounded"></div>
+                      <div className="h-4 w-1/2 bg-gray-200 rounded Brod"></div>
                       <div className="h-4 w-full bg-gray-200 rounded"></div>
                     </div>
-
-                    {/* Description Lines Skeleton */}
                     <div className="space-y-2 pt-2">
                       <div className="h-4 w-full bg-gray-200 rounded"></div>
                       <div className="h-4 w-3/4 bg-gray-200 rounded"></div>
                     </div>
                   </div>
-
-                  {/* Footer Skeleton */}
                   <div className="border-t-2 border-black/10 pt-4 mt-4 flex justify-between items-center">
                     <div className="h-4 w-1/3 bg-gray-200 rounded"></div>
                     <div className="h-8 w-16 bg-gray-200 rounded-md"></div>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
           ) : restaurants.length === 0 ? (
@@ -404,7 +479,6 @@ export default function OwnerDashboard() {
               {restaurants.map((res) => (
                 <div
                   key={res.id}
-                  // 🆕 ΑΛΛΑΓΗ: Προστέθηκε λογική opacity-60 & grayscale αν είναι HIDDEN
                   className={`bg-white p-5 rounded-2xl border-2 border-b-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] flex flex-col justify-between hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] transition-all ${
                     res.status === "HIDDEN"
                       ? "opacity-60 bg-gray-50 grayscale"
@@ -414,11 +488,10 @@ export default function OwnerDashboard() {
                   <div>
                     {/* Header Κάρτας */}
                     <div className="flex justify-between items-start gap-2 mb-2">
-                      <h3 className="text-xl font-black tracking-tight text-black line-clamp-1">
+                      <h3 className="text-xl truncate max-w-[150px] sm:max-w-[100%] font-black tracking-tight text-black line-clamp-1">
                         {res.name}
                       </h3>
 
-                      {/* 🆕 ΑΛΛΑΓΗ: Ενημερώθηκε το Status Badge για να υποστηρίζει HIDDEN και REJECTED σωστά */}
                       <span
                         className={`px-2.5 py-1 rounded-lg text-2xs font-black border-2 border-black uppercase tracking-wider shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] shrink-0 ${
                           res.status === "APPROVED"
@@ -427,7 +500,7 @@ export default function OwnerDashboard() {
                               ? "bg-yellow-400 text-black"
                               : res.status === "HIDDEN"
                                 ? "bg-gray-800 text-white"
-                                : "bg-red-400 text-black" // REJECTED
+                                : "bg-red-400 text-black"
                         }`}
                       >
                         {res.status === "APPROVED"
@@ -454,24 +527,41 @@ export default function OwnerDashboard() {
                     </p>
                   </div>
 
-                  {/* Bayesian Score Footer Row */}
                   <div className="border-t-2 border-black/10 pt-3 flex justify-between items-center text-xs font-black uppercase tracking-wide">
-                    <span className="text-gray-500 font-bold">
-                      Bayesian Score:
-                    </span>
-                    <span className="bg-amber-100 border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] border-black px-2 py-0.5 rounded-md text-amber-900 font-black">
-                      ⭐{" "}
-                      {res.globalBayesianScore > 0
-                        ? Number(res.globalBayesianScore).toFixed(1)
-                        : "N/A"}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="bg-yellow-400  border-2 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] border-black px-2 py-1   rounded-lg text-black font-black flex items-center gap-1">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="12"
+                          height="12"
+                          fill="black"
+                          className="bi bi-star"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73 3.522-3.356c.33-.314.16-.888-.282-.95l-4.898-.696L8.465.792a.513.513 0 0 0-.927 0L5.354 5.12l-4.898.696c-.441.062-.612.636-.283.95l3.523 3.356-.83 4.73zm4.905-2.767-3.686 1.894.694-3.957a.56.56 0 0 0-.163-.505L1.71 6.745l4.052-.576a.53.53 0 0 0 .393-.288L8 2.223l1.847 3.658a.53.53 0 0 0 .393.288l4.052.575-2.906 2.77a.56.56 0 0 0-.163.506l.694 3.957-3.686-1.894a.5.5 0 0 0-.461 0z" />
+                        </svg>{" "}
+                        {res.globalBayesianScore > 0
+                          ? Number(res.globalBayesianScore).toFixed(1)
+                          : "N/A"}
+                      </span>
+                    </div>
+
+                    {/* 🗑️ Κουμπί Διαγραφής */}
+                    <button
+                      onClick={() =>
+                        setRestaurantToDelete({ id: res.id, name: res.name })
+                      }
+                      className="bg-red-500  text-black border-2 border-black font-black text-2xs px-2.5 py-1 rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_0px_rgba(0,0,0,1)] transition-all cursor-pointer uppercase tracking-wider"
+                    >
+                      {t("owner.btn_delete") || "DELETE"}
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

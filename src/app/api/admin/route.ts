@@ -4,7 +4,6 @@ import { RestaurantService } from "@/lib/backend/RestaurantService";
 
 const restaurantService = new RestaurantService();
 
-// GET: Φέρνει όλα τα PENDING, APPROVED και HIDDEN εστιατόρια
 export async function GET() {
   try {
     const allRestaurants = await prisma.restaurant.findMany({
@@ -23,13 +22,11 @@ export async function GET() {
   }
 }
 
-// PUT: Αλλάζει την κατάσταση της αίτησης (Έγκριση, Απόρριψη, Απόκρυψη)
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
     const { restaurantId, status } = body;
 
-    // Προσθέσαμε το HIDDEN και το APPROVED
     if (
       !restaurantId ||
       !["APPROVED", "REJECTED", "HIDDEN", "PENDING"].includes(status)
@@ -53,7 +50,6 @@ export async function PUT(request: Request) {
   }
 }
 
-// DELETE: Διαγραφή εστιατορίου (Μόνιμη)
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

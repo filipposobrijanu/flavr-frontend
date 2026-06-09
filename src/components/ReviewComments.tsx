@@ -15,7 +15,7 @@ interface Comment {
 interface ReviewCommentsProps {
   reviewId: string;
   initialComments: Comment[];
-  currentUserId: string; // Χρειάζεται για να ξέρουμε ποιος γράφει το σχόλιο
+  currentUserId: string;
 }
 
 export default function ReviewComments({
@@ -27,7 +27,7 @@ export default function ReviewComments({
   const [comments, setComments] = useState<Comment[]>(initialComments);
   const [newComment, setNewComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showComments, setShowComments] = useState(false); // Toggle για να μην πιάνουν χώρο
+  const [showComments, setShowComments] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +43,7 @@ export default function ReviewComments({
 
       if (res.ok) {
         const addedComment = await res.json();
-        setComments((prev) => [...prev, addedComment]); // Άμεσο update στο UI (Optimistic/State update)
+        setComments((prev) => [...prev, addedComment]);
         setNewComment("");
       }
     } catch (error) {

@@ -9,6 +9,23 @@ import fish from "../../assets/ideativas-tlm-fish-6600570_1920.png";
 import { useAuth } from "@/context/AuthContext";
 import { useLocale } from "@/context/LocaleContext";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
+import { motion } from "framer-motion";
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+} as const;
 
 function SignUpContent() {
   const { t } = useLocale();
@@ -19,7 +36,6 @@ function SignUpContent() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // 🛠️ State για errors ανά input field στο signup
   const [errors, setErrors] = useState({
     username: "",
     email: "",
@@ -35,8 +51,8 @@ function SignUpContent() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            accessToken: tokenResponse.access_token, // 👈 Το στέλνουμε σαν accessToken, όπως στο Login!
-            role: role, // Στέλνουμε ΚΑΙ τον ρόλο
+            accessToken: tokenResponse.access_token,
+            role: role,
           }),
         });
 
@@ -99,7 +115,7 @@ function SignUpContent() {
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username, password, role }), // 👈 Στέλνουμε το password
+        body: JSON.stringify({ email, username, password, role }),
       });
 
       if (res.ok) {
@@ -124,25 +140,39 @@ function SignUpContent() {
   };
 
   return (
-    <div className="min-h-[calc(80vh-4rem)] md:min-h-[calc(75vh-4rem)] mb-10 flex flex-col gap-4 items-center justify-center text-center p-6 text-black">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="min-h-[calc(80vh-4rem)] md:min-h-[calc(75vh-4rem)] mb-10 flex flex-col gap-4 items-center justify-center text-center p-6 text-black"
+    >
       <title>Sign Up | Flavr</title>
       <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center">
         {/* 🍌 Μπανάνα */}
-        <div className="hidden lg:block absolute left-0 xl:left-4 top-1/2 -translate-y-1/2 w-48 h-48 xl:w-56 xl:h-56 z-0 transform -rotate-6 transition-transform hover:scale-110">
+        <motion.div
+          variants={itemVariants}
+          className="hidden lg:block absolute left-0 xl:left-4 top-1/2 -translate-y-1/2 w-48 h-48 xl:w-56 xl:h-56 z-0 transform -rotate-6 transition-transform hover:scale-110"
+        >
           <Image
             priority
             src={banana}
             alt="Banana Illustration"
             className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-yellow-400 p-2"
           />
-        </div>
+        </motion.div>
 
-        <h2 className="text-4xl md:text-5xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight mb-4 uppercase z-10">
+        <motion.h2
+          variants={itemVariants}
+          className="text-4xl md:text-5xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight mb-4 uppercase z-10"
+        >
           {t("signup.title")}
-        </h2>
+        </motion.h2>
 
         {/* 📦 Κάρτα */}
-        <div className="bg-white p-8 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-full max-w-md transition-all z-10">
+        <motion.div
+          variants={itemVariants}
+          className="bg-white p-8 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-full max-w-md transition-all z-10"
+        >
           {/* General Global Error Box */}
           {errors.general && (
             <div className="mb-4 p-3 bg-red-200 border-2 border-black rounded-xl font-bold text-xs uppercase text-red-700 tracking-wide text-left shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -254,11 +284,9 @@ function SignUpContent() {
             <hr className="w-full border-black border-1" />
           </div>
 
-          {/* 🚀 Το ίδιο Custom Google Button με το Login! */}
           <button
             type="button"
             onClick={() => {
-              // Έλεγχος αν ο ρόλος είναι έγκυρος
               if (!role) {
                 setErrors({
                   ...errors,
@@ -266,9 +294,9 @@ function SignUpContent() {
                 });
                 return;
               }
-              googleSignUp(); // Αν όλα οκ, τρέχει το login
+              googleSignUp();
             }}
-            className="w-full flex items-center justify-center gap-3 px-4 cursor-pointer py-3 bg-white border-2 border-black rounded-xl font-black uppercase text-sm shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
+            className="w-full flex items-center justify-center gap-3 px-4 cursor-pointer  py-2.5 bg-white border-2 border-black rounded-xl font-black uppercase text-md shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
           >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -287,29 +315,35 @@ function SignUpContent() {
               {t("signup.login_link")}
             </Link>
           </p>
-        </div>
+        </motion.div>
 
         {/* 🐟 Ψάρι */}
-        <div className="hidden lg:block absolute right-0 xl:right-4 top-1/2 -translate-y-1/2 w-48 h-48 xl:w-56 xl:h-56 z-0 transform rotate-6 transition-transform hover:scale-110">
+        <motion.div
+          variants={itemVariants}
+          className="hidden lg:block absolute right-0 xl:right-4 top-1/2 -translate-y-1/2 w-48 h-48 xl:w-56 xl:h-56 z-0 transform rotate-6 transition-transform hover:scale-110"
+        >
           <Image
             priority
             src={fish}
             alt="Fish Illustration"
             className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-purple-400 p-2"
           />
-        </div>
+        </motion.div>
         <div className="flex justify-center items-center w-full">
-          <div className="flex lg:hidden justify-center items-center  mb-2 mt-10 w-44 h-44 transform -rotate-8 transition-transform hover:scale-110">
+          <motion.div
+            variants={itemVariants}
+            className="flex lg:hidden justify-center items-center  mb-2 mt-10 w-44 h-44 transform -rotate-8 transition-transform hover:scale-110"
+          >
             <Image
               priority
               src={fish}
               alt="Burger Illustration"
               className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-purple-400 p-2"
             />
-          </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 export default function SignUpPage() {

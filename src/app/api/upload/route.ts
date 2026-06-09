@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { v2 as cloudinary } from "cloudinary";
 
-// Ρύθμιση Cloudinary
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -11,7 +10,6 @@ cloudinary.config({
 export async function POST(req: Request) {
   try {
     const formData = await req.body;
-    // Επειδή το FormData είναι stream, θέλει ειδικό χειρισμό στο Next.js
     const data = await req.formData();
     const files = data.getAll("files") as File[];
 
@@ -30,7 +28,7 @@ export async function POST(req: Request) {
     });
 
     const urls = await Promise.all(uploadPromises);
-    return NextResponse.json(urls); // Επιστρέφει το ["url1", "url2"]
+    return NextResponse.json(urls);
   } catch (error) {
     return NextResponse.json({ error: "Upload failed" }, { status: 500 });
   }

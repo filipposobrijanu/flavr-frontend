@@ -17,7 +17,7 @@ export default function FavoriteButton({
   const router = useRouter();
 
   const handleToggle = async (e: React.MouseEvent) => {
-    e.preventDefault(); // Για να μην κάνει trigger τυχόν Link γύρω από την κάρτα
+    e.preventDefault();
     if (loading) return;
 
     setLoading(true);
@@ -29,7 +29,6 @@ export default function FavoriteButton({
       });
 
       if (res.status === 401) {
-        // Αν δεν είναι συνδεδεμένος, τον στέλνουμε login
         router.push("/login");
         return;
       }
@@ -37,7 +36,7 @@ export default function FavoriteButton({
       if (res.ok) {
         const data = await res.json();
         setIsFavorite(data.isFavorite);
-        router.refresh(); // Ανανέωση των server δεδομένων στο παρασκήνιο
+        router.refresh();
       }
     } catch (error) {
       console.error("Failed to toggle favorite", error);

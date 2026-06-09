@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { cookies } from "next/headers";
-import bcrypt from "bcryptjs"; // Χρειάζεσαι το bcryptjs για να ελέγξεις/φτιάξεις τον κωδικό
+import bcrypt from "bcryptjs";
 
 export async function PUT(request: Request) {
   try {
@@ -22,7 +22,6 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Βρίσκουμε τον χρήστη
     const user = await prisma.user.findUnique({
       where: { id: userId },
     });
@@ -34,7 +33,6 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Ελέγχουμε αν ο τωρινός κωδικός είναι σωστός
     const isPasswordValid = await bcrypt.compare(
       currentPassword,
       user.passwordHash,
@@ -46,10 +44,8 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Κρυπτογραφούμε τον νέο κωδικό
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
 
-    // Αποθηκεύουμε τον νέο κωδικό
     await prisma.user.update({
       where: { id: userId },
       data: { passwordHash: hashedNewPassword },

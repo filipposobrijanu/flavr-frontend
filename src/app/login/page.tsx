@@ -9,6 +9,23 @@ import fish from "../../assets/ideativas-tlm-fish-6600570_1920.png";
 import { useAuth } from "@/context/AuthContext";
 import { useLocale } from "@/context/LocaleContext";
 import { GoogleOAuthProvider, useGoogleLogin } from "@react-oauth/google";
+import { motion } from "framer-motion";
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.2 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: "easeOut" },
+  },
+} as const;
 
 function LoginContent() {
   const { t } = useLocale();
@@ -18,7 +35,6 @@ function LoginContent() {
   const [loading, setLoading] = useState(false);
   const [password, setPassword] = useState("");
 
-  // 🛠️ State για errors ανά input field
   const [errors, setErrors] = useState({
     username: "",
     email: "",
@@ -67,7 +83,7 @@ function LoginContent() {
       hasErrors = true;
     }
     if (!password.trim()) {
-      newErrors.password = t("login.err_password_req"); // 👈 Password Validation
+      newErrors.password = t("login.err_password_req");
       hasErrors = true;
     }
 
@@ -80,7 +96,6 @@ function LoginContent() {
     setErrors({ username: "", email: "", password: "", general: "" });
 
     try {
-      // Στέλνουμε πλέον και το password στο login API σου
       const res = await fetch("/api/auth", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -108,25 +123,39 @@ function LoginContent() {
   };
 
   return (
-    <div className=" min-h-[calc(80vh-4rem)] md:min-h-[calc(75vh-4rem)] mb-10 flex flex-col gap-4 items-center justify-center text-center p-6 text-black">
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className=" min-h-[calc(80vh-4rem)] md:min-h-[calc(75vh-4rem)] mb-10 flex flex-col gap-4 items-center justify-center text-center p-6 text-black"
+    >
       <title>Login | Flavr</title>
       <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center">
         {/* 🍌 Μπανάνα */}
-        <div className="hidden lg:block absolute left-0 xl:left-4 top-1/2 -translate-y-1/2 w-48 h-48 xl:w-56 xl:h-56 z-0 transform -rotate-12 transition-transform hover:scale-110">
+        <motion.div
+          variants={itemVariants}
+          className="hidden lg:block absolute left-0 xl:left-4 top-1/2 -translate-y-1/2 w-48 h-48 xl:w-56 xl:h-56 z-0 transform -rotate-12 transition-transform hover:scale-110"
+        >
           <Image
             priority
             src={banana}
             alt="Banana Illustration"
             className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-blue-400 p-2"
           />
-        </div>
+        </motion.div>
 
-        <h2 className="text-4xl md:text-5xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight mb-4 uppercase z-10">
+        <motion.h2
+          variants={itemVariants}
+          className="text-4xl md:text-5xl font-black text-white [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight mb-4 uppercase z-10"
+        >
           {t("login.welcome")}
-        </h2>
+        </motion.h2>
 
         {/* 📦 Κάρτα */}
-        <div className="bg-white p-8 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-full max-w-md transition-all z-10">
+        <motion.div
+          variants={itemVariants}
+          className="bg-white p-8 rounded-2xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-full max-w-md transition-all z-10"
+        >
           {/* General Global Error Box */}
           {errors.general && (
             <div className="mb-4 p-3 bg-red-200 border-2 border-black rounded-xl font-bold text-xs uppercase text-red-700 tracking-wide text-left shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
@@ -220,7 +249,7 @@ function LoginContent() {
           <button
             type="button"
             onClick={() => googleLogin()}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white border-2 border-black rounded-xl font-black uppercase text-sm shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
+            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 bg-white border-2 border-black rounded-xl font-black uppercase text-md shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
           >
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -239,29 +268,35 @@ function LoginContent() {
               {t("login.create_account")}
             </Link>
           </p>
-        </div>
+        </motion.div>
 
         {/* 🐟 Ψάρι */}
-        <div className="hidden lg:block absolute right-0 xl:right-4 top-1/2 -translate-y-1/2 w-48 h-48 xl:w-56 xl:h-56 z-0 transform rotate-12 transition-transform hover:scale-110">
+        <motion.div
+          variants={itemVariants}
+          className="hidden lg:block absolute right-0 xl:right-4 top-1/2 -translate-y-1/2 w-48 h-48 xl:w-56 xl:h-56 z-0 transform rotate-12 transition-transform hover:scale-110"
+        >
           <Image
             priority
             src={fish}
             alt="Fish Illustration"
             className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-green-400 p-2"
           />
-        </div>
+        </motion.div>
         <div className="flex justify-center items-center w-full">
-          <div className="flex lg:hidden justify-center items-center  mb-2 mt-10 w-44 h-44 transform -rotate-8 transition-transform hover:scale-110">
+          <motion.div
+            variants={itemVariants}
+            className="flex lg:hidden justify-center items-center  mb-2 mt-10 w-44 h-44 transform -rotate-8 transition-transform hover:scale-110"
+          >
             <Image
               priority
               src={fish}
               alt="Burger Illustration"
               className="object-contain border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] rounded-2xl bg-green-400 p-2"
             />
-          </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 export default function LoginPage() {

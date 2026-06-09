@@ -1,11 +1,9 @@
-// src/app/layout.tsx
-import { DynaPuff, Comic_Relief } from "next/font/google";
+import { DynaPuff, Playpen_Sans, Comic_Relief } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer/Footer";
 import { AuthProvider } from "../context/AuthContext";
 import { Metadata } from "next";
-import PageTransition from "../components/PageTransition";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { LocaleProvider } from "@/context/LocaleContext";
@@ -16,26 +14,62 @@ const ranchersFont = DynaPuff({
   weight: ["400"],
   variable: "--font-ranchers",
 });
-const carlitoFont = Comic_Relief({
+const carlitoFont = Playpen_Sans({
   subsets: ["greek"],
-  weight: ["400", "700"],
+  weight: ["500", "700"],
   variable: "--font-carlito",
 });
 export const metadata: Metadata = {
-  metadataBase: new URL("http://localhost:3000/"),
+  metadataBase: new URL("https://flavr-frontend-iota.vercel.app"),
+
   title: {
     default: "Flavr | Discover & Review Restaurants",
     template: "%s | Flavr",
   },
+  description:
+    "Stop trusting fake reviews. Flavr uses Bayesian statistics for honest, role-based restaurant rankings.",
+  keywords: [
+    "restaurant reviews",
+    "bayesian score",
+    "food rating",
+    "honest reviews",
+    "flavr",
+  ],
+  authors: [{ name: "Flavr Team" }],
+
   openGraph: {
     title: "Flavr | Unfiltered Restaurant Truth",
     description:
       "Stop trusting fake reviews. Flavr uses Bayesian statistics for honest restaurant rankings.",
-    url: "https://flavr.com",
+    url: "https://flavr-frontend-iota.vercel.app",
     siteName: "Flavr",
-    images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
+    images: [
+      {
+        url: "/flavr_logo.png",
+        width: 1200,
+        height: 630,
+        alt: "Flavr - Transparent Restaurant Reviews",
+      },
+    ],
     locale: "en_US",
     type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Flavr | Unfiltered Restaurant Truth",
+    description:
+      "Stop trusting fake reviews. Flavr uses Bayesian statistics for honest restaurant rankings.",
+    images: ["/flavr_logo.png"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+    },
   },
 };
 
@@ -53,7 +87,7 @@ export default async function RootLayout({
         <LocaleProvider>
           <AuthProvider>
             <Navbar></Navbar>
-            <PageTransition>{children} </PageTransition>
+            {children}
             <Footer
               brandName="Flavr"
               logo={<span className="text-2xl">🍳</span>}

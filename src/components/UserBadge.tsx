@@ -11,7 +11,7 @@ export default function UserBadge({ reviewCount }: UserBadgeProps) {
   const { t } = useLocale();
   const badge = getUserBadge(reviewCount);
 
-  if (!badge) return null; // Αν δεν έχει reviews, δεν δείχνουμε badge
+  if (!badge) return null;
 
   return (
     <span

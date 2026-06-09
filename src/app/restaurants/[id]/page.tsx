@@ -8,6 +8,8 @@ import ReviewImageGallery from "@/components/ReviewImageGallery";
 import UserBadge from "@/components/UserBadge";
 import ReviewComments from "@/components/ReviewComments";
 import OwnerResponse from "@/components/OwnerResponse";
+import { motion } from "framer-motion";
+import ShareButton from "@/components/ShareButton";
 
 interface Review {
   id: string;
@@ -34,7 +36,6 @@ interface Review {
   user: {
     username: string;
     _count?: {
-      // 👈 Προσθήκη του _count ως optional
       reviews: number;
     };
   };
@@ -89,7 +90,6 @@ export default function RestaurantDetailsPage() {
     setTimeout(() => setNotification(null), 4000);
   };
 
-  // Form State για την κριτική
   const [text, setText] = useState("");
   const [foodRating, setFoodRating] = useState(5);
   const [serviceRating, setServiceRating] = useState(5);
@@ -97,7 +97,6 @@ export default function RestaurantDetailsPage() {
   const [vfmRating, setVfmRating] = useState(5);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
-  // Φόρτωση δεδομένων εστιατορίου
   const fetchRestaurantData = useCallback(async () => {
     setLoading(true);
     const res = await fetch(`/api/restaurants/${id}`);
@@ -114,7 +113,6 @@ export default function RestaurantDetailsPage() {
       const user = JSON.parse(storedUser);
       setCurrentUser(user);
 
-      // 👈 ΠΡΟΣΘΗΚΗ: Διαβάζουμε τα αποθηκευμένα upvotes αυτού του χρήστη
       const savedUpvotes = localStorage.getItem(`upvoted_reviews_${user.id}`);
       if (savedUpvotes) {
         setUpvotedReviews(new Set(JSON.parse(savedUpvotes)));
@@ -123,7 +121,6 @@ export default function RestaurantDetailsPage() {
     fetchRestaurantData();
   }, [fetchRestaurantData]);
 
-  // Υποβολή Κριτικής
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!text)
@@ -140,7 +137,6 @@ export default function RestaurantDetailsPage() {
     try {
       let uploadedImageUrls: string[] = [];
 
-      // 👈 4. ΠΡΟΣΘΗΚΗ: Αν ο χρήστης έχει επιλέξει φωτογραφίες, τις ανεβάζουμε πρώτα!
       if (selectedFiles.length > 0) {
         const formData = new FormData();
         selectedFiles.forEach((file) => formData.append("files", file));
@@ -151,7 +147,7 @@ export default function RestaurantDetailsPage() {
         });
 
         if (uploadRes.ok) {
-          const imageUrls = await uploadRes.json(); // 👈 Αυτό θα είναι τώρα το ["url1", "url2"]
+          const imageUrls = await uploadRes.json();
           uploadedImageUrls = imageUrls;
         } else {
           showNotification("Αποτυχία ανεβάσματος εικόνων", "error");
@@ -171,7 +167,7 @@ export default function RestaurantDetailsPage() {
           vfmRating,
           userId: currentUser.id,
           restaurantId: id,
-          images: uploadedImageUrls, // 👈 5. ΠΡΟΣΘΗΚΗ: Στέλνουμε τις φωτογραφίες στη βάση
+          images: uploadedImageUrls,
         }),
       });
 
@@ -182,7 +178,7 @@ export default function RestaurantDetailsPage() {
         setServiceRating(5);
         setAtmosphereRating(5);
         setVfmRating(5);
-        setSelectedFiles([]); // Καθαρίζουμε τις επιλεγμένες φωτό
+        setSelectedFiles([]);
         fetchRestaurantData();
       } else {
         showNotification(t("restaurant_details.errors.submit_error"), "error");
@@ -192,18 +188,16 @@ export default function RestaurantDetailsPage() {
       showNotification(t("restaurant_details.errors.submit_error"), "error");
     }
   };
-  const hasIncremented = useRef(false); // 👈 Χρειαζόμαστε το useRef import
+  const hasIncremented = useRef(false);
 
   useEffect(() => {
     if (!id) return;
 
-    // 1. Ελέγχουμε αν έχουμε ήδη μετρήσει αυτή την επίσκεψη σε αυτό το tab
     const alreadyIncremented = sessionStorage.getItem(`viewed_${id}`);
 
     if (!alreadyIncremented) {
       const incrementViews = async () => {
         try {
-          // 2. Σημειώνουμε άμεσα στο session ότι η επίσκεψη έγινε
           sessionStorage.setItem(`viewed_${id}`, "true");
 
           const res = await fetch(`/api/restaurants/${id}/view`, {
@@ -217,7 +211,6 @@ export default function RestaurantDetailsPage() {
             );
           }
         } catch (err) {
-          // Αν αποτύχει, διαγράφουμε το flag για να ξαναπροσπαθήσει
           sessionStorage.removeItem(`viewed_${id}`);
           console.error("Failed to track view");
         }
@@ -232,10 +225,8 @@ export default function RestaurantDetailsPage() {
       return;
     }
 
-    // Έλεγχος αν υπάρχει ήδη στο Set
     const isReverting = upvotedReviews.has(reviewId);
 
-    // Κάνε open το F12 στον browser για να δεις τι τρέχει εδώ:
     console.log(
       "👉 CLICKED UPVOTE | reviewId:",
       reviewId,
@@ -243,7 +234,6 @@ export default function RestaurantDetailsPage() {
       isReverting,
     );
 
-    // 1. Optimistic UI Update
     setRestaurant((prev) => {
       if (!prev) return prev;
       return {
@@ -263,7 +253,6 @@ export default function RestaurantDetailsPage() {
       };
     });
 
-    // 2. Ενημέρωση του Set & LocalStorage
     setUpvotedReviews((prev) => {
       const newSet = new Set(prev);
       if (isReverting) {
@@ -281,7 +270,6 @@ export default function RestaurantDetailsPage() {
       return newSet;
     });
 
-    // 3. API Call στο Backend
     try {
       const response = await fetch(`/api/reviews/${reviewId}/upvote`, {
         method: "POST",
@@ -307,34 +295,45 @@ export default function RestaurantDetailsPage() {
           <div className="h-10 w-40 bg-gray-200 rounded-xl border-2 border-black"></div>
 
           {/* Hero Card Skeleton */}
-          <div className="bg-white p-6 md:p-8 border-4 border-black rounded-2xl flex flex-col md:flex-row justify-between items-start gap-6">
-            <div className="space-y-4 flex-1">
-              <div className="h-6 w-24 bg-gray-200 rounded-lg"></div>{" "}
-              {/* Cuisine tag */}
-              <div className="h-12 w-3/4 bg-gray-200 rounded-lg"></div>{" "}
+          <div className="bg-white p-6 md:p-8 border-4 border-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row justify-between items-start gap-6">
+            <div className="space-y-3 flex-1">
+              {/* Image Placeholder */}
+              <div className="w-64 h-64 bg-gray-200 rounded-xl border-2 border-black mb-6"></div>
+              {/* Cuisine Tag */}
+              <div className="h-6 w-24 bg-gray-200 rounded-lg"></div>
               {/* Title */}
-              <div className="h-4 w-1/3 bg-gray-200 rounded-md"></div>{" "}
+              <div className="h-10 w-3/4 bg-gray-200 rounded-lg"></div>
               {/* Address */}
+              <div className="h-4 w-1/3 bg-gray-200 rounded-md"></div>
+              {/* Description */}
               <div className="space-y-2 pt-4 border-t-2 border-black border-dashed">
-                <div className="h-4 w-full bg-gray-200 rounded"></div>
                 <div className="h-4 w-full bg-gray-200 rounded"></div>
                 <div className="h-4 w-2/3 bg-gray-200 rounded"></div>
               </div>
+              {/* Hours */}
+              <div className="h-10 w-48 bg-gray-200 rounded-xl mt-4"></div>
             </div>
+
+            {/* Sidebar Meta Info (Views/Share) */}
+            <div className="flex flex-col gap-4">
+              <div className="h-6 w-20 bg-gray-200 rounded"></div>
+              <div className="h-10 w-32 bg-gray-200 rounded-xl"></div>
+            </div>
+
             {/* Score Badge Skeleton */}
-            <div className="h-32 w-full md:w-[180px] bg-gray-200 border-4 border-black rounded-2xl"></div>
+            <div className="h-[140px] w-full md:w-[180px] bg-gray-200 border-4 border-black rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]"></div>
           </div>
 
-          {/* Form & Reviews Skeleton */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Form & Reviews Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             {/* Sidebar Form Skeleton */}
-            <div className="h-[400px] w-full bg-white border-4 border-black rounded-2xl p-6">
+            <div className="h-[450px] w-full bg-white border-4 border-black rounded-2xl p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
               <div className="h-8 w-1/2 bg-gray-200 rounded mb-6"></div>
               <div className="space-y-6">
                 {[1, 2, 3, 4].map((i) => (
                   <div
                     key={i}
-                    className="h-10 w-full bg-gray-200 rounded-lg"
+                    className="h-12 w-full bg-gray-200 rounded-lg"
                   ></div>
                 ))}
               </div>
@@ -343,10 +342,7 @@ export default function RestaurantDetailsPage() {
             {/* Reviews List Skeleton */}
             <div className="lg:col-span-2 space-y-4">
               <div className="h-8 w-48 bg-gray-200 rounded-lg"></div>
-              <div
-                key={1}
-                className="h-40 w-full bg-white border-2 border-b-4 border-black rounded-2xl p-5 space-y-4"
-              >
+              <div className="h-40 w-full bg-white border-2 border-b-4 border-black rounded-2xl p-5 space-y-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
                 <div className="flex justify-between">
                   <div className="h-6 w-32 bg-gray-200 rounded"></div>
                   <div className="h-6 w-20 bg-gray-200 rounded"></div>
@@ -379,7 +375,12 @@ export default function RestaurantDetailsPage() {
   );
   const displayedReviews = sortedReviews.slice(0, visibleReviews);
   return (
-    <div className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black">
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+      className="min-h-[calc(80vh-4rem)] p-6 md:p-12 text-black"
+    >
       {notification && (
         <div
           className={`fixed bottom-20 right-6 z-50 p-4 border-4 border-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] font-black ${
@@ -403,18 +404,22 @@ export default function RestaurantDetailsPage() {
         </Link>
 
         {/* 🏛️ Κεντρικό Card Εστιατορίου */}
-        <div className="bg-white p-6 md:p-8 border-4 border-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row justify-between items-start gap-6">
+        <motion.div
+          initial={{ y: 50, opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="bg-white p-6 md:p-8 border-4 border-black rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col md:flex-row justify-between items-start gap-6"
+        >
           <div className="space-y-3 flex-1">
             {restaurant.imageUrl && (
               <>
                 <img
                   src={restaurant.imageUrl}
                   alt={restaurant.name}
-                  onClick={() => setIsMainImgOpen(true)} // 👈 Ανοίγει το modal με κλικ
+                  onClick={() => setIsMainImgOpen(true)}
                   className="w-64 h-64 object-cover rounded-xl border-2 border-black mb-6 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] transition-all cursor-zoom-in bg-gray-100"
                 />
 
-                {/* 🌌 Σκοτεινό Lightbox Modal για την Κύρια Εικόνα */}
                 {isMainImgOpen && (
                   <div className="fixed inset-0 z-[100] h-screen flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-fade-in animate-duration-200">
                     {/* Κουμπί Κλεισίματος */}
@@ -426,10 +431,9 @@ export default function RestaurantDetailsPage() {
                       {t("restaurant_details.close_button")}
                     </button>
 
-                    {/* 🖼️ Container Εικόνας */}
                     <div
                       className="relative max-w-4xl max-h-[100vh] flex items-center justify-center border-4 border-black bg-zinc-900 p-2 rounded-2xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden"
-                      onClick={(e) => e.stopPropagation()} // Stop propagation για να μην κλείνει όταν κάνεις κλικ πάνω στην εικόνα
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <img
                         src={restaurant.imageUrl}
@@ -438,7 +442,6 @@ export default function RestaurantDetailsPage() {
                       />
                     </div>
 
-                    {/* Κλείσιμο με κλικ οπουδήποτε στο μαύρο background */}
                     <div
                       className="absolute inset-0 w-full h-full -z-10 cursor-zoom-out"
                       onClick={() => setIsMainImgOpen(false)}
@@ -482,7 +485,7 @@ export default function RestaurantDetailsPage() {
             </svg>{" "}
             {restaurant.views}
           </div>
-          {/* 📊 Μεγάλο Bayesian Score Sticker */}
+          <ShareButton restaurantName={restaurant.name} />
           <div className="bg-yellow-400 border-4 border-black  p-6 rounded-2xl text-center shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] min-w-[180px] w-full md:w-auto shrink-0">
             <p className="text-xs font-black uppercase tracking-wider text-black">
               Bayesian Score
@@ -507,10 +510,15 @@ export default function RestaurantDetailsPage() {
               {t("restaurant_details.reviews_count")}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {/* Κάτω Πλέγμα: Φόρμα & Κριτικές */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start"
+        >
           {/* ✍️ Φόρμα Κριτικής */}
           <div className="lg:col-span-1">
             {currentUser?.role === "REVIEWER" ? (
@@ -618,8 +626,11 @@ export default function RestaurantDetailsPage() {
               <>
                 {/* Εδώ χρησιμοποιούμε το displayedReviews (που περιλαμβάνει το slice) */}
                 {displayedReviews.map((rev) => (
-                  <div
+                  <motion.div
                     key={rev.id}
+                    initial={{ scale: 0.95, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
                     className="bg-white p-5 border-2 border-b-4 border-black rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] space-y-3"
                   >
                     <div className="flex justify-between items-start border-b-2 border-black pb-2 gap-2">
@@ -700,7 +711,7 @@ export default function RestaurantDetailsPage() {
                         currentUserId={currentUser?.id || ""}
                       />
                     )}
-                  </div>
+                  </motion.div>
                 ))}
 
                 {/* 🔘 Το Κουμπί Load More ΜΕΣΑ στο col-span-2 */}
@@ -729,8 +740,8 @@ export default function RestaurantDetailsPage() {
               </button>
             </div>
           )}
-        </div>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 }

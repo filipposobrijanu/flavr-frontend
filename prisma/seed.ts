@@ -4,7 +4,6 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Seeding database with mock data for Flavr...");
 
-  // 1. Δημιουργία Χρηστών (1 Owner, 2 Reviewers)
   const owner = await prisma.user.upsert({
     where: { email: "gordon@flavr.com" },
     update: {},
@@ -12,7 +11,7 @@ async function main() {
       email: "gordon@flavr.com",
       username: "ChefGordon",
       role: "OWNER",
-      passwordHash: "mock_hash_123", // Σε κανονικό σενάριο βάζεις bcrypt hash
+      passwordHash: "mock_hash_123",
     },
   });
 
@@ -38,7 +37,6 @@ async function main() {
     },
   });
 
-  // 2. Δημιουργία Εστιατορίων (Ανήκουν στον owner)
   const restaurant1 = await prisma.restaurant.create({
     data: {
       name: "Luigi's Pasta House",
@@ -92,7 +90,6 @@ async function main() {
     },
   });
 
-  // 3. Δημιουργία Κριτικών (Reviews)
   await prisma.review.create({
     data: {
       rating: 5,

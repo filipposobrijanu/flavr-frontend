@@ -4,12 +4,25 @@ import Image from "next/image";
 import UserActivityFeed from "@/components/UserActivityFeed";
 import rest_Image from "../../assets/ideativas-tlm-waffles-8748848_1920.png";
 import { useLocale } from "@/context/LocaleContext";
+import { motion } from "framer-motion";
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15, delayChildren: 0.1 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
+};
 interface DashboardClientProps {
   activities: any[];
   totalReviews: number;
-  avgRating: string; // 🆕
-  favoriteCuisine: string; // 🆕
+  avgRating: string;
+  favoriteCuisine: string;
 }
 
 export default function DashboardClient({
@@ -21,9 +34,13 @@ export default function DashboardClient({
   const { t } = useLocale();
 
   return (
-    <main className="p-6 md:p-12 max-w-6xl mx-auto min-h-[calc(80vh-4rem)]">
-      {/* Παλιό Header Styling */}
-      <div className="mb-6 pb-8">
+    <motion.main
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="p-6 md:p-12 max-w-6xl mx-auto min-h-[calc(80vh-4rem)]"
+    >
+      <motion.div variants={itemVariants} className="mb-6 pb-8">
         <h2 className="text-4xl md:text-5xl text-white items-center inline-flex gap-3 [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight uppercase">
           <Image
             priority
@@ -34,8 +51,10 @@ export default function DashboardClient({
           {t("dashboard.title")}
         </h2>
 
-        {/* 🆕 Stats Grid που ταιριάζει με το στυλ σου */}
-        <div className="grid text-black grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
+        <motion.div
+          variants={containerVariants}
+          className="grid text-black grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-6"
+        >
           <div className="bg-yellow-400 border-2 border-black px-4 py-3 font-black rounded-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
             <p className="text-xs opacity-70 uppercase">
               {t("dashboard.reviews_posted")}
@@ -54,10 +73,12 @@ export default function DashboardClient({
             <p className="text-xs opacity-70">{t("dashboard.trust_score")}</p>
             <p className="text-2xl">98%</p>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
 
-      <UserActivityFeed activities={activities} />
-    </main>
+      <motion.div variants={itemVariants}>
+        <UserActivityFeed activities={activities} />
+      </motion.div>
+    </motion.main>
   );
 }

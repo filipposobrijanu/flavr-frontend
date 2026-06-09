@@ -5,19 +5,16 @@ import { translations } from "../i18n/locales";
 const LocaleContext = createContext<any>(null);
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
-  // 1. Αρχικοποίηση: Διαβάζουμε από το localStorage αν υπάρχει, αλλιώς "el"
   const [lang, setLang] = useState(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("preferred_lang") || "el";
+      return localStorage.getItem("preferred_lang") || "en";
     }
-    return "el";
+    return "en";
   });
 
-  // 2. Όταν αλλάζει το lang, το αποθηκεύουμε στο localStorage
   useEffect(() => {
     localStorage.setItem("preferred_lang", lang);
 
-    // Εδώ παραμένει ο κώδικάς σου για τις γραμματοσειρές
     document.body.classList.remove("font-ranchers", "font-carlito");
     if (lang === "el") {
       document.body.classList.add("font-carlito");
@@ -32,7 +29,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     keys.forEach((k) => {
       if (current) current = current[k];
     });
-    return current || path; // Επιστρέφει το path αν δεν βρει μετάφραση
+    return current || path;
   };
 
   return (

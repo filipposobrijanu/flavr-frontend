@@ -21,11 +21,10 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Έλεγχος αν το username υπάρχει ήδη σε άλλον χρήστη
     const existingUser = await prisma.user.findFirst({
       where: {
         username: username,
-        NOT: { id: userId }, // Εξαιρούμε τον τρέχοντα χρήστη
+        NOT: { id: userId },
       },
     });
 
@@ -36,7 +35,6 @@ export async function PUT(request: Request) {
       );
     }
 
-    // Ενημέρωση του χρήστη
     await prisma.user.update({
       where: { id: userId },
       data: { username },

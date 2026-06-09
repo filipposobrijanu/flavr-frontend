@@ -13,9 +13,7 @@ export default function FaqTooltip() {
   ];
 
   return (
-    // 🆕 fixed bottom-6 right-6 για να πάει δεξιά
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
-      {/* FAQ Pop-up Panel */}
       {isOpen && (
         <div className="mb-4 w-72 bg-white border-3 border-black p-5 rounded-2xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] animate-in fade-in zoom-in duration-200">
           <h3 className="font-black text-black text-lg mb-3 uppercase tracking-wider flex items-center gap-1">

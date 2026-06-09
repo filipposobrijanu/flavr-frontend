@@ -5,22 +5,37 @@ import rest_Image from "../../assets/ideativas-tlm-hot-dog-sandwich-6402792_1920
 import { useAuth } from "@/context/AuthContext";
 import { useTranslations } from "next-intl"; // <-- Προσάρμοσε αυτό το import ανάλογα το library σου
 import { useLocale } from "@/context/LocaleContext";
+import { motion } from "framer-motion";
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+} as const;
 
 export default function SettingsPage() {
   const { t } = useLocale();
   const { user, logout } = useAuth();
 
-  // Loading states
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [profileLoading, setProfileLoading] = useState(false);
   const [passwordLoading, setPasswordLoading] = useState(false);
 
-  // Form states
   const [username, setUsername] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
 
-  // Notification State
   const [notification, setNotification] = useState<{
     message: string;
     type: "success" | "error";
@@ -34,8 +49,6 @@ export default function SettingsPage() {
   useEffect(() => {
     if (user?.username) setUsername(user.username);
   }, [user]);
-
-  // --- Handlers ---
 
   const handleUpdateProfile = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -119,7 +132,12 @@ export default function SettingsPage() {
   };
 
   return (
-    <main className="relative p-6 md:p-12 max-w-4xl mx-auto min-h-[calc(80vh-4rem)]">
+    <motion.main
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="relative p-6 md:p-12 max-w-4xl mx-auto min-h-[calc(80vh-4rem)]"
+    >
       {/* Notification UI */}
       {notification && (
         <div
@@ -133,7 +151,7 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <div className="mb-6 pb-8">
+      <motion.div variants={itemVariants} className="mb-6 pb-8">
         <h2 className="text-4xl mb-6 md:text-5xl text-white items-center inline-flex gap-3 [-webkit-text-stroke:5px_black] [paint-order:stroke_fill] tracking-tight uppercase">
           <Image
             priority
@@ -144,9 +162,12 @@ export default function SettingsPage() {
           {t("SettingsPage.title")}
         </h2>
 
-        <div className="space-y-8">
+        <motion.div variants={containerVariants} className="space-y-8">
           {/* --- Profile Update Card --- */}
-          <div className="bg-yellow-400 border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <motion.div
+            variants={itemVariants}
+            className="bg-yellow-400 border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          >
             <h3 className="text-xl font-black mb-4 text-black uppercase">
               {t("SettingsPage.editProfile")}
             </h3>
@@ -179,10 +200,13 @@ export default function SettingsPage() {
                 </span>
               </button>
             </form>
-          </div>
+          </motion.div>
 
           {/* --- Security Card --- */}
-          <div className="bg-blue-400 border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <motion.div
+            variants={itemVariants}
+            className="bg-blue-400 border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          >
             <h3 className="text-xl font-black mb-4 text-black uppercase">
               {t("SettingsPage.security")}
             </h3>
@@ -227,10 +251,13 @@ export default function SettingsPage() {
                 </span>
               </button>
             </form>
-          </div>
+          </motion.div>
 
           {/* --- Danger Zone Card --- */}
-          <div className="bg-red-500 border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+          <motion.div
+            variants={itemVariants}
+            className="bg-red-500 border-2 border-black p-6 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+          >
             <h3 className="text-xl font-black mb-2 text-black uppercase">
               {t("SettingsPage.dangerZone")}
             </h3>
@@ -253,9 +280,9 @@ export default function SettingsPage() {
                   : t("SettingsPage.deleteAccount")}
               </span>
             </button>
-          </div>
-        </div>
-      </div>
-    </main>
+          </motion.div>
+        </motion.div>
+      </motion.div>
+    </motion.main>
   );
 }

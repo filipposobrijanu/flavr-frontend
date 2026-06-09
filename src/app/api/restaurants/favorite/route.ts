@@ -20,7 +20,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Έλεγχος αν υπάρχει ήδη στα αγαπημένα
     const existingFavorite = await prisma.favorite.findUnique({
       where: {
         userId_restaurantId: { userId, restaurantId },
@@ -28,7 +27,6 @@ export async function POST(request: Request) {
     });
 
     if (existingFavorite) {
-      // Αν υπάρχει, το διαγράφουμε (Unfavorite)
       await prisma.favorite.delete({
         where: {
           userId_restaurantId: { userId, restaurantId },
@@ -36,7 +34,6 @@ export async function POST(request: Request) {
       });
       return NextResponse.json({ isFavorite: false });
     } else {
-      // Αν δεν υπάρχει, το δημιουργούμε (Favorite)
       await prisma.favorite.create({
         data: { userId, restaurantId },
       });
