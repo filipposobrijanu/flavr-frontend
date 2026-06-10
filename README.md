@@ -86,10 +86,12 @@ npm install
 **3. Configure Environment Variables:**
 Create a `.env` file in your root folder and configure your database and media parameters:
 ```env
-DATABASE_URL="your_prisma_database_connection_string"
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="your_cloud_name"
-CLOUDINARY_API_KEY="your_api_key"
-CLOUDINARY_API_SECRET="your_api_secret"
+DATABASE_URL="..."
+DIRECT_URL="..."
+NEXT_PUBLIC_GOOGLE_CLIENT_ID="..."
+NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME="..."
+CLOUDINARY_API_KEY="..."
+CLOUDINARY_API_SECRET="..."
 ```
 
 **4. Synchronize Database Schema:**
