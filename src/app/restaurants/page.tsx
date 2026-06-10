@@ -50,7 +50,7 @@ interface Restaurant {
 
 export default function RestaurantsPage() {
   const { t } = useLocale();
-  const [sortBy, setSortBy] = useState("rating");
+  const [sortBy, setSortBy] = useState("rating_high");
 
   const [visibleCount, setVisibleCount] = useState(6);
 
@@ -122,23 +122,24 @@ export default function RestaurantsPage() {
     });
   }, [restaurants, cuisine, price, area, sortBy, isOpenNow]);
 
-  useEffect(() => {
-    const getRestaurants = async () => {
-      setIsLoading(true);
-      try {
-        const res = await fetch("/api/restaurants?search=&cuisine=");
-        const data = await res.json();
-        if (res.ok && Array.isArray(data)) {
-          setRestaurants(data);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setIsLoading(false);
+useEffect(() => {
+  const getRestaurants = async () => {
+    setIsLoading(true);
+    try {
+      // Πλέον περνάμε δυναμικά τα states στο API URL
+      const res = await fetch(`/api/restaurants?search=${encodeURIComponent(search)}&cuisine=${encodeURIComponent(cuisine)}`);
+      const data = await res.json();
+      if (res.ok && Array.isArray(data)) {
+        setRestaurants(data);
       }
-    };
-    getRestaurants();
-  }, [search, cuisine]);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  getRestaurants();
+}, [search, cuisine]);
   return (
     <motion.div
       initial="hidden"

@@ -31,11 +31,45 @@ export async function GET(request: Request) {
             userId: userId,
           },
         },
+        reviews: true,
       },
       orderBy: { createdAt: "desc" },
     });
 
-    return NextResponse.json(restaurants);
+    let totalStarsAcrossPlatform = 0;
+    let totalReviewsAcrossPlatform = 0;
+
+    restaurants.forEach((res) => {
+      res.reviews?.forEach((rev) => {
+        totalStarsAcrossPlatform += rev.rating;
+        totalReviewsAcrossPlatform++;
+      });
+    });
+
+    const C =
+      totalReviewsAcrossPlatform > 0
+        ? totalStarsAcrossPlatform / totalReviewsAcrossPlatform
+        : 3.5;
+
+    const m = 3;
+
+    const calculatedRestaurants = restaurants.map((res) => {
+      const v = res.reviews?.length || 0;
+
+      const R =
+        v > 0 ? res.reviews.reduce((acc, rev) => acc + rev.rating, 0) / v : 0;
+
+      const bayesianScore = (v / (v + m)) * R + (m / (v + m)) * C;
+
+      const { reviews, ...restaurantData } = res;
+
+      return {
+        ...restaurantData,
+        globalBayesianScore: v > 0 ? bayesianScore : 0,
+      };
+    });
+
+    return NextResponse.json(calculatedRestaurants);
   } catch (error) {
     console.error("🚨 Error in GET /api/restaurants:", error);
     return NextResponse.json(
