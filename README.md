@@ -1,4 +1,4 @@
-<h1 align="center">🎨 Flavr</h1>
+<h1 align="center">Flavr</h1>
 <h3 align="center">Neobrutalist Restaurant Evaluation & Discovery Platform</h3>
 
 <p align="center">
@@ -18,12 +18,10 @@
 
 ### ✨ Core Features
 
-* **🧮 Bayesian Rating System:** Uses an advanced statistical ranking algorithm (similar to IMDb) to calculate weighted ratings, preventing new or low-volume entries with a few 5-star reviews from unfairly skewing the top leaderboards.
-* **📊 Granular Owner Dashboard:** A secure control panel enabling verified restaurant owners to manage operational parameters such as operating hours, accurate geolocations, and dynamic business data.
-* **🔒 Role-Based Access Control (RBAC):** Strict server-side authorization patterns that isolate administrative routes, ensuring only authenticated and verified owners can execute mutations on their business profiles.
-* **💬 Review Management & Engagement:** Facilitates community trust by allowing verified owners to officially respond to user-generated feedback and address customer reviews.
-* **🖼️ Neobrutalist Media Gallery:** A high-end interactive imagery interface featuring responsive lightbox components tailored to the platform's signature high-contrast layout.
-* **🗺️ Integrated Geolocation Services:** Utilizes address-encoding mapping protocols to generate instantaneous, cross-platform navigation coordinates for end users.
+* **Bayesian Rating System:** Uses an advanced statistical ranking algorithm (similar to IMDb) to calculate weighted ratings, preventing new or low-volume entries with a few 5-star reviews from unfairly skewing the top leaderboards.
+* **Granular Owner Dashboard:** A secure control panel enabling verified restaurant owners to manage operational parameters such as operating hours, accurate geolocations, and dynamic business data.
+* **Role-Based Access Control (RBAC):** Strict server-side authorization patterns that isolate administrative routes, ensuring only authenticated and verified owners can execute mutations on their business profiles.
+* **Review Management & Engagement:** Facilitates community trust by allowing verified owners to officially respond to user-generated feedback and address customer reviews.
 
 ---
 
