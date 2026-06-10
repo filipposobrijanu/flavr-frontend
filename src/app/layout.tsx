@@ -82,6 +82,7 @@ export default async function RootLayout({
     <html
       lang="el"
       className={`${ranchersFont.variable} ${carlitoFont.variable}`}
+      suppressHydrationWarning
     >
       <body className="bg-black text-black font-ranchers">
         <LocaleProvider>

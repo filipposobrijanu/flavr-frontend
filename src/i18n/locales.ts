@@ -1,5 +1,8 @@
 export const translations = {
   el: {
+    common: {
+      loading: "Φόρτωση...",
+    },
     restaurant: {
       share: "ΜΟΙΡΑΣΟΥ ΤΟ",
       copied: "ΑΝΤΙΓΡΑΦΗΚΕ!",
@@ -405,6 +408,9 @@ export const translations = {
     },
   },
   en: {
+    common: {
+      loading: "Loading...",
+    },
     restaurant: {
       share: "SHARE",
       copied: "COPIED!",

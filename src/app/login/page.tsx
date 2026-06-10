@@ -42,8 +42,13 @@ function LoginContent() {
     general: "",
   });
   const router = useRouter();
+  // Στο state του LoginContent
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  // Στο useGoogleLogin
   const googleLogin = useGoogleLogin({
     onSuccess: async (tokenResponse) => {
+      setGoogleLoading(true); // Ενεργοποίηση loading
       try {
         const res = await fetch("/api/auth/google", {
           method: "POST",
@@ -54,6 +59,8 @@ function LoginContent() {
         if (res.ok) {
           const user = await res.json();
           login(user);
+          // Force refresh για να καθαρίσει τυχόν παλιό cache από transactions
+          router.refresh();
           if (user.role === "ADMIN") router.push("/admin");
           else router.push("/restaurants");
         } else {
@@ -61,6 +68,8 @@ function LoginContent() {
         }
       } catch (error) {
         setErrors({ ...errors, general: "Σφάλμα δικτύου" });
+      } finally {
+        setGoogleLoading(false); // Απενεργοποίηση
       }
     },
     onError: () => setErrors({ ...errors, general: "Το Google Login απέτυχε" }),
@@ -127,7 +136,7 @@ function LoginContent() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className=" min-h-[calc(80vh-4rem)] md:min-h-[calc(75vh-4rem)] mb-10 flex flex-col gap-4 items-center justify-center text-center p-6 text-black"
+      className=" min-h-[calc(80vh-4rem)] md:min-h-[calc(80vh-4rem)] mb-10 flex flex-col gap-4 items-center justify-center text-center p-6 text-black"
     >
       <title>Login | Flavr</title>
       <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center">
@@ -242,15 +251,33 @@ function LoginContent() {
 
           <button
             type="button"
+            disabled={googleLoading}
             onClick={() => googleLogin()}
-            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 bg-white border-2 border-black rounded-xl font-black uppercase text-md shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] cursor-pointer hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
+            className={`w-full flex items-center cursor-pointer justify-center gap-3 px-4 py-2.5 bg-white border-2 border-black rounded-xl font-black uppercase text-md shadow-[0px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${
+              googleLoading
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]"
+            }`}
           >
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              alt="Google Logo"
-              className="w-5 h-5"
-            />
-            {t("login.continue_with_google") || "Continue with Google"}
+            {googleLoading ? (
+              <>
+                <img
+                  src="https://www.svgrepo.com/show/475656/google-color.svg"
+                  alt="Google"
+                  className="w-5 h-5"
+                />
+                {t("common.loading")}
+              </>
+            ) : (
+              <>
+                <img
+                  src="https://www.svgrepo.com/show/475656/google-color.svg"
+                  alt="Google"
+                  className="w-5 h-5"
+                />
+                {t("login.continue_with_google")}
+              </>
+            )}
           </button>
           <p className="mt-6 text-xs font-bold text-gray-600">
             {t("login.new_user")}{" "}

@@ -59,6 +59,7 @@ function SignUpContent() {
         if (res.ok) {
           const newUser = await res.json();
           login(newUser);
+          router.refresh();
 
           if (newUser.role === "ADMIN") router.push("/admin");
           else if (newUser.role === "OWNER") router.push("/owner");
@@ -144,7 +145,7 @@ function SignUpContent() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="min-h-[calc(80vh-4rem)] md:min-h-[calc(75vh-4rem)] mb-10 flex flex-col gap-4 items-center justify-center text-center p-6 text-black"
+      className="min-h-[calc(80vh-4rem)] md:min-h-[calc(80vh-4rem)] mb-10 flex flex-col gap-4 items-center justify-center text-center p-6 text-black"
     >
       <title>Sign Up | Flavr</title>
       <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center justify-center">
@@ -277,9 +278,9 @@ function SignUpContent() {
           <div className="my-6 flex items-center justify-center relative">
             <hr className="w-full border-black border-1" />
           </div>
-
           <button
             type="button"
+            disabled={loading}
             onClick={() => {
               if (!role) {
                 setErrors({
@@ -290,14 +291,31 @@ function SignUpContent() {
               }
               googleSignUp();
             }}
-            className="w-full flex items-center justify-center gap-3 px-4 cursor-pointer  py-2.5 bg-white border-2 border-black rounded-xl font-black uppercase text-md shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px] transition-all"
+            className={`w-full flex items-center cursor-pointer justify-center gap-3 px-4 py-2.5 bg-white border-2 border-black rounded-xl font-black uppercase text-md shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all ${
+              loading
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:shadow-none hover:translate-x-[4px] hover:translate-y-[4px]"
+            }`}
           >
-            <img
-              src="https://www.svgrepo.com/show/475656/google-color.svg"
-              alt="Google Logo"
-              className="w-5 h-5"
-            />
-            {t("signup.continue_with_google") || "Sign up with Google"}
+            {loading ? (
+              <>
+                <img
+                  src="https://www.svgrepo.com/show/475656/google-color.svg"
+                  alt="Google"
+                  className="w-5 h-5"
+                />
+                {t("common.loading")}
+              </>
+            ) : (
+              <>
+                <img
+                  src="https://www.svgrepo.com/show/475656/google-color.svg"
+                  alt="Google"
+                  className="w-5 h-5"
+                />
+                {t("signup.continue_with_google")}
+              </>
+            )}
           </button>
 
           <p className="mt-6 text-xs font-bold text-gray-600">
